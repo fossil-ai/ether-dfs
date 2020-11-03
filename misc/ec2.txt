@@ -1,5 +1,8 @@
+VMs:
+i-08630abccc20852a7
+IP:54.224.113.140
 
-ssh -i "test.pem" ec2-user@ec2-3-238-86-7.compute-1.amazonaws.com
+i-087d6fa7e0bcdb475
+IP:3.89.159.148
 
-//this is useless,the numbers change every time
 
