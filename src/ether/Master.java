@@ -58,7 +58,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 
 	@Override
-	public void createFile(String filename) {
+	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
 		// TODO Auto-generated method stub
 		
 		System.out.println("Master: File Created");
@@ -88,12 +88,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 		// the primary replica is the first lucky replica picked
 		int primaryReplicaIndex = replicaIndices[0];
-		try {
-			minionMasterInvocation.get(primaryReplicaIndex).takeCharge(filename, replicas);
-		} catch (RemoteException | NotBoundException e) {
-			// couldn't assign the master replica
-			e.printStackTrace();
-		}
+		
+		minionMasterInvocation.get(primaryReplicaIndex).takeCharge(filename, replicasResponsible);
+		
 
 		fileMinionsMapping.put(filename, replicasResponsible);
 		filePrimaryMinionMapping.put(filename, minionLocations.get(primaryReplicaIndex));
@@ -103,6 +100,24 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	private int[] getRandomReplicaIndices(){
 		return null;
 	}
+	
+	@Override
+	public MinionLocation locatePrimaryReplica(String fileName) throws RemoteException {
+		
+		return filePrimaryMinionMapping.get(fileName);
+	}
+	
+
+	/**
+	 * registers new replica server @ the master by adding required meta data
+	 * @param replicaLoc
+	 * @param replicaStub
+	 */
+	public void registerMinion(MinionLocation minionLocation, MasterMinionLink minionStub){
+		minionLocations.add(minionLocation);
+		minionMasterInvocation.add((MasterMinionLink) minionStub);
+	}
+
 
 	
 

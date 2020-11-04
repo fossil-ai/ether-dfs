@@ -19,19 +19,19 @@ public class MinionLocation implements Serializable {
 		this.alive = alive;
 	}
 	
-	boolean isAlive(){
+	public boolean isAlive(){
 		return alive;
 	}
 	
-	int getId(){
+	public int getId(){
 		return id;
 	}
 	
-	void setAlive(boolean alive){
+	public void setAlive(boolean alive){
 		this.alive = alive;
 	}
 	
-	String getAddress(){
+	public String getAddress(){
 		return address;
 	}
 

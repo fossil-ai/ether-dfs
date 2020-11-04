@@ -1,10 +1,13 @@
 package ether;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,9 +36,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	
 	private Map<Long, String> activeTxn; // map between active transactions and file names
 	private Map<Long, Map<Long, byte[]>> txnFileMap; // map between transaction ID and corresponding file chunks
-//	private Map<String,	 List<ReplicaReplicaInterface> > filesReplicaMap; //replicas where files that this replica is its master are replicated  
-	private Map<Integer, MinionLocation> replicaServersLoc; // Map<ReplicaID, replicaLoc>
-//	private Map<Integer, ReplicaReplicaInterface> replicaServersStubs; // Map<ReplicaID, replicaStub>
+	private Map<String,	 List<MinionMinionLink> > filesReplicaMap; //replicas where files that this replica is its master are replicated  
+	private Map<Integer, MinionLocation> minionServersLoc; // Map<ReplicaID, replicaLoc>
+	private Map<Integer, MinionMinionLink> minionToMinionStubs; // Map<ReplicaID, replicaStub>
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks; // locks objects of the open files
 	
 	public Minion(int id, String dir) throws RemoteException {
@@ -69,6 +72,35 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		lock.writeLock().lock();
 		file.createNewFile();
 		lock.writeLock().unlock();
+	}
+
+	@Override
+	public void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException {
+		// TODO Auto-generated method stub
+		
+		System.out.println("[@Replica] taking charge of file: "+ filename);
+		System.out.println(replicasResponsible);
+		
+		List<MinionMinionLink> minionStubs = new ArrayList<MinionMinionLink>(replicasResponsible.size());
+		
+		for (MinionLocation loc : replicasResponsible) {
+			// if the current locations is this replica .. ignore
+			if (loc.getId() == this.id)
+				continue;
+			  
+			// if this is a new replica generate stub for this replica
+			if (!minionServersLoc.containsKey(loc.getId())){
+				minionServersLoc.put(loc.getId(), loc);
+				MinionMinionLink stub = (MinionMinionLink) registry.lookup("ReplicaClient"+loc.getId());
+				minionToMinionStubs.put(loc.getId(), stub);
+			}
+			MinionMinionLink minionStub = minionToMinionStubs.get(loc.getId());
+			minionStubs.add(minionStub);
+		}
+		
+		filesReplicaMap.put(filename, minionStubs);
+		
+		
 	}
 
 	
