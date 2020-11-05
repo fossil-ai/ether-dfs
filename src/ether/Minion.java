@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.File;
@@ -35,7 +36,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private Registry registry;
 	
 	private Map<Long, String> activeTxn; // map between active transactions and file names
-	private Map<Long, Map<Long, byte[]>> txnFileMap; // map between transaction ID and corresponding file chunks
 	private Map<String,	 List<MinionMinionLink> > filesReplicaMap; //replicas where files that this replica is its master are replicated  
 	private Map<Integer, MinionLocation> minionServersLoc; // Map<ReplicaID, replicaLoc>
 	private Map<Integer, MinionMinionLink> minionToMinionStubs; // Map<ReplicaID, replicaStub>
@@ -45,12 +45,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		
 		this.id = id;
 		this.directory = "/tmp/minion_" + id + "/";
-//		txnFileMap = new TreeMap<Long, Map<Long, byte[]>>();
-//		activeTxn = new TreeMap<Long, String>();
-//		filesReplicaMap = new TreeMap<String, List<ReplicaReplicaInterface>>();
-//		replicaServersLoc = new TreeMap<Integer, ReplicaLoc>();
-//		replicaServersStubs = new TreeMap<Integer, ReplicaReplicaInterface>();
-//		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
+		activeTxn = new TreeMap<Long, String>();
+		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
+		minionServersLoc = new TreeMap<Integer, MinionLocation>();
+		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
+		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 		
 		File file = new File(this.directory);
 		if (!file.exists()){

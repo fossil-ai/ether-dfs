@@ -29,8 +29,12 @@ public class Client {
 	}
 	
 	public void createFile(String name) {
-		masterLink.cr
-		
+		try {
+			masterLink.createFile(name);
+		} catch (RemoteException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

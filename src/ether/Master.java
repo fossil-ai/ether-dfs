@@ -70,7 +70,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		for (int i = 0; i < replicaIndices.length; i++) {
 
 			do {
-				replicaIndices[i] = random.nextInt(replicationFactor);
+//				replicaIndices[i] = random.nextInt(replicationFactor);
+				replicaIndices[i] = 0;
 				
 			} while(alreadySelectedIndices.contains(replicaIndices[i]));
 
