@@ -102,7 +102,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	
 	@Override
 	public MinionLocation locatePrimaryReplica(String fileName) throws RemoteException {
-		
 		return filePrimaryMinionMapping.get(fileName);
 	}
 	

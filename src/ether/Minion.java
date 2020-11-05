@@ -33,6 +33,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	
 	public int id;
 	public String directory;
+	private MinionLocation location;
 	private Registry registry;
 	
 	private Map<String,	 List<MinionMinionLink> > filesReplicaMap;
@@ -48,14 +49,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 			e.printStackTrace();
 		}
 		
-		this.id = id;
+		this.id = 0;
 		this.directory = "/tmp/minion_" + id + "/";
 		
 		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
 		minionServersLoc = new TreeMap<Integer, MinionLocation>();
 		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
-		MinionLocation location = new MinionLocation(0, ip, true);
+		location = new MinionLocation(this.id, ip, true);
 		
 		File file = new File(this.directory);
 		if (!file.exists()){
@@ -100,7 +101,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		
 		filesReplicaMap.put(filename, minionStubs);
 		
-		
+	}
+	
+	public MinionLocation getLocation() {
+		return this.location;
 	}
 
 	
