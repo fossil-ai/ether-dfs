@@ -1,6 +1,7 @@
 package ether;
 
 import java.util.Scanner;
+import javax.naming.*; 
 
 public class ClientService {
 	
