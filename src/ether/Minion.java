@@ -28,39 +28,40 @@ import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, MinionMinionLink, ClientMinionLink {
 	
-	public final static int REG_PORT = 50900;
+	public final static int REG_PORT = 50904;
 	public final static String REG_ADDR = "localhost";
 	
 	public int id;
 	public String directory;
 	private Registry registry;
 	
-	private Map<Long, String> activeTxn; // map between active transactions and file names
-	private Map<String,	 List<MinionMinionLink> > filesReplicaMap; //replicas where files that this replica is its master are replicated  
-	private Map<Integer, MinionLocation> minionServersLoc; // Map<ReplicaID, replicaLoc>
-	private Map<Integer, MinionMinionLink> minionToMinionStubs; // Map<ReplicaID, replicaStub>
-	private ConcurrentMap<String, ReentrantReadWriteLock> locks; // locks objects of the open files
+	private Map<String,	 List<MinionMinionLink> > filesReplicaMap;
+	private Map<Integer, MinionLocation> minionServersLoc;
+	private Map<Integer, MinionMinionLink> minionToMinionStubs;
+	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	
-	public Minion(int id, String dir) throws RemoteException {
-		
-		this.id = id;
-		this.directory = "/tmp/minion_" + id + "/";
-		activeTxn = new TreeMap<Long, String>();
-		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
-		minionServersLoc = new TreeMap<Integer, MinionLocation>();
-		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
-		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
-		
-		File file = new File(this.directory);
-		if (!file.exists()){
-			file.mkdir();
-		}
+	public Minion(String ip, String dir) throws RemoteException {
 		
 		try  {
 			registry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		this.id = id;
+		this.directory = "/tmp/minion_" + id + "/";
+		
+		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
+		minionServersLoc = new TreeMap<Integer, MinionLocation>();
+		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
+		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
+		MinionLocation location = new MinionLocation(0, ip, true);
+		
+		File file = new File(this.directory);
+		if (!file.exists()){
+			file.mkdir();
+		}
+		
 	}
 
 	@Override

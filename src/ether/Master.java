@@ -35,10 +35,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	Random random;
 
 	
-	protected Master(int replicationFactor, int blocksize) throws RemoteException {
+	protected Master() throws RemoteException {
 		
-		this.replicationFactor = replicationFactor;
-		this.blocksize = blocksize;
 		
 		// TODO Auto-generated constructor stub
 		fileMinionsMapping = new HashMap<String, List<MinionLocation>>();

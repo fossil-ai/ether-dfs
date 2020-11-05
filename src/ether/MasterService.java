@@ -1,10 +1,14 @@
 package ether;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+
 
 import links.ClientMasterLink;
 
@@ -12,26 +16,45 @@ public class MasterService {
 
 	public static void main(String[] args) {
 		
-		final String REG_ADDR = "localhost";
 		final int REG_PORT = 50904;
 		final String MS_LINKNAME = "MasterLink";
 		
-		System.out.println("Creating Java RMI registry");
-		LocateRegistry.createRegistry(REG_PORT);
-		registry = LocateRegistry.getRegistry(REG_PORT);
-		// spawn master server here
+		Registry registry;
+		int N, blocksize, replicationFactor;
+		BufferedReader reader;
 		
-		System.out.println("L.");
-		// TODO make file names global
-		BufferedReader reader = new BufferedReader(new FileReader("filesys.conf"));
-		int N = Integer.parseInt(reader.readLine().trim());
-		int blocksize = Integer.parseInt(reader.readLine().trim());
-		int replicationFactor = Integer.parseInt(reader.readLine().trim());
+		System.out.println("Creating Java RMI registry...");
 		
-		Master masterServer = new Master(replicationFactor, blocksize);
-		ClientMasterLink cm_stub = (ClientMasterLink) UnicastRemoteObject.toStub(masterServer);
-		registry.rebind("ClientMasterLink", cm_stub);
-		System.err.println("Server ready");
+		try {
+			
+			LocateRegistry.createRegistry(REG_PORT);
+			System.out.println("Registry instance exported on port: " + REG_PORT);
+			registry = LocateRegistry.getRegistry(REG_PORT);
+			
+			System.out.println("Parsing server/minion configurations...");
+			
+			try {
+				reader = new BufferedReader(new FileReader("filesys.conf"));
+//				N = Integer.parseInt(reader.readLine().trim());
+//				blocksize = Integer.parseInt(reader.readLine().trim());
+//				replicationFactor = Integer.parseInt(reader.readLine().trim());
+				
+				System.out.println("Launching MasterServer");
+				Master masterServer = new Master();
+				ClientMasterLink cm_stub = (ClientMasterLink) UnicastRemoteObject.toStub(masterServer);
+				registry.rebind(MS_LINKNAME, cm_stub);
+				System.err.println("Ready and running...");
+				
+			} catch (NumberFormatException | IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 

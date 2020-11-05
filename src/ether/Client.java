@@ -17,9 +17,9 @@ public class Client {
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
 			masterLink =  (ClientMasterLink) registry.lookup(masterServerLinkName);
-			System.out.println("[@client] Master Stub fetched successfuly");
+			System.out.println("Successfully fetched master server stub.");
 		} catch (RemoteException | NotBoundException e) {
-			// fatal error .. no registry could be linked
+			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
 	}
