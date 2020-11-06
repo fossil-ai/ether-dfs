@@ -18,6 +18,6 @@ public interface ClientMasterLink extends Remote {
 	
 	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
 
-	MinionLocation locatePrimaryReplica(String fileName) throws RemoteException;
+	MinionLocation locatePrimaryMinion(String fileName) throws RemoteException;
 
 }

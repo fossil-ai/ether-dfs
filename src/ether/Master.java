@@ -16,19 +16,17 @@ import java.util.TreeSet;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
+import utils.FileManager;
 import utils.MinionLocation;
 import links.ClientMasterLink;
 
 public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink {
 	
-	public int replicationFactor;
-	public int blocksize;
 	public String name;
 	public String address;
+	
+	FileManager fileManager;
 
-	private Map<String,	List<MinionLocation> > fileMinionsMapping;
-	private Map<String,	 MinionLocation> filePrimaryMinionMapping;
-	private Map<Integer, String> activeTransactions; // active transactions <ID, fileName>
 	private List<MinionLocation> minionLocations;
 	private List<MasterMinionLink> minionMasterInvocation; 
 	
@@ -37,14 +35,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	
 	protected Master() throws RemoteException {
 		
-		
-		// TODO Auto-generated constructor stub
-		fileMinionsMapping = new HashMap<String, List<MinionLocation>>();
-		filePrimaryMinionMapping = new HashMap<String, MinionLocation>();
-		activeTransactions = new HashMap<Integer, String>();
+		fileManager = new FileManager();
 		minionLocations = new ArrayList<MinionLocation>();
 		minionMasterInvocation = new ArrayList<MasterMinionLink>();
-		
 		this.random = new Random();
 	}
 	
@@ -60,7 +53,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		// TODO Auto-generated method stub
 		
 		System.out.println("Master: File Created");
-		int replicaIndices[] = new int[replicationFactor];
+		int replicaIndices[] = new int[2];
 		List<MinionLocation> replicasResponsible = new ArrayList<MinionLocation>();
 
 		Set<Integer> alreadySelectedIndices = new TreeSet<Integer>();
@@ -87,12 +80,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 		// the primary replica is the first lucky replica picked
 		int primaryReplicaIndex = replicaIndices[0];
-		
 		minionMasterInvocation.get(primaryReplicaIndex).takeCharge(filename, replicasResponsible);
 		
 
-		fileMinionsMapping.put(filename, replicasResponsible);
-		filePrimaryMinionMapping.put(filename, minionLocations.get(primaryReplicaIndex));
+		fileManager.assignSelectedMinionsToFile(filename, replicasResponsible);
+		fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex, minionLocations);
 		
 	}
 	
@@ -101,8 +93,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 	
 	@Override
-	public MinionLocation locatePrimaryReplica(String fileName) throws RemoteException {
-		return filePrimaryMinionMapping.get(fileName);
+	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
+		return fileManager.getPrimaryFileLocation(fileName);
 	}
 	
 
@@ -114,6 +106,13 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public void registerMinion(MinionLocation minionLocation, MasterMinionLink minionStub){
 		minionLocations.add(minionLocation);
 		minionMasterInvocation.add((MasterMinionLink) minionStub);
+	}
+
+
+	@Override
+	public int getMinionCount() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 
