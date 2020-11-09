@@ -73,7 +73,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.minionsNum();
 	}
 
-
 	
-
+	public void heartBeat()
+	{
+		
+	}
+	
 }

@@ -107,6 +107,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		return this.location;
 	}
 
-	
+	// return free memory space in percentage.
+	public double getMemSpace()
+	{
+		File file = new File("/dev/xvda1");
+		return (double)(file.getFreeSpace()/(1024*1024))/(file.getTotalSpace()/(1024*1024));
+	}
 
 }
