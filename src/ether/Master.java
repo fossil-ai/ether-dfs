@@ -18,6 +18,7 @@ import links.MasterMinionLink;
 import links.MinionMasterLink;
 import utils.FileManager;
 import utils.MinionLocation;
+import utils.MinionManager;
 import links.ClientMasterLink;
 
 public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink {
@@ -26,65 +27,34 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public String address;
 	
 	FileManager fileManager;
-
-	private List<MinionLocation> minionLocations;
-	private List<MasterMinionLink> minionMasterInvocation; 
+	MinionManager minionManager;
 	
 	Random random;
-
 	
 	protected Master() throws RemoteException {
-		
-		fileManager = new FileManager();
-		minionLocations = new ArrayList<MinionLocation>();
-		minionMasterInvocation = new ArrayList<MasterMinionLink>();
+		this.fileManager = new FileManager();
+		this.minionManager = new MinionManager();
 		this.random = new Random();
 	}
 	
-
 	public void addMinionInterface(MinionLocation minionLocation, MasterMinionLink stub){
-		minionLocations.add(minionLocation);
-		minionMasterInvocation.add((MasterMinionLink) stub);
+		this.minionManager.addMinion(minionLocation, stub);
 	}
-
 
 	@Override
 	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
-		// TODO Auto-generated method stub
-		
 		System.out.println("Master: File Created");
-		int replicaIndices[] = new int[2];
-		List<MinionLocation> replicasResponsible = new ArrayList<MinionLocation>();
-
-		Set<Integer> alreadySelectedIndices = new TreeSet<Integer>();
-
-		for (int i = 0; i < replicaIndices.length; i++) {
-
-			do {
-//				replicaIndices[i] = random.nextInt(replicationFactor);
-				replicaIndices[i] = 0;
-				
-			} while(alreadySelectedIndices.contains(replicaIndices[i]));
-
-
-			alreadySelectedIndices.add(replicaIndices[i]);
-			replicasResponsible.add(minionLocations.get(replicaIndices[i]));
-
+		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
 			try {
-				minionMasterInvocation.get(replicaIndices[i]).createFile(filename);
+				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
 			} catch (IOException e) { 
 				e.printStackTrace();
 			}
-
 		}
-
-		// the primary replica is the first lucky replica picked
-		int primaryReplicaIndex = replicaIndices[0];
-		minionMasterInvocation.get(primaryReplicaIndex).takeCharge(filename, replicasResponsible);
-		
-
-		fileManager.assignSelectedMinionsToFile(filename, replicasResponsible);
-		fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex, minionLocations);
+		int primaryReplicaIndex = 0;
+		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename, this.minionManager.getMinionLocations());
+		this.fileManager.assignSelectedMinionsToFile(filename, this.minionManager.getMinionLocations());
+		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex, this.minionManager.getMinionLocations());
 		
 	}
 	
@@ -96,23 +66,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
 		return fileManager.getPrimaryFileLocation(fileName);
 	}
-	
-
-	/**
-	 * registers new replica server @ the master by adding required meta data
-	 * @param replicaLoc
-	 * @param replicaStub
-	 */
-	public void registerMinion(MinionLocation minionLocation, MasterMinionLink minionStub){
-		minionLocations.add(minionLocation);
-		minionMasterInvocation.add((MasterMinionLink) minionStub);
-	}
 
 
 	@Override
 	public int getMinionCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.minionManager.minionsNum();
 	}
 
 
