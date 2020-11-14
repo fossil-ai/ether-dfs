@@ -1,6 +1,8 @@
 package ether;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.*;  
 import java.rmi.server.*;  
 import java.util.UUID;
@@ -29,12 +31,26 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	FileManager fileManager;
 	MinionManager minionManager;
 	
+	private static ServerSocket server;
+	private static Socket socket;
+	private static int port = 50000;
+	
 	Random random;
 	
 	protected Master() throws RemoteException {
 		this.fileManager = new FileManager();
 		this.minionManager = new MinionManager();
 		this.random = new Random();
+		
+		try {
+			server = new ServerSocket(port);
+			socket = server.accept();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	public void addMinionInterface(MinionLocation minionLocation, MasterMinionLink stub){
@@ -73,9 +89,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.minionsNum();
 	}
 
-	
-	public void heartBeat()
-	{
+	public void listenHeartBeat() {
 		
 	}
 	
