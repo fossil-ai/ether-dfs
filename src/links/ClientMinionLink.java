@@ -9,5 +9,7 @@ import java.rmi.Remote;
  *
  */
 public interface ClientMinionLink extends Remote {
+	
+	void readFile(String filename);
 
 }

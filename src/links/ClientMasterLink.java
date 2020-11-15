@@ -1,5 +1,6 @@
 package links;
 
+import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
@@ -17,6 +18,8 @@ import utils.MinionLocation;
 public interface ClientMasterLink extends Remote {
 	
 	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
+	
+	public int assignMinionToClient() throws IOException;
 
 	MinionLocation locatePrimaryMinion(String fileName) throws RemoteException;
 

@@ -40,6 +40,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private Map<Integer, MinionLocation> minionServersLoc;
 	private Map<Integer, MinionMinionLink> minionToMinionStubs;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
+	private Map<Integer, ClientMinionLink> clientsConnectedMap;
 	
 	public Minion(String ip, String dir) throws RemoteException {
 		
@@ -55,6 +56,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
 		minionServersLoc = new TreeMap<Integer, MinionLocation>();
 		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
+		clientsConnectedMap = new TreeMap<Integer, ClientMinionLink>();
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 		location = new MinionLocation(this.id, ip, true);
 		
@@ -112,6 +114,18 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	{
 		File file = new File("/dev/xvda1");
 		return (double)(file.getFreeSpace()/(1024*1024))/(file.getTotalSpace()/(1024*1024));
+	}
+
+	@Override
+	public void readFile(String filename) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+	@Override
+	public void addClientToMinion(int id, ClientMinionLink link) {
+		clientsConnectedMap.put(id, link);
 	}
 
 }
