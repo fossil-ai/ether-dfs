@@ -10,16 +10,23 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException; 
 import java.nio.file.FileStore; 
 import java.nio.file.Files; 
 import java.nio.file.Path; 
 import java.nio.file.Paths; 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.net.*;  
 
 import links.MasterMinionLink;
 import links.MinionMinionLink;
@@ -30,6 +37,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	
 	public final static int REG_PORT = 50904;
 	public final static String REG_ADDR = "localhost";
+	
+	private static int myPort = 50000;
+	private static Socket socket;
 	
 	public int id;
 	public String directory;
@@ -64,6 +74,29 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		if (!file.exists()){
 			file.mkdir();
 		}
+		
+		try {
+			socket = new Socket(ip, myPort);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    Timer timer = new Timer();
+	    timer.schedule(new TimerTask() {
+	        @Override
+	        public void run() {
+	        	try {
+					heartBeat();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	            ;
+	        }
+	    }, 0, 1000);
 		
 	}
 
@@ -108,10 +141,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	public MinionLocation getLocation() {
 		return this.location;
 	}
-
+	
+	public void heartBeat() throws IOException{
+		DataOutputStream heartBeat = new DataOutputStream(socket.getOutputStream()); 
+		heartBeat.writeDouble(getMemSpace());
+	}
 	// return free memory space in percentage.
-	public double getMemSpace()
-	{
+	public double getMemSpace(){
 		File file = new File("/dev/xvda1");
 		return (double)(file.getFreeSpace()/(1024*1024))/(file.getTotalSpace()/(1024*1024));
 	}
