@@ -12,7 +12,9 @@ public class Client {
 	
 	ClientMasterLink masterLink;
 	static Registry registry;
+	private int clientID;
 	
+
 	public Client(String hostname, int port, String masterServerLinkName){
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
@@ -22,6 +24,9 @@ public class Client {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
+		
+		this.clientID = 1234; // Temporary ID
+		
 	}
 	
 	public void createFile(String name) {
@@ -31,6 +36,26 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void assignMinion() {
+		try {
+			masterLink.assignMinionToClient();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public int getClientID() {
+		return clientID;
+	}
+
+	public void setClientID(int clientID) {
+		this.clientID = clientID;
 	}
 	
 	

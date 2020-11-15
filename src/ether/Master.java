@@ -92,13 +92,16 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		
 	}
 	
-	private int[] getRandomReplicaIndices(){
-		return null;
-	}
 	
 	@Override
 	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
 		return fileManager.getPrimaryFileLocation(fileName);
+	}
+	
+	public int assignMinionToClient(){
+		System.out.println("Master: Assigning Client to Minion");
+		this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(1234, null);;
+		return 0;
 	}
 
 

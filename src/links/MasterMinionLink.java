@@ -19,6 +19,8 @@ public interface MasterMinionLink extends Remote {
 	
 	void createFile(String filename) throws IOException;
 	
+	void addClientToMinion(int id, ClientMinionLink link);
+	
 	void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException;
 
 }
