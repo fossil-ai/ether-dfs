@@ -40,6 +40,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	
 	private static int myPort = 50000;
 	private static Socket socket;
+	private static String IpAddress = "172.31.33.125"; // need to configure later. should be the main server address.
 	
 	public int id;
 	public String directory;
@@ -74,7 +75,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		}
 		
 		try {
-			socket = new Socket(ip, myPort);
+			socket = new Socket(IpAddress, myPort);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
