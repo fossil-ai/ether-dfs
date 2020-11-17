@@ -6,26 +6,30 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 
 public class Client {
 	
+	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
 	static Registry registry;
 	private int clientID;
 	
 
-	public Client(String hostname, int port, String masterServerLinkName){
+	public Client(String hostname, int port, String masterServerJumpLinkName){
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
-			masterLink =  (ClientMasterLink) registry.lookup(masterServerLinkName);
-			System.out.println("Successfully fetched master server stub.");
+			jumpLink =  (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			System.out.println("Successfully fetched master-server jump-link stub.");
+			clientID = jumpLink.clientJumpStart();
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
+		
 		
 		this.setClientID(masterLink.getClientCount() + 1);
 		this.assignMinion(this.getClientID());

@@ -1,7 +1,9 @@
 package ether;
 
 import java.util.Scanner;
-import javax.naming.*; 
+import javax.naming.*;
+
+import utils.ConfigReader; 
 
 public class ClientService {
 	
@@ -18,12 +20,12 @@ public class ClientService {
 
 	public static void main(String[] args) {
 		
-
-		final String REG_ADDR = "localhost";
-		final int REG_PORT = 50904;
-		final String MS_LINKNAME = "MasterLink";
+		ConfigReader reader = new ConfigReader();
+		String REG_ADDR = reader.getRegistryHost();
+		int REG_PORT = reader.getRegistryPort();
+		String MS_JUMPLINKNAME = reader.getRegistryJumpName();
 		
-		Client client = new Client(REG_ADDR, REG_PORT, MS_LINKNAME);
+		Client client = new Client(REG_ADDR, REG_PORT, MS_JUMPLINKNAME);
 		
 		System.out.println("Welcome to Ether-DFS - What would you like to do?");
 		printOptions();

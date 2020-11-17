@@ -21,6 +21,7 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 
 import links.MasterMinionLink;
+import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import utils.ClientManager;
 import utils.FileManager;
@@ -29,7 +30,7 @@ import utils.MinionManager;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 
-public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink {
+public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink, MinionMasterJumpLink {
 	
 	public String name;
 	public String address;
@@ -37,7 +38,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	FileManager fileManager;
 	MinionManager minionManager;
 	ClientManager clientManager;
-	
 
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -55,20 +55,20 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		
 		
 		
-		try {
-			serverSocket = new ServerSocket(port);
-			System.out.println("server socket started!!!!");
-			while(true) {
-
-				socket = serverSocket.accept();
-				System.out.println("connection established!!!!");
-				threadServer thread = new threadServer(socket);
-				thread.start();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			serverSocket = new ServerSocket(port);
+//			System.out.println("server socket started!!!!");
+//			while(true) {
+//
+//				socket = serverSocket.accept();
+//				System.out.println("connection established!!!!");
+//				threadServer thread = new threadServer(socket);
+//				thread.start();
+//			}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		//include all the minions IP address; initialize minions memory space to 1;
 		//MinionsList.put("172.31.33.125", 1);
 		MinionsList.put("172.31.46.197", 1.00);
@@ -155,9 +155,22 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		}
 	}
 
+
 	@Override
-	public int hey() {
-		// TODO Auto-generated method stub
+	public int clientJumpStart(){
+		System.out.println("HEY! Connecting new client...");
+		System.out.println("Looks like there are " + this.getClientCount() + " clients connected...");
+		System.out.println("Assigning client with ID: " + this.getClientCount() + 1);
+		int id = this.getClientCount() + 1;
+		return 0;
+	}
+	
+	@Override
+	public int minionJumpStart(){
+		System.out.println("HEY! Connecting new minion...");
+		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
+		System.out.println("Assigning minion with ID: " + this.getMinionCount() + 1);
+		int id = this.getMinionCount() + 1;
 		return 0;
 	}
 	

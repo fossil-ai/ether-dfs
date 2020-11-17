@@ -35,8 +35,6 @@ public class MasterService {
 				
 				System.out.println("Launching MasterServer");
 				Master masterServer = new Master();
-				ClientMasterLink cm_stub = (ClientMasterLink) UnicastRemoteObject.toStub(masterServer);
-				registry.rebind(MS_LINKNAME, cm_stub);
 				System.err.println("Ready and running...");
 				
 			} catch (NumberFormatException | IOException e) {
