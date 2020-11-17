@@ -23,5 +23,4 @@ public interface MasterMinionLink extends Remote {
 	
 	void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException;
 
-	double getMemSpace();
 }

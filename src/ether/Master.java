@@ -1,13 +1,17 @@
 package ether;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.*;  
 import java.rmi.server.*;  
 import java.util.UUID;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -22,9 +26,10 @@ import utils.ClientManager;
 import utils.FileManager;
 import utils.MinionLocation;
 import utils.MinionManager;
+import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 
-public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJunpLink {
+public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink {
 	
 	public String name;
 	public String address;
@@ -33,9 +38,12 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	MinionManager minionManager;
 	ClientManager clientManager;
 	
-	private static ServerSocket server;
-	private static Socket socket;
-	private static int port = 50000;
+
+	private ServerSocket serverSocket;
+	private Socket socket;
+	private int port = 50000;
+	Map <String , Double> MinionsList = new HashMap <String , Double>();
+
 	
 	Random random;
 	
@@ -45,13 +53,26 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.clientManager = new ClientManager();
 		this.random = new Random();
 		
+		
+		
 		try {
-			server = new ServerSocket(port);
-			socket = server.accept();
+			serverSocket = new ServerSocket(port);
+			System.out.println("server socket started!!!!");
+			while(true) {
+
+				socket = serverSocket.accept();
+				System.out.println("connection established!!!!");
+				threadServer thread = new threadServer(socket);
+				thread.start();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//include all the minions IP address; initialize minions memory space to 1;
+		//MinionsList.put("172.31.33.125", 1);
+		MinionsList.put("172.31.46.197", 1.00);
+		
 		
 	}
 	
@@ -95,13 +116,50 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.minionsNum();
 	}
 	
+
 	@Override
 	public int getClientCount() {
 		return this.clientManager.clientsNum();
 	}
 
 	public void listenHeartBeat() {
+	class threadServer extends Thread{		
+		Socket threadSocket;
+		public threadServer ( Socket threadSocket){
+			this.threadSocket = threadSocket;
+		}
 		
+		public void run (){
+			double percent;
+			String tempAddress;
+				try {
+					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
+					tempAddress = threadSocket.getRemoteSocketAddress().toString();
+					System.out.println("input is " + input + "address is "+ tempAddress);
+					if (MinionsList.containsKey(tempAddress)) {
+						System.out.println(" address is in address book, update percent value");
+						MinionsList.put(tempAddress, input.readDouble());
+						}
+					else {
+						System.out.println("minions is down, remove from the list");
+						MinionsList.remove(tempAddress);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			}
+			
+		}
 	}
+
+	@Override
+	public int hey() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 	
 }
