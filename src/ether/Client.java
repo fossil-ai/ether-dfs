@@ -7,10 +7,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import links.ClientMasterLink;
+import links.ClientMinionLink;
 
 public class Client {
 	
 	ClientMasterLink masterLink;
+	ClientMinionLink minionLink;
 	static Registry registry;
 	private int clientID;
 	
@@ -25,7 +27,9 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-		this.clientID = 1234; // Temporary ID
+		this.setClientID(masterLink.getClientCount() + 1);
+		this.assignMinion(this.getClientID());
+//		(ClientMinionLink) registry.lookup(masterServerLinkName);
 		
 	}
 	
@@ -38,9 +42,13 @@ public class Client {
 		}
 	}
 	
-	private void assignMinion() {
+	public void readFile(String name) {
+		minionLink.readFile(name);
+	}
+	
+	private String assignMinion(int clientID) {
 		try {
-			masterLink.assignMinionToClient();
+			masterLink.assignMinionToClient(clientID);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -48,6 +56,7 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	public int getClientID() {

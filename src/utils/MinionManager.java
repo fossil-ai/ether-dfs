@@ -39,7 +39,5 @@ public class MinionManager {
 	public void setMinionMasterInvocation(List<MasterMinionLink> minionMasterInvocation) {
 		this.minionMasterInvocation = minionMasterInvocation;
 	}
-	
-
 
 }

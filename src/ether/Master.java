@@ -18,18 +18,20 @@ import java.util.TreeSet;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
+import utils.ClientManager;
 import utils.FileManager;
 import utils.MinionLocation;
 import utils.MinionManager;
 import links.ClientMasterLink;
 
-public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink {
+public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJunpLink {
 	
 	public String name;
 	public String address;
 	
 	FileManager fileManager;
 	MinionManager minionManager;
+	ClientManager clientManager;
 	
 	private static ServerSocket server;
 	private static Socket socket;
@@ -40,6 +42,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	protected Master() throws RemoteException {
 		this.fileManager = new FileManager();
 		this.minionManager = new MinionManager();
+		this.clientManager = new ClientManager();
 		this.random = new Random();
 		
 		try {
@@ -49,7 +52,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		
 	}
 	
@@ -80,16 +82,22 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return fileManager.getPrimaryFileLocation(fileName);
 	}
 	
-	public int assignMinionToClient(){
+	@Override
+	public String assignMinionToClient(int clientID){
 		System.out.println("Master: Assigning Client to Minion");
-		this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(1234, null);;
-		return 0;
+		this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(clientID, null);;
+		return "";
 	}
 
 
 	@Override
 	public int getMinionCount() {
 		return this.minionManager.minionsNum();
+	}
+	
+	@Override
+	public int getClientCount() {
+		return this.clientManager.clientsNum();
 	}
 
 	public void listenHeartBeat() {

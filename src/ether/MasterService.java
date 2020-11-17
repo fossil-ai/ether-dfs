@@ -20,8 +20,6 @@ public class MasterService {
 		final String MS_LINKNAME = "MasterLink";
 		
 		Registry registry;
-		int N, blocksize, replicationFactor;
-		BufferedReader reader;
 		
 		System.out.println("Creating Java RMI registry...");
 		
@@ -34,10 +32,6 @@ public class MasterService {
 			System.out.println("Parsing server/minion configurations...");
 			
 			try {
-				reader = new BufferedReader(new FileReader("filesys.conf"));
-//				N = Integer.parseInt(reader.readLine().trim());
-//				blocksize = Integer.parseInt(reader.readLine().trim());
-//				replicationFactor = Integer.parseInt(reader.readLine().trim());
 				
 				System.out.println("Launching MasterServer");
 				Master masterServer = new Master();

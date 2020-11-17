@@ -18,13 +18,7 @@ public class ClientService {
 
 	public static void main(String[] args) {
 		
-		/*
-		 * Provide the client object with:
-		 * 1. Java RMI Registry port #
-		 * 2. Java RMI Registry hostname
-		 * 3. Name of the master server's remote object reference in registry.
-		 * */
-		
+
 		final String REG_ADDR = "localhost";
 		final int REG_PORT = 50904;
 		final String MS_LINKNAME = "MasterLink";
@@ -40,40 +34,36 @@ public class ClientService {
 	    while(!done) {
 	    	
 	        String input = scanner.nextLine();
-	    	
-		    switch (input) {
-		        case "1":
-		            System.out.println("What is the name of the file?");
-		            String filename = scanner.nextLine();
-		            client.createFile(filename);
-		            break;
-	
-		        case "2":
-		            System.out.println("What is the name of the file?");
-		            break;
-	
-		        case "3":
-		            System.out.println("What is the name of the file?");
-		            break;
-	
-		        case "4":
-		        	System.out.println("What is the name of the file?");
-		            break;
-	
-		        case "5":
-		        	System.out.println("What is the name of the file?");
-		            break;
-		        
-		        case "6":
-		            System.out.println("Closing Session. Goodbye.");
-		            scanner.close();
-		            done = true;
-		            break;
-	
-		        default:
-		            System.out.println("Invalid selection! Try again:");
-		            printOptions();
-		   }
+	        
+	        if(input == "1") {
+	        	System.out.println("What is the name of the file?");
+	            String filename = scanner.nextLine();
+	            client.createFile(filename);
+	        }
+	        else if (input == "2") {
+	        	System.out.println("What is the name of the file?");
+	            String filename = scanner.nextLine();
+	            client.readFile(filename);
+	        }
+	        else if (input == "3") {
+	        	
+	        }
+	        else if (input == "4") {
+	        	
+	        }
+	        else if (input == "5") {
+	        	
+	        }
+	        else if (input == "6") {
+	        	System.out.println("Closing Session. Goodbye.");
+	            scanner.close();
+	            done = true;
+	        }
+	        else {
+	        	System.out.println("Invalid selection! Try again:");
+		        printOptions();
+	        	
+	        }
 		    
 	    }
 	}

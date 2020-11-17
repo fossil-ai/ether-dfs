@@ -10,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException; 
 import java.nio.file.FileStore; 
 import java.nio.file.Files; 
@@ -155,8 +157,22 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	@Override
 	public void readFile(String filename) {
 		// TODO Auto-generated method stub
-		
-		
+		 try {
+		      File file = new File(this.directory + filename);
+		      locks.putIfAbsent(filename, new ReentrantReadWriteLock());
+		      ReentrantReadWriteLock lock = locks.get(filename);
+		      lock.readLock().lock();
+		      Scanner scanner = new Scanner(file);
+		      while (scanner.hasNextLine()) {
+		        String data = scanner.nextLine();
+		        System.out.println(data);
+		      }
+		      scanner.close();
+		      lock.readLock().unlock();
+		    } catch (FileNotFoundException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }		 
 	}
 
 	@Override
