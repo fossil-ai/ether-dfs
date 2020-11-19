@@ -23,6 +23,6 @@ public interface ClientMasterLink extends Remote {
 
 	MinionLocation locatePrimaryMinion(String fileName) throws RemoteException;
 
-	int getClientCount();
+	int getClientCount() throws RemoteException;
 
 }

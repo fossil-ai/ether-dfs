@@ -1,6 +1,7 @@
 package links;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * @author mohamf1
@@ -13,6 +14,6 @@ import java.rmi.Remote;
 
 public interface MinionMasterLink extends Remote{
 	
-	public int getMinionCount();
+	public int getMinionCount() throws RemoteException;
 	
 }

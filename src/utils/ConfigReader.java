@@ -37,7 +37,7 @@ public class ConfigReader {
 	}
 	
 	public String getRegistryJumpName(){
-		return configs.get("MS_LINK_BASENAME");
+		return configs.get("MS_JUMPLINK");
 	}
 	
 	public int getMinionNum(){

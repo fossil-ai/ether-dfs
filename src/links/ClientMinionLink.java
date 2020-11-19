@@ -1,6 +1,7 @@
 package links;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * @author mohamf1
@@ -10,6 +11,6 @@ import java.rmi.Remote;
  */
 public interface ClientMinionLink extends Remote {
 	
-	void readFile(String filename);
+	void readFile(String filename) throws RemoteException;
 
 }

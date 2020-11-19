@@ -47,7 +47,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	
 	Random random;
 	
-	protected Master() throws RemoteException {
+	public Master() throws RemoteException{
 		this.fileManager = new FileManager();
 		this.minionManager = new MinionManager();
 		this.clientManager = new ClientManager();
@@ -71,7 +71,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 //		}
 		//include all the minions IP address; initialize minions memory space to 1;
 		//MinionsList.put("172.31.33.125", 1);
-		MinionsList.put("172.31.46.197", 1.00);
+//		MinionsList.put("172.31.46.197", 1.00);
 		
 		
 	}
@@ -97,7 +97,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		
 	}
 	
-	
 	@Override
 	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
 		return fileManager.getPrimaryFileLocation(fileName);
@@ -106,16 +105,19 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public String assignMinionToClient(int clientID){
 		System.out.println("Master: Assigning Client to Minion");
-		this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(clientID, null);;
+		try {
+			this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(clientID, null);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
 		return "";
 	}
-
 
 	@Override
 	public int getMinionCount() {
 		return this.minionManager.minionsNum();
 	}
-	
 
 	@Override
 	public int getClientCount() {
@@ -159,10 +161,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public int clientJumpStart(){
 		System.out.println("HEY! Connecting new client...");
-		System.out.println("Looks like there are " + this.getClientCount() + " clients connected...");
+		System.out.println("Looks like there are " + this.getClientCount() + " clients connected to the DFS...");
 		System.out.println("Assigning client with ID: " + this.getClientCount() + 1);
 		int id = this.getClientCount() + 1;
-		return 0;
+		return id;
 	}
 	
 	@Override
@@ -171,7 +173,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
 		System.out.println("Assigning minion with ID: " + this.getMinionCount() + 1);
 		int id = this.getMinionCount() + 1;
-		return 0;
+		return id;
 	}
 	
 	

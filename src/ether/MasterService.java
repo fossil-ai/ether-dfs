@@ -1,40 +1,36 @@
 package ether;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-
-import links.ClientMasterLink;
+import links.ClientMasterJumpLink;
+import links.MinionMasterJumpLink;
+import utils.ConfigReader;
 
 public class MasterService {
 
 	public static void main(String[] args) {
 		
-		final int REG_PORT = 50904;
-		final String MS_LINKNAME = "MasterLink";
-		
-		Registry registry;
-		
-		System.out.println("Creating Java RMI registry...");
+		ConfigReader reader = new ConfigReader();
+		int REG_PORT = reader.getRegistryPort();
+		String REG_HOST = reader.getRegistryHost();
 		
 		try {
-			
+			System.out.println("Creating Java RMI registry...");
 			LocateRegistry.createRegistry(REG_PORT);
 			System.out.println("Registry instance exported on port: " + REG_PORT);
-			registry = LocateRegistry.getRegistry(REG_PORT);
-			
-			System.out.println("Parsing server/minion configurations...");
 			
 			try {
-				
 				System.out.println("Launching MasterServer");
 				Master masterServer = new Master();
+	            // Bind the remote object's stub in the registry
+	            Registry registry = LocateRegistry.getRegistry(REG_PORT);
+	            ClientMasterJumpLink clientMasterJLStub = (ClientMasterJumpLink) UnicastRemoteObject.toStub(masterServer);
+	            registry.rebind(reader.getRegistryJumpName(), clientMasterJLStub);
 				System.err.println("Ready and running...");
 				
 			} catch (NumberFormatException | IOException e) {

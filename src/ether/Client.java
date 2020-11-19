@@ -31,7 +31,7 @@ public class Client {
 		}
 		
 		
-		this.setClientID(masterLink.getClientCount() + 1);
+		this.setClientID(clientID);
 		this.assignMinion(this.getClientID());
 //		(ClientMinionLink) registry.lookup(masterServerLinkName);
 		
@@ -47,7 +47,12 @@ public class Client {
 	}
 	
 	public void readFile(String name) {
-		minionLink.readFile(name);
+		try {
+			minionLink.readFile(name);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private String assignMinion(int clientID) {
