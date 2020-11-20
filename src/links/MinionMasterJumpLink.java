@@ -2,6 +2,7 @@ package links;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 
 public interface MinionMasterJumpLink extends Remote{
 	
@@ -10,6 +11,6 @@ public interface MinionMasterJumpLink extends Remote{
 	 *  wants to connected and to have an ID assigned.
 	 * */
 	
-	public int minionJumpStart() throws RemoteException;
+	public String minionJumpStart(Registry registry) throws RemoteException;
 
 }

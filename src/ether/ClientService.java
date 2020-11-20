@@ -23,7 +23,7 @@ public class ClientService {
 		ConfigReader reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
 		int REG_PORT = reader.getRegistryPort();
-		String MS_JUMPLINKNAME = reader.getRegistryJumpName();
+		String MS_JUMPLINKNAME = reader.getRegistryClientJumpName();
 		
 		Client client = new Client(REG_ADDR, REG_PORT, MS_JUMPLINKNAME);
 		

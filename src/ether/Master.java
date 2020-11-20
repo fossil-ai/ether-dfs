@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.*;  
+import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.*;  
 import java.util.UUID;
 import java.util.ArrayList;
@@ -159,21 +161,47 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 
 	@Override
-	public int clientJumpStart(){
+	public String clientJumpStart(Registry registry){
 		System.out.println("HEY! Connecting new client...");
 		System.out.println("Looks like there are " + this.getClientCount() + " clients connected to the DFS...");
 		System.out.println("Assigning client with ID: " + this.getClientCount() + 1);
 		int id = this.getClientCount() + 1;
-		return id;
+		
+        try {
+			registry.rebind("ClientMasterLink_" + id, (ClientMasterLink) UnicastRemoteObject.toStub(this));
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "ClientMasterLink_" + id;
 	}
 	
 	@Override
-	public int minionJumpStart(){
+	public String minionJumpStart(Registry registry){
 		System.out.println("HEY! Connecting new minion...");
 		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
 		System.out.println("Assigning minion with ID: " + this.getMinionCount() + 1);
 		int id = this.getMinionCount() + 1;
-		return id;
+		
+		try {
+			registry.rebind("MinionMasterLink_" + id, (MinionMasterLink) UnicastRemoteObject.toStub(this));
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "MinionMasterLink_" + id;
 	}
 	
 	

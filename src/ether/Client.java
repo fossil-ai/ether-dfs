@@ -17,6 +17,7 @@ public class Client {
 	ClientMinionLink minionLink;
 	static Registry registry;
 	private int clientID;
+	private String clientMasterStubName;
 	
 
 	public Client(String hostname, int port, String masterServerJumpLinkName){
@@ -24,7 +25,10 @@ public class Client {
 			registry = LocateRegistry.getRegistry(hostname, port);
 			jumpLink =  (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub.");
-			clientID = jumpLink.clientJumpStart();
+			this.clientMasterStubName = jumpLink.clientJumpStart(registry);
+			this.clientID = Integer.parseInt(clientMasterStubName.split("_")[1]);
+			System.out.println("Your master-stub access name is: " + this.clientMasterStubName);
+			System.out.println("Your assigned ID is: " + this.clientID);
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
@@ -32,7 +36,7 @@ public class Client {
 		
 		
 		this.setClientID(clientID);
-		this.assignMinion(this.getClientID());
+		//this.assignMinion(this.getClientID());
 //		(ClientMinionLink) registry.lookup(masterServerLinkName);
 		
 	}

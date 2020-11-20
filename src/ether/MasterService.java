@@ -29,8 +29,13 @@ public class MasterService {
 				Master masterServer = new Master();
 	            // Bind the remote object's stub in the registry
 	            Registry registry = LocateRegistry.getRegistry(REG_PORT);
+	            
 	            ClientMasterJumpLink clientMasterJLStub = (ClientMasterJumpLink) UnicastRemoteObject.toStub(masterServer);
-	            registry.rebind(reader.getRegistryJumpName(), clientMasterJLStub);
+	            registry.rebind(reader.getRegistryClientJumpName(), clientMasterJLStub);
+	            
+	            MinionMasterJumpLink minionMasterJLStub = (MinionMasterJumpLink) UnicastRemoteObject.toStub(masterServer);
+	            registry.rebind(reader.getRegistryMinionJumpName(), minionMasterJLStub);
+	            
 				System.err.println("Ready and running...");
 				
 			} catch (NumberFormatException | IOException e) {

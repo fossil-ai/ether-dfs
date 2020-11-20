@@ -36,8 +36,12 @@ public class ConfigReader {
 		return configs.get("REG_HOST");
 	}
 	
-	public String getRegistryJumpName(){
-		return configs.get("MS_JUMPLINK");
+	public String getRegistryClientJumpName(){
+		return configs.get("MS_CLIENT_JUMPLINK");
+	}
+	
+	public String getRegistryMinionJumpName(){
+		return configs.get("MS_MINION_JUMPLINK");
 	}
 	
 	public int getMinionNum(){
@@ -52,7 +56,8 @@ public class ConfigReader {
 		ConfigReader reader = new ConfigReader();
 		System.out.println(reader.getRegistryPort());
 		System.out.println(reader.getRegistryHost());
-		System.out.println(reader.getRegistryJumpName());
+		System.out.println(reader.getRegistryClientJumpName());
+		System.out.println(reader.getRegistryMinionJumpName());
 		System.out.println(reader.getMinionNum());
 		System.out.println(reader.getMinions());
 	}
