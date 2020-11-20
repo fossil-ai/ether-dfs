@@ -29,6 +29,8 @@ public class Client {
 			this.clientID = Integer.parseInt(clientMasterStubName.split("_")[1]);
 			System.out.println("Your master-stub access name is: " + this.clientMasterStubName);
 			System.out.println("Your assigned ID is: " + this.clientID);
+			masterLink =  (ClientMasterLink) registry.lookup(this.clientMasterStubName);
+			System.out.println("Successfully fetched master-server link stub.");
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
@@ -36,7 +38,7 @@ public class Client {
 		
 		
 		this.setClientID(clientID);
-		//this.assignMinion(this.getClientID());
+//		this.assignMinion(this.getClientID());
 //		(ClientMinionLink) registry.lookup(masterServerLinkName);
 		
 	}
