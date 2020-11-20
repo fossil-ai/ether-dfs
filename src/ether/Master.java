@@ -55,8 +55,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.clientManager = new ClientManager();
 		this.random = new Random();
 		
-		
-		
 //		try {
 //			serverSocket = new ServerSocket(port);
 //			System.out.println("server socket started!!!!");
@@ -104,9 +102,13 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return fileManager.getPrimaryFileLocation(fileName);
 	}
 	
-	@Override
+
 	public String assignMinionToClient(int clientID){
-		System.out.println("Master: Assigning Client to Minion");
+		System.out.println("Master: Assigning minion to client");
+		if(this.minionManager.minionsNum() < 1) {
+			System.out.println("No minion active in the minion manager - are any minions active?");
+			return "FAILED TO ASSIGN";
+		}
 		try {
 			this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(clientID, null);
 		} catch (RemoteException e) {
@@ -179,6 +181,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        
+        
+        
 		return "ClientMasterLink_" + id;
 	}
 	

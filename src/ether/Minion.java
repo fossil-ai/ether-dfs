@@ -31,23 +31,28 @@ import java.util.concurrent.TimeUnit;
 import java.net.*;  
 
 import links.MasterMinionLink;
+import links.MinionMasterJumpLink;
+import links.MinionMasterLink;
 import links.MinionMinionLink;
+import utils.ConfigReader;
 import utils.MinionLocation;
+import links.ClientMasterJumpLink;
+import links.ClientMasterLink;
 import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, MinionMinionLink, ClientMinionLink {
-	
-	public final static int REG_PORT = 50904;
-	public final static String REG_ADDR = "localhost";
 	
 	private static int myPort = 50000;
 	private static Socket socket;
 	private static String IpAddress = "172.31.33.125"; // need to configure later. should be the main server address.
 	
-	public int id;
+	public int minionID;
 	public String directory;
 	private MinionLocation location;
 	private Registry registry;
+	private MinionMasterJumpLink jumpLink;
+	private String minionMasterStubName;
+	private MinionMasterLink masterLink;
 	
 	private Map<String,	 List<MinionMinionLink> > filesReplicaMap;
 	private Map<Integer, MinionLocation> minionServersLoc;
@@ -57,49 +62,65 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	
 	public Minion(String ip, String dir) throws RemoteException {
 		
-		try  {
+		ConfigReader reader = new ConfigReader();
+		String REG_ADDR = reader.getRegistryHost();
+		int REG_PORT = reader.getRegistryPort();
+		String masterServerJumpLinkName = reader.getRegistryMinionJumpName();
+		
+		try {
 			registry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
-		} catch (RemoteException e) {
+			jumpLink =  (MinionMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			System.out.println("Successfully fetched master-server jump-link stub for minion.");
+			this.minionMasterStubName = jumpLink.minionJumpStart(registry);
+			this.minionID = Integer.parseInt(minionMasterStubName.split("_")[1]);
+			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
+			System.out.println("Your assigned ID is: " + this.minionID);
+			masterLink =  (MinionMasterLink) registry.lookup(this.minionMasterStubName);
+			System.out.println("Successfully fetched master-server link stub.");
+			
+		    MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
+			registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
+			
+		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
 		
-		this.id = 0;
-		this.directory = "/tmp/minion_" + id + "/";
+		this.directory = "/tmp/minion_" + this.minionID + "/";
 		
 		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
 		minionServersLoc = new TreeMap<Integer, MinionLocation>();
 		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
 		clientsConnectedMap = new TreeMap<Integer, ClientMinionLink>();
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
-		location = new MinionLocation(this.id, ip, true);
+		location = new MinionLocation(this.minionID, ip, true);
 		
 		File file = new File(this.directory);
 		if (!file.exists()){
 			file.mkdir();
 		}
 		
-		try {
-			socket = new Socket(IpAddress, myPort);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    Timer timer = new Timer();
-	    timer.schedule(new TimerTask() {
-	        @Override
-	        public void run() {
-	        	try {
-					heartBeat();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	            ;
-	        }
-	    }, 0, 1000);
+//		try {
+//			socket = new Socket(IpAddress, myPort);
+//		} catch (UnknownHostException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	    Timer timer = new Timer();
+//	    timer.schedule(new TimerTask() {
+//	        @Override
+//	        public void run() {
+//	        	try {
+//					heartBeat();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//	            ;
+//	        }
+//	    }, 0, 1000);
 		
 	}
 
@@ -124,7 +145,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		
 		for (MinionLocation loc : replicasResponsible) {
 			// if the current locations is this replica .. ignore
-			if (loc.getId() == this.id)
+			if (loc.getId() == this.minionID)
 				continue;
 			  
 			// if this is a new replica generate stub for this replica

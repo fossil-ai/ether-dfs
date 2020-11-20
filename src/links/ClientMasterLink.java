@@ -18,8 +18,6 @@ import utils.MinionLocation;
 public interface ClientMasterLink extends Remote {
 	
 	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
-	
-	public String assignMinionToClient(int clientID) throws IOException;
 
 	MinionLocation locatePrimaryMinion(String fileName) throws RemoteException;
 

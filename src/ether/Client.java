@@ -35,12 +35,6 @@ public class Client {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
-		
-		
-		this.setClientID(clientID);
-//		this.assignMinion(this.getClientID());
-//		(ClientMinionLink) registry.lookup(masterServerLinkName);
-		
 	}
 	
 	public void createFile(String name) {
@@ -59,19 +53,6 @@ public class Client {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private String assignMinion(int clientID) {
-		try {
-			masterLink.assignMinionToClient(clientID);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public int getClientID() {
