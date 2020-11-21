@@ -24,12 +24,20 @@ public class Client {
 	private ArrayList<String> currentWorkingDirectory;
 
 	public enum ClientOperation {
+		
 		LS {
 			@Override
-			public void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink) {
+			public void executeOp(String[] cmds, Client client) {
+				//client.masterLink.listFiles();
+			}
+		},
+		
+		NANO {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated method stub
 				try {
-					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0]);
+					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
@@ -43,7 +51,7 @@ public class Client {
 			}
 		};
 
-		public abstract void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink);
+		public abstract void executeOp(String[] cmds, Client client);
 	}
 
 	public Client(String hostname, int port, String masterServerJumpLinkName) {
@@ -71,7 +79,7 @@ public class Client {
 			return true;
 		} else {
 			String op = CommandParser.parse(cmds);
-			ClientOperation.valueOf(op).executeOp(cmds, masterLink, minionLink);
+			ClientOperation.valueOf(op).executeOp(cmds, this);
 		}
 		return false;
 	}
@@ -83,10 +91,6 @@ public class Client {
 			System.out.print(this.currentWorkingDirectory.get(i));
 		}
 		System.out.print("$ ");
-	}
-
-	private void parseCommand() {
-
 	}
 
 	private void createFile(String name) {
