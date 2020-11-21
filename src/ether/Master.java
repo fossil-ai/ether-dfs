@@ -27,6 +27,8 @@ import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import utils.ClientManager;
 import utils.FileManager;
+import utils.FileNode;
+import utils.GlobalNameSpaceManager;
 import utils.MinionLocation;
 import utils.MinionManager;
 import links.ClientMasterJumpLink;
@@ -41,6 +43,7 @@ public class Master extends UnicastRemoteObject
 	FileManager fileManager;
 	MinionManager minionManager;
 	ClientManager clientManager;
+	GlobalNameSpaceManager globalNameSpaceManager;
 
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -51,6 +54,7 @@ public class Master extends UnicastRemoteObject
 
 	public Master() throws RemoteException {
 		this.fileManager = new FileManager();
+		this.globalNameSpaceManager = new GlobalNameSpaceManager();
 		this.minionManager = new MinionManager();
 		this.clientManager = new ClientManager();
 		this.random = new Random();
@@ -204,6 +208,17 @@ public class Master extends UnicastRemoteObject
 			e.printStackTrace();
 		}
 		return "MinionMasterLink_" + id;
+	}
+
+	@Override
+	public String[] listFilesAtCWD(FileNode cwdNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileNode getRootNode() {
+		return this.globalNameSpaceManager.getRoot();
 	}
 
 }

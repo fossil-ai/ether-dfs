@@ -17,17 +17,12 @@ public class FileManager {
 	public FileManager(){
 		this.fileLocationMap = new HashMap<String, List<MinionLocation>>();
 		this.filePrimaryMinionMap = new HashMap<String, MinionLocation>();
-		
-	
-
-
 	}
 	
 	public String getGlobalPath(String filename){
 		return filename;
 		
 	}
-	
 
 	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex,
 			List<MinionLocation> minionLocations) {

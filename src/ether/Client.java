@@ -11,6 +11,7 @@ import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 import utils.CommandParser;
+import utils.FileNode;
 
 public class Client {
 
@@ -22,13 +23,14 @@ public class Client {
 	private int clientID;
 	private String clientMasterStubName;
 	private ArrayList<String> currentWorkingDirectory;
+	private FileNode cwdNode;
 
 	public enum ClientOperation {
 		
 		LS {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				//client.masterLink.listFiles();
+				client.masterLink.listFilesAtCWD(client.currentWorkingDirectory);
 			}
 		},
 		
@@ -69,9 +71,10 @@ public class Client {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
-
+		
+		this.cwdNode = masterLink.getRootNode();
 		this.currentWorkingDirectory = new ArrayList<String>();
-		this.currentWorkingDirectory.add("client" + this.clientID + "@ether-dfs:~/tmp");
+		this.currentWorkingDirectory.add("tmp");
 	}
 
 	public boolean execute(String[] cmds) {
@@ -85,7 +88,7 @@ public class Client {
 	}
 
 	public void printCWD() {
-		System.out.print(this.currentWorkingDirectory.get(0));
+		System.out.print("client" + this.clientID + "@ether-dfs:~/");
 		for (int i = 1; i < this.currentWorkingDirectory.size(); i++) {
 			System.out.print("/");
 			System.out.print(this.currentWorkingDirectory.get(i));

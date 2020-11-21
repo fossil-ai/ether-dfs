@@ -14,16 +14,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-class FileNode {
-	public String filename;
-	public FileNode parent;
-	public TreeMap<String, FileNode> children;
-	public boolean isDir = false;
-	
-	public FileNode(){
-		
-	}
-}
 
 public class GlobalNameSpaceManager {
 
@@ -31,7 +21,10 @@ public class GlobalNameSpaceManager {
 	private FileNode root;
 
 	public GlobalNameSpaceManager() {
-
+		this.rebuildGlobalPath();
+	}
+	
+	public void rebuildGlobalPath() {
 		File globalNameSpaceFile = new File(this.GLOBAL_NS_FILENAME);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder;
@@ -50,6 +43,10 @@ public class GlobalNameSpaceManager {
 			e.printStackTrace();
 		}
 		xmlToFileNode(doc);
+	};
+	
+	public FileNode getRoot(){
+		return this.root;
 	}
 
 	private void xmlToFileNode(Document doc) {
@@ -59,17 +56,17 @@ public class GlobalNameSpaceManager {
 	}
 
 	private static FileNode walk(FileNode fileNode, FileNode parentNode, Node node, String path) {
-		if(node.getNodeType() == Node.ELEMENT_NODE) {
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element element = (Element) node;
 			path = path + element.getAttribute("id");
 			System.out.println(path);
-			
+
 			fileNode.filename = path;
 			fileNode.parent = parentNode;
-			
-			if(parentNode != null)
+
+			if (parentNode != null)
 				parentNode.children.put(path, fileNode);
-			
+
 			if (node.hasChildNodes()) {
 				fileNode.isDir = true;
 				fileNode.children = new TreeMap<String, FileNode>();
@@ -81,11 +78,8 @@ public class GlobalNameSpaceManager {
 		return fileNode;
 	}
 
-	private String buildGlobalPath(FileNode node) {
-		return null;
-	};
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		GlobalNameSpaceManager manager = new GlobalNameSpaceManager();
 	}
 
