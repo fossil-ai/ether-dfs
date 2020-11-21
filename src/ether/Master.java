@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.*;  
+import java.rmi.server.*;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -32,11 +32,12 @@ import utils.MinionManager;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 
-public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink, MinionMasterJumpLink {
-	
+public class Master extends UnicastRemoteObject
+		implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink, MinionMasterJumpLink {
+
 	public String name;
 	public String address;
-	
+
 	FileManager fileManager;
 	MinionManager minionManager;
 	ClientManager clientManager;
@@ -44,17 +45,16 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	private ServerSocket serverSocket;
 	private Socket socket;
 	private int port = 50000;
-	Map <String , Double> MinionsList = new HashMap <String , Double>();
+	Map<String, Double> MinionsList = new HashMap<String, Double>();
 
-	
 	Random random;
-	
-	public Master() throws RemoteException{
+
+	public Master() throws RemoteException {
 		this.fileManager = new FileManager();
 		this.minionManager = new MinionManager();
 		this.clientManager = new ClientManager();
 		this.random = new Random();
-		
+
 //		try {
 //			serverSocket = new ServerSocket(port);
 //			System.out.println("server socket started!!!!");
@@ -69,14 +69,13 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		//include all the minions IP address; initialize minions memory space to 1;
-		//MinionsList.put("172.31.33.125", 1);
+		// include all the minions IP address; initialize minions memory space to 1;
+		// MinionsList.put("172.31.33.125", 1);
 //		MinionsList.put("172.31.46.197", 1.00);
-		
-		
+
 	}
-	
-	public void addMinionInterface(MinionLocation minionLocation, MasterMinionLink stub){
+
+	public void addMinionInterface(MinionLocation minionLocation, MasterMinionLink stub) {
 		this.minionManager.addMinion(minionLocation, stub);
 	}
 
@@ -86,26 +85,27 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
 			try {
 				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
-			} catch (IOException e) { 
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		int primaryReplicaIndex = 0;
-		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename, this.minionManager.getMinionLocations());
+		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename,
+				this.minionManager.getMinionLocations());
 		this.fileManager.assignSelectedMinionsToFile(filename, this.minionManager.getMinionLocations());
-		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex, this.minionManager.getMinionLocations());
-		
+		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex,
+				this.minionManager.getMinionLocations());
+
 	}
-	
+
 	@Override
 	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
 		return fileManager.getPrimaryFileLocation(fileName);
 	}
-	
 
-	public String assignMinionToClient(int clientID){
+	public String assignMinionToClient(int clientID) {
 		System.out.println("Master: Assigning minion to client");
-		if(this.minionManager.minionsNum() < 1) {
+		if (this.minionManager.minionsNum() < 1) {
 			System.out.println("No minion active in the minion manager - are any minions active?");
 			return "FAILED TO ASSIGN";
 		}
@@ -114,7 +114,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		};
+		}
+		;
 		return "";
 	}
 
@@ -129,24 +130,24 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	public void listenHeartBeat() {
-	class threadServer extends Thread{		
-		Socket threadSocket;
-		public threadServer ( Socket threadSocket){
-			this.threadSocket = threadSocket;
-		}
-		
-		public void run (){
-			double percent;
-			String tempAddress;
+		class threadServer extends Thread {
+			Socket threadSocket;
+
+			public threadServer(Socket threadSocket) {
+				this.threadSocket = threadSocket;
+			}
+
+			public void run() {
+				double percent;
+				String tempAddress;
 				try {
 					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
 					tempAddress = threadSocket.getRemoteSocketAddress().toString();
-					System.out.println("input is " + input + "address is "+ tempAddress);
+					System.out.println("input is " + input + "address is " + tempAddress);
 					if (MinionsList.containsKey(tempAddress)) {
 						System.out.println(" address is in address book, update percent value");
 						MinionsList.put(tempAddress, input.readDouble());
-						}
-					else {
+					} else {
 						System.out.println("minions is down, remove from the list");
 						MinionsList.remove(tempAddress);
 					}
@@ -154,22 +155,20 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+
 			}
-			
+
 		}
 	}
 
-
 	@Override
-	public String clientJumpStart(Registry registry){
+	public String clientJumpStart(Registry registry) {
 		System.out.println("HEY! Connecting new client...");
 		System.out.println("Looks like there are " + this.getClientCount() + " clients connected to the DFS...");
 		System.out.println("Assigning client with ID: " + this.getClientCount() + 1);
 		int id = this.getClientCount() + 1;
-		
-        try {
+
+		try {
 			registry.rebind("ClientMasterLink_" + id, (ClientMasterLink) UnicastRemoteObject.toStub(this));
 		} catch (AccessException e) {
 			// TODO Auto-generated catch block
@@ -181,20 +180,17 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        
-        
-        
+
 		return "ClientMasterLink_" + id;
 	}
-	
+
 	@Override
-	public String minionJumpStart(Registry registry){
+	public String minionJumpStart(Registry registry) {
 		System.out.println("HEY! Connecting new minion...");
 		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
 		System.out.println("Assigning minion with ID: " + this.getMinionCount() + 1);
 		int id = this.getMinionCount() + 1;
-		
+
 		try {
 			registry.rebind("MinionMasterLink_" + id, (MinionMasterLink) UnicastRemoteObject.toStub(this));
 		} catch (AccessException e) {
@@ -209,6 +205,5 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		}
 		return "MinionMasterLink_" + id;
 	}
-	
-	
+
 }

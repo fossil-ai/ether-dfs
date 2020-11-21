@@ -20,15 +20,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException; 
-import java.nio.file.FileStore; 
-import java.nio.file.Files; 
-import java.nio.file.Path; 
-import java.nio.file.Paths; 
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.net.*;  
+import java.net.*;
 
 import links.MasterMinionLink;
 import links.MinionMasterJumpLink;
@@ -41,11 +41,11 @@ import links.ClientMasterLink;
 import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, MinionMinionLink, ClientMinionLink {
-	
+
 	private static int myPort = 50000;
 	private static Socket socket;
 	private static String IpAddress = "172.31.33.125"; // need to configure later. should be the main server address.
-	
+
 	public int minionID;
 	public String directory;
 	private MinionLocation location;
@@ -53,52 +53,52 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private MinionMasterJumpLink jumpLink;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
-	
-	private Map<String,	 List<MinionMinionLink> > filesReplicaMap;
+
+	private Map<String, List<MinionMinionLink>> filesReplicaMap;
 	private Map<Integer, MinionLocation> minionServersLoc;
 	private Map<Integer, MinionMinionLink> minionToMinionStubs;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	private Map<Integer, ClientMinionLink> clientsConnectedMap;
-	
+
 	public Minion(String ip, String dir) throws RemoteException {
-		
+
 		ConfigReader reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
 		int REG_PORT = reader.getRegistryPort();
 		String masterServerJumpLinkName = reader.getRegistryMinionJumpName();
-		
+
 		try {
 			registry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
-			jumpLink =  (MinionMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			jumpLink = (MinionMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub for minion.");
 			this.minionMasterStubName = jumpLink.minionJumpStart(registry);
 			this.minionID = Integer.parseInt(minionMasterStubName.split("_")[1]);
 			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
 			System.out.println("Your assigned ID is: " + this.minionID);
-			masterLink =  (MinionMasterLink) registry.lookup(this.minionMasterStubName);
+			masterLink = (MinionMasterLink) registry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-			
-		    MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
+
+			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
 			registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
-			
+
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		this.directory = "/tmp/minion_" + this.minionID + "/";
-		
+
 		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
 		minionServersLoc = new TreeMap<Integer, MinionLocation>();
 		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
 		clientsConnectedMap = new TreeMap<Integer, ClientMinionLink>();
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 		location = new MinionLocation(this.minionID, ip, true);
-		
+
 		File file = new File(this.directory);
-		if (!file.exists()){
+		if (!file.exists()) {
 			file.mkdir();
 		}
-		
+
 //		try {
 //			socket = new Socket(IpAddress, myPort);
 //		} catch (UnknownHostException e) {
@@ -121,7 +121,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 //	            ;
 //	        }
 //	    }, 0, 1000);
-		
+
 	}
 
 	@Override
@@ -135,66 +135,68 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	}
 
 	@Override
-	public void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException {
+	public void takeCharge(String filename, List<MinionLocation> replicasResponsible)
+			throws AccessException, RemoteException, NotBoundException {
 		// TODO Auto-generated method stub
-		
-		System.out.println("[@Replica] taking charge of file: "+ filename);
+
+		System.out.println("[@Replica] taking charge of file: " + filename);
 		System.out.println(replicasResponsible);
-		
+
 		List<MinionMinionLink> minionStubs = new ArrayList<MinionMinionLink>(replicasResponsible.size());
-		
+
 		for (MinionLocation loc : replicasResponsible) {
 			// if the current locations is this replica .. ignore
 			if (loc.getId() == this.minionID)
 				continue;
-			  
+
 			// if this is a new replica generate stub for this replica
-			if (!minionServersLoc.containsKey(loc.getId())){
+			if (!minionServersLoc.containsKey(loc.getId())) {
 				minionServersLoc.put(loc.getId(), loc);
-				MinionMinionLink stub = (MinionMinionLink) registry.lookup("ReplicaClient"+loc.getId());
+				MinionMinionLink stub = (MinionMinionLink) registry.lookup("ReplicaClient" + loc.getId());
 				minionToMinionStubs.put(loc.getId(), stub);
 			}
 			MinionMinionLink minionStub = minionToMinionStubs.get(loc.getId());
 			minionStubs.add(minionStub);
 		}
-		
+
 		filesReplicaMap.put(filename, minionStubs);
-		
+
 	}
-	
+
 	public MinionLocation getLocation() {
 		return this.location;
 	}
-	
-	public void heartBeat() throws IOException{
-		DataOutputStream heartBeat = new DataOutputStream(socket.getOutputStream()); 
+
+	public void heartBeat() throws IOException {
+		DataOutputStream heartBeat = new DataOutputStream(socket.getOutputStream());
 		heartBeat.writeDouble(getMemSpace());
 	}
+
 	// return free memory space in percentage.
-	public double getMemSpace(){
+	public double getMemSpace() {
 		File file = new File("/dev/xvda1");
-		return (double)(file.getFreeSpace()/(1024*1024))/(file.getTotalSpace()/(1024*1024));
+		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
 	}
 
 	@Override
 	public void readFile(String filename) {
 		// TODO Auto-generated method stub
-		 try {
-		      File file = new File(this.directory + filename);
-		      locks.putIfAbsent(filename, new ReentrantReadWriteLock());
-		      ReentrantReadWriteLock lock = locks.get(filename);
-		      lock.readLock().lock();
-		      Scanner scanner = new Scanner(file);
-		      while (scanner.hasNextLine()) {
-		        String data = scanner.nextLine();
-		        System.out.println(data);
-		      }
-		      scanner.close();
-		      lock.readLock().unlock();
-		    } catch (FileNotFoundException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }		 
+		try {
+			File file = new File(this.directory + filename);
+			locks.putIfAbsent(filename, new ReentrantReadWriteLock());
+			ReentrantReadWriteLock lock = locks.get(filename);
+			lock.readLock().lock();
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNextLine()) {
+				String data = scanner.nextLine();
+				System.out.println(data);
+			}
+			scanner.close();
+			lock.readLock().unlock();
+		} catch (FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
 	}
 
 	@Override

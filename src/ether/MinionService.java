@@ -14,12 +14,12 @@ import utils.MinionLocation;
 public class MinionService {
 
 	public static void main(String[] args) {
-		
+
 		try {
 			System.out.println("Launching Minion at: " + InetAddress.getLocalHost().getHostAddress());
 			String ip = InetAddress.getLocalHost().getHostAddress();
-			Minion minion = new Minion(ip, "./"); 
-			
+			Minion minion = new Minion(ip, "./");
+
 		} catch (UnknownHostException | RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

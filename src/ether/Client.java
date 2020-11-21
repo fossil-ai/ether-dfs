@@ -13,19 +13,18 @@ import links.ClientMinionLink;
 import utils.CommandParser;
 
 public class Client {
-	
+
 	static Registry registry;
 	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
-	
+
 	private int clientID;
 	private String clientMasterStubName;
 	private ArrayList<String> currentWorkingDirectory;
-	
-	
-	public enum ClientOperation{
-		LS{
+
+	public enum ClientOperation {
+		LS {
 			@Override
 			public void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink) {
 				// TODO Auto-generated method stub
@@ -36,63 +35,60 @@ public class Client {
 					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
-		        }
-		        catch (IOException | InterruptedException e) {
-		            System.out.println("exception happened - here's what I know: ");
-		            e.printStackTrace();
-		            System.exit(-1);
-		        }
+				} catch (IOException | InterruptedException e) {
+					System.out.println("exception happened - here's what I know: ");
+					e.printStackTrace();
+					System.exit(-1);
+				}
 			}
 		};
-		
+
 		public abstract void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink);
 	}
-	
-	
 
-	public Client(String hostname, int port, String masterServerJumpLinkName){
+	public Client(String hostname, int port, String masterServerJumpLinkName) {
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
-			jumpLink =  (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			jumpLink = (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub.");
 			this.clientMasterStubName = jumpLink.clientJumpStart(registry);
 			this.clientID = Integer.parseInt(clientMasterStubName.split("_")[1]);
 			System.out.println("Your master-stub access name is: " + this.clientMasterStubName);
 			System.out.println("Your assigned ID is: " + this.clientID);
-			masterLink =  (ClientMasterLink) registry.lookup(this.clientMasterStubName);
+			masterLink = (ClientMasterLink) registry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
-		
+
 		this.currentWorkingDirectory = new ArrayList<String>();
 		this.currentWorkingDirectory.add("client" + this.clientID + "@ether-dfs:~/tmp");
 	}
-	
-	public boolean execute(String[] cmds){
+
+	public boolean execute(String[] cmds) {
 		if (cmds[0].equals("exit")) {
 			return true;
 		} else {
-			String op =  CommandParser.parse(cmds);
+			String op = CommandParser.parse(cmds);
 			ClientOperation.valueOf(op).executeOp(cmds, masterLink, minionLink);
 		}
 		return false;
 	}
-	
+
 	public void printCWD() {
 		System.out.print(this.currentWorkingDirectory.get(0));
-		for(int i = 1; i < this.currentWorkingDirectory.size(); i++){
+		for (int i = 1; i < this.currentWorkingDirectory.size(); i++) {
 			System.out.print("/");
 			System.out.print(this.currentWorkingDirectory.get(i));
 		}
 		System.out.print("$ ");
 	}
-	
-	private void parseCommand(){
-		
+
+	private void parseCommand() {
+
 	}
-	
+
 	private void createFile(String name) {
 		try {
 			masterLink.createFile(name);
@@ -101,7 +97,7 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void readFile(String name) {
 		try {
 			minionLink.readFile(name);
@@ -110,7 +106,5 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 }
