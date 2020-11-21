@@ -5,19 +5,49 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
+import utils.CommandParser;
 
 public class Client {
 	
+	static Registry registry;
 	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
-	static Registry registry;
+	
 	private int clientID;
 	private String clientMasterStubName;
+	private ArrayList<String> currentWorkingDirectory;
+	
+	
+	public enum ClientOperation{
+		LS{
+			@Override
+			public void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink) {
+				// TODO Auto-generated method stub
+				try {
+					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0]);
+					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+					Process p = processBuilder.start();
+					p.waitFor();
+		        }
+		        catch (IOException | InterruptedException e) {
+		            System.out.println("exception happened - here's what I know: ");
+		            e.printStackTrace();
+		            System.exit(-1);
+		        }
+			}
+		};
+		
+		public abstract void executeOp(String[] cmds, ClientMasterLink masterlink, ClientMinionLink minionLink);
+	}
+	
 	
 
 	public Client(String hostname, int port, String masterServerJumpLinkName){
@@ -35,9 +65,35 @@ public class Client {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
+		
+		this.currentWorkingDirectory = new ArrayList<String>();
+		this.currentWorkingDirectory.add("client" + this.clientID + "@ether-dfs:~/tmp");
 	}
 	
-	public void createFile(String name) {
+	public boolean execute(String[] cmds){
+		if (cmds[0].equals("exit")) {
+			return true;
+		} else {
+			String op =  CommandParser.parse(cmds);
+			ClientOperation.valueOf(op).executeOp(cmds, masterLink, minionLink);
+		}
+		return false;
+	}
+	
+	public void printCWD() {
+		System.out.print(this.currentWorkingDirectory.get(0));
+		for(int i = 1; i < this.currentWorkingDirectory.size(); i++){
+			System.out.print("/");
+			System.out.print(this.currentWorkingDirectory.get(i));
+		}
+		System.out.print("$ ");
+	}
+	
+	private void parseCommand(){
+		
+	}
+	
+	private void createFile(String name) {
 		try {
 			masterLink.createFile(name);
 		} catch (RemoteException | NotBoundException e) {
@@ -46,21 +102,13 @@ public class Client {
 		}
 	}
 	
-	public void readFile(String name) {
+	private void readFile(String name) {
 		try {
 			minionLink.readFile(name);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public int getClientID() {
-		return clientID;
-	}
-
-	public void setClientID(int clientID) {
-		this.clientID = clientID;
 	}
 	
 	

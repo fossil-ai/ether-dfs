@@ -18,8 +18,8 @@ public class JavaRunCommand {
 
         	 Process p = processBuilder.start();
         	  // wait for termination.
-        	  p.waitFor();
-        	System.out.println("Exiting VI");
+        	 p.waitFor();
+        	 System.out.println("Exiting VI");
         }
         catch (IOException e) {
             System.out.println("exception happened - here's what I know: ");
