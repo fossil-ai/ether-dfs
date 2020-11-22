@@ -211,9 +211,12 @@ public class Master extends UnicastRemoteObject
 	}
 
 	@Override
-	public String[] listFilesAtCWD(FileNode cwdNode) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
+		ArrayList<String> listOfFiles = new ArrayList<String>();
+		for (Map.Entry<String, FileNode> entry : cwdNode.children.entrySet()) {
+			listOfFiles.add(entry.getValue().filename);
+		}
+		return listOfFiles;
 	}
 
 	@Override
