@@ -1,9 +1,14 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.TreeMap;
 
-public class FileNode {
+public class FileNode implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -562992716721742567L;
 	public String filename;
 	public String path;
 	public FileNode parent;

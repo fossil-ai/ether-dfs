@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root>
-	<folder id="tmp">
-	    <file id="test0.txt"/>
-		<file id="test1.txt"/>
-		<file id="test2.txt"/>
-	</folder>
+<root id="tmp">
+    <file id="test0.txt"/>
+	<file id="test1.txt"/>
+	<file id="test2.txt"/>
 </root>

@@ -79,9 +79,4 @@ public class GlobalNameSpaceManager {
 		return fileNode;
 	}
 
-
-	public static void main(String[] args) {
-		GlobalNameSpaceManager manager = new GlobalNameSpaceManager();
-	}
-
 }

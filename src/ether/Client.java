@@ -30,10 +30,27 @@ public class Client {
 		LS {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				ArrayList<String> files = client.masterLink.listFilesAtCWD(client.cwdNode);
-				for (String filename : files){
-					 System.out.println(filename); 
-				} 
+				ArrayList<String> files;
+				try {
+					files = client.masterLink.listFilesAtCWD(client.cwdNode);
+					for (String filename : files){
+						 System.out.println(filename); 
+					} 
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		},
+		
+		CD {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				String path = client.cwdNode.path;
+				path = path + "/" + cmds[1];
+				System.out.println(path);
+				client.cwdNode = client.cwdNode.children.get(path);
+				client.updateCWD();
 			}
 		},
 		
@@ -75,7 +92,12 @@ public class Client {
 			e.printStackTrace();
 		}
 		
-		this.cwdNode = masterLink.getRootNode();
+		try {
+			this.cwdNode = masterLink.getRootNode();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.currentWorkingDirectory = new ArrayList<String>();
 	}
 
@@ -102,8 +124,9 @@ public class Client {
 	
 	private void updateCWD(){
 		this.currentWorkingDirectory.clear();
-		for(int i = 0; i < this.cwdNode.children.size(); i++){
-			
+		String[] path_split = this.cwdNode.path.split("/");
+		for(int i = 0; i < path_split.length; i++){
+			this.currentWorkingDirectory.add(path_split[i]);
 		}
 	}
 

@@ -25,8 +25,8 @@ public interface ClientMasterLink extends Remote {
 
 	int getClientCount() throws RemoteException;
 	
-	ArrayList<String> listFilesAtCWD(FileNode cwdNode);
+	ArrayList<String> listFilesAtCWD(FileNode cwdNode) throws RemoteException;
 	
-	FileNode getRootNode();
+	FileNode getRootNode() throws RemoteException;;
 
 }
