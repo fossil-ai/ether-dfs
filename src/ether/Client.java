@@ -30,7 +30,10 @@ public class Client {
 		LS {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				client.masterLink.listFilesAtCWD(client.currentWorkingDirectory);
+				ArrayList<String> files = client.masterLink.listFilesAtCWD(client.cwdNode);
+				for (String filename : files){
+					 System.out.println(filename); 
+				} 
 			}
 		},
 		
@@ -74,7 +77,6 @@ public class Client {
 		
 		this.cwdNode = masterLink.getRootNode();
 		this.currentWorkingDirectory = new ArrayList<String>();
-		this.currentWorkingDirectory.add("tmp");
 	}
 
 	public boolean execute(String[] cmds) {
@@ -86,6 +88,7 @@ public class Client {
 		}
 		return false;
 	}
+	
 
 	public void printCWD() {
 		System.out.print("client" + this.clientID + "@ether-dfs:~/");
@@ -94,6 +97,14 @@ public class Client {
 			System.out.print(this.currentWorkingDirectory.get(i));
 		}
 		System.out.print("$ ");
+	}
+	
+	
+	private void updateCWD(){
+		this.currentWorkingDirectory.clear();
+		for(int i = 0; i < this.cwdNode.children.size(); i++){
+			
+		}
 	}
 
 	private void createFile(String name) {

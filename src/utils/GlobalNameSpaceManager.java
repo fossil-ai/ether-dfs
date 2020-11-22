@@ -60,8 +60,9 @@ public class GlobalNameSpaceManager {
 			Element element = (Element) node;
 			path = path + element.getAttribute("id");
 			System.out.println(path);
-
-			fileNode.filename = path;
+			
+			fileNode.filename = element.getAttribute("id");
+			fileNode.path = path;
 			fileNode.parent = parentNode;
 
 			if (parentNode != null)
