@@ -88,6 +88,7 @@ public class Master extends UnicastRemoteObject
 		System.out.println("Master: File Created");
 		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
 			try {
+				//if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
 				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -136,6 +137,7 @@ public class Master extends UnicastRemoteObject
 	public void listenHeartBeat() {
 		class threadServer extends Thread {
 			Socket threadSocket;
+			MinionLocation minionLocation;
 
 			public threadServer(Socket threadSocket) {
 				this.threadSocket = threadSocket;
@@ -148,12 +150,14 @@ public class Master extends UnicastRemoteObject
 					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
 					tempAddress = threadSocket.getRemoteSocketAddress().toString();
 					System.out.println("input is " + input + "address is " + tempAddress);
-					if (MinionsList.containsKey(tempAddress)) {
-						System.out.println(" address is in address book, update percent value");
-						MinionsList.put(tempAddress, input.readDouble());
+					if (minionLocation.getAddress() == tempAddress) {
+						minionLocation.setAlive(true);
+						minionLocation.setMemSpace(input.readDouble());
 					} else {
-						System.out.println("minions is down, remove from the list");
-						MinionsList.remove(tempAddress);
+						System.out.println(minionLocation.getId() + "minions is down, "+
+									minionLocation.getAddress() +" remove from the list");
+						minionLocation.setAlive(false);
+						minionLocation.setMemSpace(1);    // full space, do not write to this server.
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
