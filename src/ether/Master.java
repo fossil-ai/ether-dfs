@@ -88,7 +88,7 @@ public class Master extends UnicastRemoteObject
 		System.out.println("Master: File Created");
 		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
 			try {
-				if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
+				//if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
 				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
 			} catch (IOException e) {
 				e.printStackTrace();
