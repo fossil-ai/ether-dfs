@@ -15,9 +15,9 @@ public class MinionManager {
 		this.minionMasterInvocation = new ArrayList<MasterMinionLink>();
 	}
 	
-	public void addMinion(MinionLocation minionLocation, MasterMinionLink stub) {
+	public void addMinion(MinionLocation minionLocation) {
 		this.minionLocations.add(minionLocation);
-		this.minionMasterInvocation.add((MasterMinionLink) stub);
+		//this.minionMasterInvocation.add((MasterMinionLink) stub);
 	}
 	
 	public int minionsNum() {

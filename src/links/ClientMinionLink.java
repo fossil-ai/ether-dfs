@@ -11,6 +11,8 @@ import java.rmi.RemoteException;
  */
 public interface ClientMinionLink extends Remote {
 	
-	void readFile(String filename) throws RemoteException;
+	void createDir(String dirName) throws RemoteException;
+	
+//	void readFile(String filename) throws RemoteException;
 
 }

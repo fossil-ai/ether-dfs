@@ -79,27 +79,23 @@ public class Master extends UnicastRemoteObject
 
 	}
 
-	public void addMinionInterface(MinionLocation minionLocation, MasterMinionLink stub) {
-		this.minionManager.addMinion(minionLocation, stub);
-	}
-
 	@Override
 	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
 		System.out.println("Master: File Created");
 		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
 			try {
-				//if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
+				// if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
 				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		int primaryReplicaIndex = 0;
-		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename,
-				this.minionManager.getMinionLocations());
-		this.fileManager.assignSelectedMinionsToFile(filename, this.minionManager.getMinionLocations());
-		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex,
-				this.minionManager.getMinionLocations());
+//		int primaryReplicaIndex = 0;
+//		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename,
+//				this.minionManager.getMinionLocations());
+//		this.fileManager.assignSelectedMinionsToFile(filename, this.minionManager.getMinionLocations());
+//		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex,
+//				this.minionManager.getMinionLocations());
 
 	}
 
@@ -154,10 +150,10 @@ public class Master extends UnicastRemoteObject
 						minionLocation.setAlive(true);
 						minionLocation.setMemSpace(input.readDouble());
 					} else {
-						System.out.println(minionLocation.getId() + "minions is down, "+
-									minionLocation.getAddress() +" remove from the list");
+						System.out.println(minionLocation.getId() + "minions is down, " + minionLocation.getAddress()
+								+ " remove from the list");
 						minionLocation.setAlive(false);
-						minionLocation.setMemSpace(1);    // full space, do not write to this server.
+						minionLocation.setMemSpace(1); // full space, do not write to this server.
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -226,6 +222,12 @@ public class Master extends UnicastRemoteObject
 	@Override
 	public FileNode getRootNode() {
 		return this.globalNameSpaceManager.getRoot();
+	}
+
+	@Override
+	public void storeMinionLocation(MinionLocation location) throws RemoteException {
+		// TODO Auto-generated method stub
+		this.minionManager.addMinion(location);
 	}
 
 }

@@ -10,13 +10,15 @@ public class MinionLocation implements Serializable {
 	private static final long serialVersionUID = -3209888687514514650L;
 	
 	private static String address;
+	private String directory;
 	private int id;
 	private boolean alive;
 	private double memSpace;
 	
-	public MinionLocation(int id, String address, boolean alive, double memSpace) {
+	public MinionLocation(int id, String address, String directory, boolean alive, double memSpace) {
 		this.id = id;
 		this.address = address;
+		this.directory = directory;
 		this.alive = alive;
 		this.memSpace = memSpace; // init to 0 = space is empty;
 	}

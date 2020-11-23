@@ -22,27 +22,29 @@ public class Client {
 
 	private int clientID;
 	private String clientMasterStubName;
+	private String clientMinionStubName;
+
 	private ArrayList<String> currentWorkingDirectory;
 	private FileNode cwdNode;
 
 	public enum ClientOperation {
-		
+
 		LS {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				ArrayList<String> files;
 				try {
 					files = client.masterLink.listFilesAtCWD(client.cwdNode);
-					for (String filename : files){
-						 System.out.println(filename); 
-					} 
+					for (String filename : files) {
+						System.out.println(filename);
+					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		},
-		
+
 		CD {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
@@ -53,7 +55,18 @@ public class Client {
 				client.updateCWD();
 			}
 		},
-		
+
+		MKDIR {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				String path = client.cwdNode.path;
+				path = path + "/" + cmds[1];
+				System.out.println(path);
+				client.cwdNode = client.cwdNode.children.get(path);
+				client.updateCWD();
+			}
+		},
+
 		NANO {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
@@ -87,11 +100,15 @@ public class Client {
 			System.out.println("Your assigned ID is: " + this.clientID);
 			masterLink = (ClientMasterLink) registry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
+
+			minionLink = (ClientMinionLink) registry.lookup(this.clientMinionStubName);
+			System.out.println("Successfully fetched minion link stub.");
+
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();
 		}
-		
+
 		try {
 			this.cwdNode = masterLink.getRootNode();
 		} catch (RemoteException e) {
@@ -110,7 +127,6 @@ public class Client {
 		}
 		return false;
 	}
-	
 
 	public void printCWD() {
 		System.out.print("client" + this.clientID + "@ether-dfs:~/");
@@ -120,12 +136,11 @@ public class Client {
 		}
 		System.out.print("$ ");
 	}
-	
-	
-	private void updateCWD(){
+
+	private void updateCWD() {
 		this.currentWorkingDirectory.clear();
 		String[] path_split = this.cwdNode.path.split("/");
-		for(int i = 0; i < path_split.length; i++){
+		for (int i = 0; i < path_split.length; i++) {
 			this.currentWorkingDirectory.add(path_split[i]);
 		}
 	}
@@ -134,15 +149,6 @@ public class Client {
 		try {
 			masterLink.createFile(name);
 		} catch (RemoteException | NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void readFile(String name) {
-		try {
-			minionLink.readFile(name);
-		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -21,6 +21,6 @@ public interface MasterMinionLink extends Remote {
 	
 	void addClientToMinion(int id, ClientMinionLink link) throws RemoteException;
 	
-	void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException;
+//	void takeCharge(String filename, List<MinionLocation> replicasResponsible) throws AccessException, RemoteException, NotBoundException;
 
 }

@@ -61,7 +61,15 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private Map<Integer, ClientMinionLink> clientsConnectedMap;
 
 	public Minion(String ip, String dir) throws RemoteException {
+		
+		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
+		minionServersLoc = new TreeMap<Integer, MinionLocation>();
+		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
+		clientsConnectedMap = new TreeMap<Integer, ClientMinionLink>();
+		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
+		System.out.println("Running minion server node on: " + ip);
+		
 		ConfigReader reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
 		int REG_PORT = reader.getRegistryPort();
@@ -85,14 +93,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 			e.printStackTrace();
 		}
 
-		this.directory = "/tmp/minion_" + this.minionID + "/";
-
-		filesReplicaMap = new TreeMap<String, List<MinionMinionLink>>();
-		minionServersLoc = new TreeMap<Integer, MinionLocation>();
-		minionToMinionStubs = new TreeMap<Integer, MinionMinionLink>();
-		clientsConnectedMap = new TreeMap<Integer, ClientMinionLink>();
-		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
-		location = new MinionLocation(this.minionID, ip, true);
+		this.directory = "/tmp/" + "minion_" + this.minionID;
+		System.out.println("Minion directory located on: " + this.directory);
+		location = new MinionLocation(this.minionID, ip, this.directory, true, 0);
+		masterLink.storeMinionLocation(location);
 
 		File file = new File(this.directory);
 		if (!file.exists()) {
@@ -134,34 +138,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		lock.writeLock().unlock();
 	}
 
-	@Override
-	public void takeCharge(String filename, List<MinionLocation> replicasResponsible)
-			throws AccessException, RemoteException, NotBoundException {
-		// TODO Auto-generated method stub
-
-		System.out.println("[@Replica] taking charge of file: " + filename);
-		System.out.println(replicasResponsible);
-
-		List<MinionMinionLink> minionStubs = new ArrayList<MinionMinionLink>(replicasResponsible.size());
-
-		for (MinionLocation loc : replicasResponsible) {
-			// if the current locations is this replica .. ignore
-			if (loc.getId() == this.minionID)
-				continue;
-
-			// if this is a new replica generate stub for this replica
-			if (!minionServersLoc.containsKey(loc.getId())) {
-				minionServersLoc.put(loc.getId(), loc);
-				MinionMinionLink stub = (MinionMinionLink) registry.lookup("ReplicaClient" + loc.getId());
-				minionToMinionStubs.put(loc.getId(), stub);
-			}
-			MinionMinionLink minionStub = minionToMinionStubs.get(loc.getId());
-			minionStubs.add(minionStub);
-		}
-
-		filesReplicaMap.put(filename, minionStubs);
-
-	}
 
 	public MinionLocation getLocation() {
 		return this.location;
@@ -178,30 +154,40 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
 	}
 
-	@Override
-	public void readFile(String filename) {
-		// TODO Auto-generated method stub
-		try {
-			File file = new File(this.directory + filename);
-			locks.putIfAbsent(filename, new ReentrantReadWriteLock());
-			ReentrantReadWriteLock lock = locks.get(filename);
-			lock.readLock().lock();
-			Scanner scanner = new Scanner(file);
-			while (scanner.hasNextLine()) {
-				String data = scanner.nextLine();
-				System.out.println(data);
-			}
-			scanner.close();
-			lock.readLock().unlock();
-		} catch (FileNotFoundException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-	}
+//	@Override
+//	public void readFile(String filename) {
+//		// TODO Auto-generated method stub
+//		try {
+//			File file = new File(this.directory + filename);
+//			locks.putIfAbsent(filename, new ReentrantReadWriteLock());
+//			ReentrantReadWriteLock lock = locks.get(filename);
+//			lock.readLock().lock();
+//			Scanner scanner = new Scanner(file);
+//			while (scanner.hasNextLine()) {
+//				String data = scanner.nextLine();
+//				System.out.println(data);
+//			}
+//			scanner.close();
+//			lock.readLock().unlock();
+//		} catch (FileNotFoundException e) {
+//			System.out.println("An error occurred.");
+//			e.printStackTrace();
+//		}
+//	}
 
 	@Override
 	public void addClientToMinion(int id, ClientMinionLink link) {
 		clientsConnectedMap.put(id, link);
 	}
+
+	@Override
+	public void createDir(String dirName) throws RemoteException {
+		// TODO Auto-generated method stub
+		File file = new File(this.directory + dirName);
+		if (!file.exists()) {
+			file.mkdir();
+		}
+	}
+
 
 }

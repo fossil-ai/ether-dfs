@@ -3,6 +3,8 @@ package links;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import utils.MinionLocation;
+
 /**
  * @author mohamf1
  *
@@ -15,5 +17,7 @@ import java.rmi.RemoteException;
 public interface MinionMasterLink extends Remote{
 	
 	public int getMinionCount() throws RemoteException;
+	
+	public void storeMinionLocation(MinionLocation location) throws RemoteException;
 	
 }
