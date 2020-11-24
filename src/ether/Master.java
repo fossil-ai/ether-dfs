@@ -59,24 +59,25 @@ public class Master extends UnicastRemoteObject
 		this.clientManager = new ClientManager();
 		this.random = new Random();
 
-//		try {
-//			serverSocket = new ServerSocket(port);
-//			System.out.println("server socket started!!!!");
-//			while(true) {
-//
-//				socket = serverSocket.accept();
-//				System.out.println("connection established!!!!");
-//				threadServer thread = new threadServer(socket);
-//				thread.start();
-//			}
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		/*
+		try {
+			serverSocket = new ServerSocket(port);
+			System.out.println("server socket started!!!!");
+			while(true) {
+
+				socket = serverSocket.accept();
+				System.out.println("connection established!!!!");
+				threadServer thread = new threadServer(socket);
+				thread.start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// include all the minions IP address; initialize minions memory space to 1;
 		// MinionsList.put("172.31.33.125", 1);
-//		MinionsList.put("172.31.46.197", 1.00);
-
+		MinionsList.put("172.31.46.197", 1.00);
+		 */
 	}
 
 	@Override
