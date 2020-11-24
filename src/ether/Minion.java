@@ -72,11 +72,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		
 		ConfigReader reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
+		System.out.println("Registry address is " + REG_ADDR);
 		int REG_PORT = reader.getRegistryPort();
+		System.out.println("Registry port is " + REG_PORT);
 		String masterServerJumpLinkName = reader.getRegistryMinionJumpName();
 
 		try {
 			registry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
+			System.out.println("locate registry success");
 			jumpLink = (MinionMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub for minion.");
 			this.minionMasterStubName = jumpLink.minionJumpStart(registry);
