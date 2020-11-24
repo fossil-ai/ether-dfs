@@ -183,7 +183,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	@Override
 	public void createDir(String dirName) throws RemoteException {
 		// TODO Auto-generated method stub
-		File file = new File(this.directory + dirName);
+		File file = new File(this.directory + "/" + dirName);
 		if (!file.exists()) {
 			file.mkdir();
 		}
