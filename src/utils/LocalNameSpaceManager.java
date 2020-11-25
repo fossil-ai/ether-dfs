@@ -29,32 +29,32 @@ public class LocalNameSpaceManager {
 	private String directory;
 	private String minion_id;
 	private FileNode root;
+	private Document doc;
 
 	public LocalNameSpaceManager(String directory, String id) {
 		this.directory = directory;
 		this.minion_id = id;
 		this.local_ns_filename = "resources/minion_namespaces/minion_namespace_" + this.minion_id + ".xml";
-		this.buildXMLFromDir(this.directory);
+		this.buildXMLFromDir();
 	}
 	
-	public void buildXMLFromDir(String dir){
+	public void buildXMLFromDir(){
 		
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder docBuilder;
-	    Document doc;
 		try {
 			docBuilder = docFactory.newDocumentBuilder();
-			doc = docBuilder.newDocument();
-		    Element rootElement = doc.createElement("root");
+			this.doc = docBuilder.newDocument();
+		    Element rootElement = this.doc.createElement("root");
 		    rootElement.setAttribute("id", "/tmp");
 		    rootElement.setIdAttribute("id", true);
-		    doc.appendChild(rootElement);
+		    this.doc.appendChild(rootElement);
 		    
-		    this.walkDirectoryToXML(doc, this.directory);
+		    this.walkDirectoryToXML(this.doc, this.directory);
 		    
 		    TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		    Transformer transformer = transformerFactory.newTransformer();
-		    DOMSource source = new DOMSource(doc);
+		    DOMSource source = new DOMSource(this.doc);
 		    StreamResult result = new StreamResult(new File(this.local_ns_filename));
 		    transformer.transform(source, result);
 		    System.out.println("File saved!");
@@ -99,10 +99,8 @@ public class LocalNameSpaceManager {
 		return doc;
 	}
 	
-	public static void main(String[] args){
-		
-		LocalNameSpaceManager manager = new LocalNameSpaceManager("/tmp/minion_0", "0");
-		
+	public Document getDoc() {
+		return this.doc;
 	}
 	
 

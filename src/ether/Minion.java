@@ -35,6 +35,7 @@ import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import links.MinionMinionLink;
 import utils.ConfigReader;
+import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
@@ -59,6 +60,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private Map<Integer, MinionMinionLink> minionToMinionStubs;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	private Map<Integer, ClientMinionLink> clientsConnectedMap;
+	
+	private LocalNameSpaceManager nsManager;
 
 	public Minion(String ip, String dir) throws RemoteException {
 		
@@ -105,6 +108,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		if (!file.exists()) {
 			file.mkdir();
 		}
+		
+		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
+		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 
 		/*
 		try {

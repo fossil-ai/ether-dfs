@@ -17,7 +17,7 @@ import org.xml.sax.SAXException;
 
 public class GlobalNameSpaceManager {
 
-	private final String GLOBAL_NS_FILENAME = "resources/globalnamespace.xml";
+	public final String GLOBAL_NS_FILENAME = "resources/globalnamespace.xml";
 	private FileNode root;
 
 	public GlobalNameSpaceManager() {
