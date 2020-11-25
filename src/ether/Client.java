@@ -92,6 +92,7 @@ public class Client {
 	public Client(String hostname, int port, String masterServerJumpLinkName) {
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
+			System.out.println("host name is " + hostname + "  port is " + port );
 			jumpLink = (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub.");
 			this.clientMasterStubName = jumpLink.clientJumpStart(registry);

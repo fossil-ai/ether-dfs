@@ -33,7 +33,7 @@ public class ConfigReader {
 	}
 	
 	public String getRegistryHost(){
-		return configs.get("REG_HOST");
+		return configs.get("REG_ADDRESS");
 	}
 	
 	public String getRegistryClientJumpName(){
