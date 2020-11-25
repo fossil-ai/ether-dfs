@@ -175,6 +175,7 @@ public class Master extends UnicastRemoteObject
 
 		try {
 			registry.rebind("ClientMasterLink_" + id, (ClientMasterLink) UnicastRemoteObject.toStub(this));
+			System.out.println("ClientMasterLink rebind success");
 		} catch (AccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
