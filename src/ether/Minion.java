@@ -217,5 +217,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
 
+	@Override
+	public void registryBind(Registry registry, String name, ClientMinionLink link) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

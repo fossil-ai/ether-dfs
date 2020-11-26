@@ -16,7 +16,7 @@ public interface ClientMinionLink extends Remote {
 	
 	void createDir(String dirName, FileNode cwd) throws RemoteException;
 	
-	public void registryBind(Registry registry, String name, ClientMinionLink link);
+	public void registryBind(Registry registry, String name, ClientMinionLink link) throws RemoteException;
 	
 //	void readFile(String filename) throws RemoteException;
 

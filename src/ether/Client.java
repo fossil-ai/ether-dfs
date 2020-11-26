@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Map;
 
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
@@ -165,18 +166,15 @@ public class Client {
 	
 	private void updateFileNode(){
 		try {
-			System.out.println(depth);
 			String cwdPath = this.cwdNode.path;
-			System.out.println(cwdPath);
 			String[] cwdPaths = cwdPath.split("/");
-			System.out.println(cwdPaths.length);
-			String search_path = cwdPaths[0];
+			String search_path = cwdPaths[2];
 			this.cwdNode = this.masterLink.getRootNode();
-			for(int i = 0; i <= depth; i++) {
-				System.out.println(search_path);
-//				this.cwdNode = this.cwdNode.children.get(search_path);
-				search_path = search_path + cwdPaths[i];			
-				}
+			for(int i = 1;  i <= depth; i++) {
+				this.cwdNode = this.cwdNode.children.get("/tmp/" + search_path);
+				if(i != depth)
+					search_path = search_path + "/" + cwdPaths[2+i];
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

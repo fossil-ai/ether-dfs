@@ -251,6 +251,7 @@ public class Master extends UnicastRemoteObject
 		return Integer.toString(randID);
 	}
 
+	@Override
 	public void registryBind (Registry registry , String name, MasterMinionLink link) {
 		try {
 			registry.rebind(name, link);
