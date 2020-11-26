@@ -1,6 +1,7 @@
 package ether;
 
 import java.rmi.AccessException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -89,11 +90,25 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 			masterLink = (MinionMasterLink) registry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
 
+
+			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
+			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
+			try {
+				Naming.rebind("htttp://172.31.33.125/", mm_stub);   // Minion IP address
+				Naming.rebind("htttp://172.31.61.146/", cm_stub);   // Client IP address
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// below is Faisal's original code
+			/*
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
 			registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
 			
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			registry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
+			*/
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
