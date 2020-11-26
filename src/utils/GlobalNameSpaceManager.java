@@ -21,7 +21,7 @@ public class GlobalNameSpaceManager {
 	private FileNode root;
 
 	public GlobalNameSpaceManager() {
-		this.rebuildGlobalPath();
+
 	}
 	
 	public void rebuildGlobalPath() {
@@ -52,16 +52,24 @@ public class GlobalNameSpaceManager {
 	private void xmlToFileNode(Document doc) {
 		doc.getDocumentElement().normalize();
 		root = new FileNode();
-		root = walk(root, null, doc.getDocumentElement(), "/");
+		root = walk(root, null, doc.getDocumentElement().getFirstChild(), "/");
 	}
 
 	private static FileNode walk(FileNode fileNode, FileNode parentNode, Node node, String path) {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element element = (Element) node;
-			path = path + element.getAttribute("id");
+			if(element.getAttribute("id").equalsIgnoreCase("/tmp")){
+				path = element.getAttribute("id");
+			}
+			else {
+				path = "/tmp" + element.getAttribute("id");
+			}
 			System.out.println(path);
 			
-			fileNode.filename = element.getAttribute("id");
+			String[] path_split =  element.getAttribute("id").split("/");
+			fileNode.filename = path_split[path_split.length - 1];
+			
+			System.out.println(fileNode.filename);
 			fileNode.path = path;
 			fileNode.parent = parentNode;
 
@@ -72,7 +80,7 @@ public class GlobalNameSpaceManager {
 				fileNode.isDir = true;
 				fileNode.children = new TreeMap<String, FileNode>();
 				for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-					walk(new FileNode(), fileNode, node.getChildNodes().item(i), path + "/");
+					walk(new FileNode(), fileNode, node.getChildNodes().item(i), path);
 				}
 			}
 		}

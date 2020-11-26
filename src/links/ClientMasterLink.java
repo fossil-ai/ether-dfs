@@ -27,6 +27,8 @@ public interface ClientMasterLink extends Remote {
 	
 	ArrayList<String> listFilesAtCWD(FileNode cwdNode) throws RemoteException;
 	
-	FileNode getRootNode() throws RemoteException;;
+	FileNode getRootNode() throws RemoteException;
+
+	String getRandomMinionID() throws RemoteException;
 
 }

@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<root id="/tmp">
-	<folder id="/tmp/minion_0">
-		<file id="/tmp/minion_0/test0.txt" />
-		<folder id="/tmp/minion_0/f3">
-			<file id="/tmp/minion_0/f3/ghuhu.txt" />
-		</folder>
-		<folder id="/tmp/minion_0/f2" />
-		<folder id="/tmp/minion_0/f1">
-			<folder id="/tmp/minion_0/f1/f11">
-				<file id="/tmp/minion_0/f1/f11/uhu.txt" />
-			</folder>
-			<file id="/tmp/minion_0/f1/somefile.txt" />
-		</folder>
-	</folder>
-</root>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><root id="/tmp"><folder id="/tmp/minion_0"><folder id="/tmp/minion_0/f3"><file id="/tmp/minion_0/f3/ghuhu.txt"/></folder><folder id="/tmp/minion_0/f2"/><folder id="/tmp/minion_0/f1"><folder id="/tmp/minion_0/f1/f11"><file id="/tmp/minion_0/f1/f11/uhu.txt"/></folder><file id="/tmp/minion_0/f1/somefile.txt"/></folder></folder></root>

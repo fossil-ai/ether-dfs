@@ -35,8 +35,10 @@ import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import links.MinionMinionLink;
 import utils.ConfigReader;
+import utils.GlobalNameSpaceManager;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
+import utils.NameSpaceSynchronizer;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
@@ -94,6 +96,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
 			registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
+			
+			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
+			registry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -111,6 +116,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		
 
 		/*
 		try {

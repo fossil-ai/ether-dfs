@@ -13,6 +13,7 @@ public interface ClientMinionLink extends Remote {
 	
 	void createDir(String dirName) throws RemoteException;
 	
+	
 //	void readFile(String filename) throws RemoteException;
 
 }

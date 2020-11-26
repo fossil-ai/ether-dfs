@@ -49,9 +49,13 @@ public class Client {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				String path = client.cwdNode.path;
-				path = path + "/" + cmds[1];
-				System.out.println(path);
-				client.cwdNode = client.cwdNode.children.get(path);
+				if(cmds[1].equalsIgnoreCase("..")) {
+					client.cwdNode = client.cwdNode.parent;
+				}
+				else {
+					path = path + "/" + cmds[1];
+					client.cwdNode = client.cwdNode.children.get(path);
+				}
 				client.updateCWD();
 			}
 		},
@@ -101,9 +105,11 @@ public class Client {
 			System.out.println("Your assigned ID is: " + this.clientID);
 			masterLink = (ClientMasterLink) registry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-
+			
+			String minionID = masterLink.getRandomMinionID();
+			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			minionLink = (ClientMinionLink) registry.lookup(this.clientMinionStubName);
-			System.out.println("Successfully fetched minion link stub.");
+			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + minionID);
 
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");

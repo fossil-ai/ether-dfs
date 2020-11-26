@@ -50,11 +50,11 @@ public class NameSpaceSynchronizer {
 			docBuilder = docFactory.newDocumentBuilder();
 			doc = docBuilder.newDocument();
 			Element rootElement = doc.createElement("root");
-			rootElement.setAttribute("id", "/tmp");
+			rootElement.setAttribute("id", "vmroot");
 			rootElement.setIdAttribute("id", true);
 			doc.appendChild(rootElement);
 
-			this.buildXMLFromLocalNameSpaces(doc);
+			doc = this.buildXMLFromLocalNameSpaces(doc);
 
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
@@ -79,12 +79,12 @@ public class NameSpaceSynchronizer {
 		for (Map.Entry<String, LocalNameSpaceManager> entry : this.localManagerMap.entrySet()) {
 			String minionID = entry.getKey();
 			String minionRootDir = "/tmp/minion_" + minionID;
-			walk(entry.getValue().getDoc().getDocumentElement(), doc.getDocumentElement(), doc, minionRootDir);
+			doc = walk(entry.getValue().getDoc().getDocumentElement(), doc.getDocumentElement(), doc, minionRootDir);
 		}
 		return doc;
 	};
 
-	private void walk(Node localNode, Node globalNode, Document doc,  String dirID) {
+	private Document walk(Node localNode, Node globalNode, Document doc,  String dirID) {
 		if (localNode.getNodeType() == Node.ELEMENT_NODE && globalNode.getNodeType() == Node.ELEMENT_NODE) {
 			Element element;
 			
@@ -92,19 +92,59 @@ public class NameSpaceSynchronizer {
 				element = doc.createElement("file");
 			else
 				element = doc.createElement("folder");
-			
+
 			String localFileID = ((Element)localNode).getAttribute("id");
-			String globalFileID = localFileID.split(dirID)[1];
-			element.setAttribute("id", globalFileID);
-        	element.setIdAttribute("id", true);
-            globalNode.appendChild(element);
+			String[] path = localFileID.split(dirID);
+			String globalFileID = null;
+			
+			if(path.length > 1) {
+				globalFileID = localFileID.split(dirID)[1];
+				if(doc.getElementById(globalFileID) == null) {
+					element.setAttribute("id", globalFileID);
+		        	element.setIdAttribute("id", true);
+		            globalNode.appendChild(element);
+				}
+			}
+			else if(path.length > 0) {
+				globalFileID = localFileID.split(dirID)[0];
+				if(doc.getElementById(globalFileID) == null) {
+					element.setAttribute("id", globalFileID);
+		        	element.setIdAttribute("id", true);
+		            globalNode.appendChild(element);
+				}
+			}
+			else {
+				globalFileID = "/tmp";
+				if(doc.getElementById(globalFileID) == null) {
+					element.setAttribute("id", globalFileID);
+		        	element.setIdAttribute("id", true);
+		            globalNode.appendChild(element);
+				}
+			}
             
 			if (localNode.hasChildNodes()) {
 				for (int i = 0; i < localNode.getChildNodes().getLength(); i++)
-					walk(localNode.getChildNodes().item(i), element, doc, dirID);
+					walk(localNode.getChildNodes().item(i), doc.getElementById(globalFileID), doc, dirID);
 			}
 		}
+		
+		return doc;
 
+	}
+	
+	public static void main(String[] args){
+		GlobalNameSpaceManager gManager = new GlobalNameSpaceManager();
+		LocalNameSpaceManager lManager_0 = new LocalNameSpaceManager("/tmp/" + "minion_" + 0, "0");
+		LocalNameSpaceManager lManager_1 = new LocalNameSpaceManager("/tmp/" + "minion_" + 1, "1");
+		NameSpaceSynchronizer syncro = new NameSpaceSynchronizer(gManager);
+		syncro.synchronize("0", lManager_0);
+		syncro.synchronize("1", lManager_1);
+		syncro.buildGlobalNameSpace();
+		gManager.rebuildGlobalPath();
+		syncro.synchronize("1", lManager_1);
+		syncro.buildGlobalNameSpace();
+		gManager.rebuildGlobalPath();
+		
 	}
 
 }

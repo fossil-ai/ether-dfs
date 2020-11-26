@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -198,8 +199,8 @@ public class Master extends UnicastRemoteObject
 	public String minionJumpStart(Registry registry) {
 		System.out.println("HEY! Connecting new minion...");
 		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
-		System.out.println("Assigning minion with ID: " + this.getMinionCount() + 1);
-		int id = this.getMinionCount() + 1;
+		System.out.println("Assigning minion with ID: " + this.getMinionCount());
+		int id = this.getMinionCount();
 
 		try {
 			registry.rebind("MinionMasterLink_" + id, (MinionMasterLink) UnicastRemoteObject.toStub(this));
@@ -240,7 +241,14 @@ public class Master extends UnicastRemoteObject
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException {
 		// TODO Auto-generated method stub
 		this.nameSpaceSynchronizer.synchronize(id, nsManager);
-		
+		this.nameSpaceSynchronizer.buildGlobalNameSpace();
+		this.globalNameSpaceManager.rebuildGlobalPath();
+	}
+
+	@Override
+	public String getRandomMinionID() throws RemoteException {
+		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
+		return Integer.toString(randID);
 	}
 
 }

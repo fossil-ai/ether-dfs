@@ -2,6 +2,7 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,8 +24,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-public class LocalNameSpaceManager {
+public class LocalNameSpaceManager implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6719694067564124068L;
 	private String local_ns_filename;
 	private String directory;
 	private String minion_id;

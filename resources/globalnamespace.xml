@@ -1,6 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<root id="tmp">
-    <file id="test0.txt"/>
-	<file id="test1.txt"/>
-	<file id="test2.txt"/>
-</root>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><root id="vmroot"><folder id="/tmp"><folder id="/f3"><file id="/f3/ghuhu.txt"/></folder><folder id="/f2"/><folder id="/f1"><folder id="/f1/f11"><file id="/f1/f11/uhu.txt"/></folder><file id="/f1/somefile.txt"/></folder></folder></root>
