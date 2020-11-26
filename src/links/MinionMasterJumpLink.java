@@ -13,9 +13,8 @@ public interface MinionMasterJumpLink extends Remote{
 	
 	public String minionJumpStart(Registry registry) throws RemoteException;
 
-<<<<<<< HEAD
+
 	public void registryBind (Registry registry , String name, MasterMinionLink link) throws RemoteException;
 
-=======
->>>>>>> df506a49dc94639b17479de403700ac8c5e65db2
+
 }
