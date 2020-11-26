@@ -26,6 +26,7 @@ public class Client {
 
 	private ArrayList<String> currentWorkingDirectory;
 	private FileNode cwdNode;
+	private int depth = 0;
 
 	public enum ClientOperation {
 
@@ -51,10 +52,12 @@ public class Client {
 				String path = client.cwdNode.path;
 				if(cmds[1].equalsIgnoreCase("..")) {
 					client.cwdNode = client.cwdNode.parent;
+					client.depth -= 1;
 				}
 				else {
 					path = path + "/" + cmds[1];
 					client.cwdNode = client.cwdNode.children.get(path);
+					client.depth += 1;
 				}
 				client.updateCWD();
 			}
@@ -136,10 +139,15 @@ public class Client {
 	}
 
 	public void printCWD() {
-		System.out.print("client" + this.clientID + "@ether-dfs:~/");
-		for (int i = 1; i < this.currentWorkingDirectory.size(); i++) {
-			System.out.print("/");
-			System.out.print(this.currentWorkingDirectory.get(i));
+		if(depth == 0){
+			System.out.print("client" + this.clientID + "@ether-dfs:~");
+		}
+		else {
+			System.out.print("client" + this.clientID + "@ether-dfs:");
+			for (int i = 2; i < this.currentWorkingDirectory.size(); i++) {
+				System.out.print("/");
+				System.out.print(this.currentWorkingDirectory.get(i));
+			}
 		}
 		System.out.print("$ ");
 	}

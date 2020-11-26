@@ -76,11 +76,13 @@ public class GlobalNameSpaceManager {
 			if (parentNode != null)
 				parentNode.children.put(path, fileNode);
 
-			if (node.hasChildNodes()) {
+			if(element.getTagName().equalsIgnoreCase("folder")) {
 				fileNode.isDir = true;
 				fileNode.children = new TreeMap<String, FileNode>();
-				for (int i = 0; i < node.getChildNodes().getLength(); i++) {
-					walk(new FileNode(), fileNode, node.getChildNodes().item(i), path);
+				if(node.hasChildNodes()) {
+					for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+						walk(new FileNode(), fileNode, node.getChildNodes().item(i), path);
+					}
 				}
 			}
 		}
