@@ -1,6 +1,8 @@
 package ether;
 
 import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -91,8 +93,16 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
 			registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
+			
+			Naming.bind("rmi://" + REG_ADDR + ":" + REG_PORT +"/MasterMinionLink_"+this.minionID, mm_stub);
 
 		} catch (RemoteException | NotBoundException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AlreadyBoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
