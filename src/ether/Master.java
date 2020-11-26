@@ -251,4 +251,22 @@ public class Master extends UnicastRemoteObject
 		return Integer.toString(randID);
 	}
 
+	public void registryBind( String REG_ADDR, int port, String name, MasterMinionLink link) {
+		Registry registry = null;
+		try {
+			registry = LocateRegistry.getRegistry(REG_ADDR, port);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			registry.rebind(name, link);
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
