@@ -118,7 +118,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		if (!file.exists()) {
 			file.mkdir();
 		}
-
+		System.out.println("directory created sucess");
 		
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
