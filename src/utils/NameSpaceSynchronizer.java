@@ -39,6 +39,7 @@ public class NameSpaceSynchronizer {
 	 */
 	public void synchronize(String id, LocalNameSpaceManager nsManager) {
 		this.localManagerMap.put(id, nsManager);
+		this.localManagerMap.get(id).buildXMLFromDir();
 	}
 
 	public void buildGlobalNameSpace() {

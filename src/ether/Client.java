@@ -66,11 +66,14 @@ public class Client {
 		MKDIR {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				String path = client.cwdNode.path;
-				path = path + "/" + cmds[1];
-				System.out.println(path);
-				client.cwdNode = client.cwdNode.children.get(path);
-				client.updateCWD();
+				try {
+					client.minionLink.createDir(cmds[1], client.cwdNode);
+					client.updateFileNode();
+					
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		},
 
@@ -157,6 +160,26 @@ public class Client {
 		String[] path_split = this.cwdNode.path.split("/");
 		for (int i = 0; i < path_split.length; i++) {
 			this.currentWorkingDirectory.add(path_split[i]);
+		}
+	}
+	
+	private void updateFileNode(){
+		try {
+			System.out.println(depth);
+			String cwdPath = this.cwdNode.path;
+			System.out.println(cwdPath);
+			String[] cwdPaths = cwdPath.split("/");
+			System.out.println(cwdPaths.length);
+			String search_path = cwdPaths[0];
+			this.cwdNode = this.masterLink.getRootNode();
+			for(int i = 0; i <= depth; i++) {
+				System.out.println(search_path);
+//				this.cwdNode = this.cwdNode.children.get(search_path);
+				search_path = search_path + cwdPaths[i];			
+				}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

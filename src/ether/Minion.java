@@ -37,6 +37,7 @@ import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import links.MinionMinionLink;
 import utils.ConfigReader;
+import utils.FileNode;
 import utils.GlobalNameSpaceManager;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
@@ -201,12 +202,16 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	}
 
 	@Override
-	public void createDir(String dirName) throws RemoteException {
+	public void createDir(String dirName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
-		File file = new File(this.directory + "/" + dirName);
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length-1];
+		String newDirPath = this.directory + append_path + "/" + dirName;
+		File file = new File(newDirPath);
 		if (!file.exists()) {
 			file.mkdir();
 		}
+		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
 
 

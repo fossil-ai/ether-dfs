@@ -13,6 +13,7 @@ public class FileNode implements Serializable {
 	public String path;
 	public FileNode parent;
 	public TreeMap<String, FileNode> children;
+	public TreeMap<String, FileNode> nodes;
 	public boolean isDir = false;
 
 }
