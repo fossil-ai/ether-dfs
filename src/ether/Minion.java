@@ -178,26 +178,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
 	}
 
-//	@Override
-//	public void readFile(String filename) {
-//		// TODO Auto-generated method stub
-//		try {
-//			File file = new File(this.directory + filename);
-//			locks.putIfAbsent(filename, new ReentrantReadWriteLock());
-//			ReentrantReadWriteLock lock = locks.get(filename);
-//			lock.readLock().lock();
-//			Scanner scanner = new Scanner(file);
-//			while (scanner.hasNextLine()) {
-//				String data = scanner.nextLine();
-//				System.out.println(data);
-//			}
-//			scanner.close();
-//			lock.readLock().unlock();
-//		} catch (FileNotFoundException e) {
-//			System.out.println("An error occurred.");
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Override
 	public void addClientToMinion(int id, ClientMinionLink link) {
@@ -221,6 +201,16 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	public void registryBind(Registry registry, String name, ClientMinionLink link) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public File readFile(String fileName, FileNode cwd) throws RemoteException {
+		// TODO Auto-generated method stub
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length-1];
+		String newDirPath = this.directory + append_path + "/" + fileName;
+		File file = new File(newDirPath);
+		return file;
 	}
 
 

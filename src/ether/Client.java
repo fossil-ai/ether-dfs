@@ -1,5 +1,7 @@
 package ether;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -7,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Scanner;
 
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
@@ -30,6 +33,24 @@ public class Client {
 	private int depth = 0;
 
 	public enum ClientOperation {
+		
+		CAT {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				try {
+					File file = client.minionLink.readFile(cmds[1], client.cwdNode);
+					Scanner scanner = new Scanner(file);
+					while (scanner.hasNextLine()) {
+						String data = scanner.nextLine();
+						System.out.println(data);
+					}
+					scanner.close();
+				} catch (RemoteException | FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		},
 
 		LS {
 			@Override
