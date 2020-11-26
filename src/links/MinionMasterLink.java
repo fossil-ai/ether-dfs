@@ -24,6 +24,4 @@ public interface MinionMasterLink extends Remote{
 	
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException;
 	
-	public void registryBind (String REG_ADDR, int port,  String name, MasterMinionLink link);
-	
 }
