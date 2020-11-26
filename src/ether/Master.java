@@ -29,8 +29,10 @@ import utils.ClientManager;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
+import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
 import utils.MinionManager;
+import utils.NameSpaceSynchronizer;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 
@@ -44,6 +46,7 @@ public class Master extends UnicastRemoteObject
 	MinionManager minionManager;
 	ClientManager clientManager;
 	GlobalNameSpaceManager globalNameSpaceManager;
+	NameSpaceSynchronizer nameSpaceSynchronizer;
 
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -55,6 +58,7 @@ public class Master extends UnicastRemoteObject
 	public Master() throws RemoteException {
 		this.fileManager = new FileManager();
 		this.globalNameSpaceManager = new GlobalNameSpaceManager();
+		this.nameSpaceSynchronizer = new NameSpaceSynchronizer(this.globalNameSpaceManager);
 		this.minionManager = new MinionManager();
 		this.clientManager = new ClientManager();
 		this.random = new Random();
@@ -230,6 +234,13 @@ public class Master extends UnicastRemoteObject
 	public void storeMinionLocation(MinionLocation location) throws RemoteException {
 		// TODO Auto-generated method stub
 		this.minionManager.addMinion(location);
+	}
+
+	@Override
+	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException {
+		// TODO Auto-generated method stub
+		this.nameSpaceSynchronizer.synchronize(id, nsManager);
+		
 	}
 
 }
