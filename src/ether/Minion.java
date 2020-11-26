@@ -1,6 +1,8 @@
 package ether;
 
 import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -56,14 +58,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 	private MinionMasterJumpLink jumpLink;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
+	private LocalNameSpaceManager nsManager;
 
 	private Map<String, List<MinionMinionLink>> filesReplicaMap;
 	private Map<Integer, MinionLocation> minionServersLoc;
 	private Map<Integer, MinionMinionLink> minionToMinionStubs;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	private Map<Integer, ClientMinionLink> clientsConnectedMap;
-	
-	private LocalNameSpaceManager nsManager;
 
 	public Minion(String ip, String dir) throws RemoteException {
 		
@@ -113,10 +114,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		if (!file.exists()) {
 			file.mkdir();
 		}
+
 		
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		
+
 
 		/*
 		try {
