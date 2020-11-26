@@ -3,6 +3,7 @@ package links;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import ether.Minion;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
 
