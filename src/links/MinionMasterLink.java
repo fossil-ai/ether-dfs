@@ -2,6 +2,7 @@ package links;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 
 import ether.Minion;
 import utils.LocalNameSpaceManager;
@@ -23,5 +24,9 @@ public interface MinionMasterLink extends Remote{
 	public void storeMinionLocation(MinionLocation location) throws RemoteException;
 	
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException;
+
+	public void registryBind (Registry registry , String name, MasterMinionLink link);
+	
+	public void registryBind (Registry registry , String name, ClientMinionLink link);
 	
 }
