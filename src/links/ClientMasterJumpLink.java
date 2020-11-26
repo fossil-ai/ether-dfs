@@ -11,6 +11,6 @@ public interface ClientMasterJumpLink extends Remote {
 	 * wants to connected and to have an ID assigned.
 	 */
 
-	public String clientJumpStart(Registry registry) throws RemoteException;;
+	public String clientJumpStart(Registry registry) throws RemoteException;
 
 }
