@@ -1,8 +1,10 @@
 package ether;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -115,11 +117,12 @@ public class Client {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated method stub
+				File file = null;
 				try {
 					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
-					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
 				} catch (IOException | InterruptedException e) {
@@ -129,13 +132,14 @@ public class Client {
 				}
 
 				try {
-					client.minionLink.writeFile(cmds[1], client.cwdNode);
+					file = new File(cmds[1]);
+					client.minionLink.writeFile(file, client.cwdNode);
+					client.updateFileNode();
+					file.delete();
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				client.updateFileNode();
-
 			}
 		};
 

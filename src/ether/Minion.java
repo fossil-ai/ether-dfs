@@ -10,8 +10,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.*;
+import java.nio.file.Files;
 
 import links.MasterMinionLink;
 import links.MinionMasterJumpLink;
@@ -64,7 +67,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			
 			
 			System.out.println("Creating Java RMI registry for minion as well");
-			LocateRegistry.createRegistry(REG_PORT + 1);
+			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
 			System.out.println("Registry instance exported on port: " + REG_PORT + 1 + this.minionID);
 			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT + 1 + this.minionID);
 
@@ -170,8 +173,18 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public File writeFile(String filename, FileNode cwd) throws RemoteException {
+	public File writeFile(File file, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		String newDirPath = this.directory + append_path + "/" + file.getName();
+		try {
+		    FileOutputStream fos = new FileOutputStream(newDirPath);
+		    ObjectOutputStream oos = new ObjectOutputStream(fos);
+		    oos.writeObject(file);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
 		return null;
 	}
 
