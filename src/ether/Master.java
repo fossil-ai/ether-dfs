@@ -265,7 +265,6 @@ public class Master extends UnicastRemoteObject
 		}
 	}
 
-	@Override
 	public void registryBind(Registry registry, String name, ClientMinionLink link) {
 		try {
 			registry.rebind(name, link);
