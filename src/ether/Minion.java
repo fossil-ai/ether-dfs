@@ -118,7 +118,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		if (!file.exists()) {
 			file.mkdir();
 		}
-		System.out.println("directory created sucess");
 		
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
@@ -196,12 +195,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		}
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
-
-	@Override
-	public void registryBind(Registry registry, String name, ClientMinionLink link) {
-		// TODO Auto-generated method stub
-	}
-		
 
 	@Override
 	public File readFile(String fileName, FileNode cwd) throws RemoteException {
