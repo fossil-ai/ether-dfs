@@ -129,6 +129,15 @@ public class Client {
 					e.printStackTrace();
 					System.exit(-1);
 				}
+				
+				try {
+					client.minionLink.writeFile(cmds[1], client.cwdNode);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				client.updateFileNode();
+				
 			}
 		};
 

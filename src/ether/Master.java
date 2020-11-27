@@ -66,49 +66,16 @@ public class Master extends UnicastRemoteObject
 		this.random = new Random();
 
 		/*
-		try {
-			serverSocket = new ServerSocket(port);
-			System.out.println("server socket started!!!!");
-			while(true) {
-
-				socket = serverSocket.accept();
-				System.out.println("connection established!!!!");
-				threadServer thread = new threadServer(socket);
-				thread.start();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// include all the minions IP address; initialize minions memory space to 1;
-		// MinionsList.put("172.31.33.125", 1);
-		MinionsList.put("172.31.46.197", 1.00);
+		 * try { serverSocket = new ServerSocket(port);
+		 * System.out.println("server socket started!!!!"); while(true) {
+		 * 
+		 * socket = serverSocket.accept();
+		 * System.out.println("connection established!!!!"); threadServer thread = new
+		 * threadServer(socket); thread.start(); } } catch (IOException e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } // include all the minions
+		 * IP address; initialize minions memory space to 1; //
+		 * MinionsList.put("172.31.33.125", 1); MinionsList.put("172.31.46.197", 1.00);
 		 */
-	}
-
-	@Override
-	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
-		System.out.println("Master: File Created");
-		for (int i = 0; i < this.minionManager.minionsNum(); i++) {
-			try {
-				// if( this.minionManager.getMinionLocations().get(i).getMemSpace() > 0.8) i ++;
-				this.minionManager.getMinionMasterInvocation().get(i).createFile(filename);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-//		int primaryReplicaIndex = 0;
-//		this.minionManager.getMinionMasterInvocation().get(primaryReplicaIndex).takeCharge(filename,
-//				this.minionManager.getMinionLocations());
-//		this.fileManager.assignSelectedMinionsToFile(filename, this.minionManager.getMinionLocations());
-//		this.fileManager.assignPrimaryMinionToFile(filename, primaryReplicaIndex,
-//				this.minionManager.getMinionLocations());
-
-	}
-
-	@Override
-	public MinionLocation locatePrimaryMinion(String fileName) throws RemoteException {
-		return fileManager.getPrimaryFileLocation(fileName);
 	}
 
 	public String assignMinionToClient(int clientID) {
@@ -253,7 +220,7 @@ public class Master extends UnicastRemoteObject
 	}
 
 	@Override
-	public void registryBind (Registry registry , String name, MasterMinionLink link) {
+	public void registryBind(Registry registry, String name, MasterMinionLink link) {
 		try {
 			registry.rebind(name, link);
 		} catch (AccessException e) {
@@ -276,6 +243,12 @@ public class Master extends UnicastRemoteObject
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
+	}
+
+	@Override
+	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
+		// TODO Auto-generated method stub
+
 	}
 }

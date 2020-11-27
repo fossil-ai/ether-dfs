@@ -21,8 +21,6 @@ public interface ClientMasterLink extends Remote {
 
 	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
 
-	MinionLocation locatePrimaryMinion(String fileName) throws RemoteException;
-
 	int getClientCount() throws RemoteException;
 	
 	ArrayList<String> listFilesAtCWD(FileNode cwdNode) throws RemoteException;

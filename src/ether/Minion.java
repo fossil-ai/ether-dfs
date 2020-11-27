@@ -153,15 +153,15 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 
 	}
 
-	@Override
-	public void createFile(String fileName) throws IOException {
-		File file = new File(this.directory + fileName);
-		locks.putIfAbsent(fileName, new ReentrantReadWriteLock());
-		ReentrantReadWriteLock lock = locks.get(fileName);
-		lock.writeLock().lock();
-		file.createNewFile();
-		lock.writeLock().unlock();
-	}
+//	@Override
+//	public void createFile(String fileName) throws IOException {
+//		File file = new File(this.directory + fileName);
+//		locks.putIfAbsent(fileName, new ReentrantReadWriteLock());
+//		ReentrantReadWriteLock lock = locks.get(fileName);
+//		lock.writeLock().lock();
+//		file.createNewFile();
+//		lock.writeLock().unlock();
+//	}
 
 
 	public MinionLocation getLocation() {
@@ -179,11 +179,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
 	}
 
-
-	@Override
-	public void addClientToMinion(int id, ClientMinionLink link) {
-		clientsConnectedMap.put(id, link);
-	}
 
 	@Override
 	public void createDir(String dirName, FileNode cwd) throws RemoteException {
@@ -221,6 +216,18 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		lock.writeLock().unlock();
 		locks.remove(newDirPath);
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+	}
+
+	@Override
+	public File writeFile(String filename, FileNode cwd) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addClientToMinion(int id, ClientMinionLink link) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
 

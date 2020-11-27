@@ -20,6 +20,8 @@ public interface ClientMinionLink extends Remote {
 	File readFile(String filename, FileNode cwd) throws RemoteException;
 	
 	void deleteFile(String filename, FileNode cwd) throws RemoteException;
+	
+	File writeFile(String filename, FileNode cwd) throws RemoteException;
 
 //	void readFile(String filename) throws RemoteException;
 

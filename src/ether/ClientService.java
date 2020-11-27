@@ -14,9 +14,19 @@ public class ClientService {
 		int REG_PORT = reader.getRegistryPort();
 		String MS_JUMPLINKNAME = reader.getRegistryClientJumpName();
 
-		System.out.println("********* ******************** ********");
-		System.out.println("********* WELCOME TO ETHER-DFS ********");
-		System.out.println("********* ******************** ********");
+		System.out.println("********* ************************** ********");
+		System.out.println("********* ** WELCOME TO ETHER-DFS ** ********");
+		System.out.println("********* ************************** ********");
+		System.out.println("********* ** SUPPORTED OPERATIONS ** ********");
+		System.out.println("********* ************************** ********");
+		System.out.println("*                                           *");
+		System.out.println("* ls            - list files in directory   *");
+		System.out.println("* cd    [dir]   - navigate to directory     *");
+		System.out.println("* cat   [file]  - read a file               *");
+		System.out.println("* mkdir [file]  - create a directory        *");
+		System.out.println("* rm    [file]  - delete a file             *");
+		System.out.println("* nano  [file]  - write to file             *");
+		System.out.println("********* ************************* ********");
 
 		Client client = new Client(REG_ADDR, REG_PORT, MS_JUMPLINKNAME);
 
