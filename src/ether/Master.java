@@ -225,4 +225,23 @@ public class Master extends UnicastRemoteObject
 		// TODO Auto-generated method stub
 
 	}
+	/*
+	public void registryBind(Registry registry, String name, MasterMinionLink link) {
+		try {
+			registry.bind(name,link);
+		} catch (RemoteException | AlreadyBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void registryBind(Registry registry, String name, ClientMinionLink link) {
+		try {
+			registry.bind(name,link);
+		} catch (RemoteException | AlreadyBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	*/
 }
