@@ -16,6 +16,7 @@ import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 import utils.CommandParser;
+import utils.FileContent;
 import utils.FileNode;
 
 public class Client {
@@ -117,7 +118,6 @@ public class Client {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated method stub
-				File file = null;
 				try {
 					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -132,10 +132,10 @@ public class Client {
 				}
 
 				try {
-					file = new File(cmds[1]);
-					client.minionLink.writeFile(file, client.cwdNode);
+					FileContent content = new FileContent(cmds[1]);
+					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
-					file.delete();
+					content.delete();
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

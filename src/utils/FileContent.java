@@ -1,12 +1,14 @@
 package utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 
 public class FileContent implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -14,44 +16,38 @@ public class FileContent implements Serializable {
 	private String filename;
 	private byte[] bytes;
 	private File file;
-	
+
 	public FileContent(String filename) {
-		// file to byte[], File -> Path
-		  file = new File(filename);
-		  try {
-			byte[] bytes = Files.readAllBytes(file.toPath());
+		this.filename = filename;
+		file = new File(filename);
+		try {
+			this.bytes = Files.readAllBytes(file.toPath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+	public void writeByte(String filePath) {
+		File transferredFile = new File(filePath);
+		try {
+			
+			OutputStream os = new FileOutputStream(transferredFile);
+			os.write(this.bytes);
+			os.close();
+		}
+
+		catch (Exception e) {
+			System.out.println("Exception: " + e);
+		}
+	}
 	
-//	// Method which write the bytes into a file 
-//    static void writeByte(byte[] bytes) 
-//    { 
-//        try { 
-//  
-//            // Initialize a pointer 
-//            // in file using OutputStream 
-//            OutputStream 
-//                os 
-//                = new FileOutputStream(file); 
-//  
-//            // Starts writing the bytes in it 
-//            os.write(bytes); 
-//            System.out.println("Successfully"
-//                               + " byte inserted"); 
-//  
-//            // Close the file 
-//            os.close(); 
-//        } 
-//  
-//        catch (Exception e) { 
-//            System.out.println("Exception: " + e); 
-//        } 
-//    } 
-//	
+	public void delete(){
+		this.file.delete();
+	}
 	
-	
+	public String getName(){
+		return filename;
+	}
 
 }

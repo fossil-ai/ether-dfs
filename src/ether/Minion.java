@@ -20,6 +20,7 @@ import links.MasterMinionLink;
 import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import utils.ConfigReader;
+import utils.FileContent;
 import utils.FileNode;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
@@ -173,18 +174,17 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public File writeFile(File file, FileNode cwd) throws RemoteException {
+	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + file.getName();
+		String newDirPath = this.directory + append_path + "/" + content.getName();
 		try {
-		    FileOutputStream fos = new FileOutputStream(newDirPath);
-		    ObjectOutputStream oos = new ObjectOutputStream(fos);
-		    oos.writeObject(file);
+		    content.writeByte(newDirPath);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
+		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		return null;
 	}
 

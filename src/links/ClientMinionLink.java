@@ -4,6 +4,7 @@ import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import utils.FileContent;
 import utils.FileNode;
 
 /**
@@ -20,8 +21,6 @@ public interface ClientMinionLink extends Remote {
 	
 	void deleteFile(String filename, FileNode cwd) throws RemoteException;
 	
-	File writeFile(File file, FileNode cwd) throws RemoteException;
-
-//	void readFile(String filename) throws RemoteException;
+	File writeFile(FileContent fileContent, FileNode cwd) throws RemoteException;
 
 }
