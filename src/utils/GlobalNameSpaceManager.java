@@ -11,9 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 
 public class GlobalNameSpaceManager {
 
@@ -23,7 +21,7 @@ public class GlobalNameSpaceManager {
 	public GlobalNameSpaceManager() {
 
 	}
-	
+
 	public void rebuildGlobalPath() {
 		File globalNameSpaceFile = new File(this.GLOBAL_NS_FILENAME);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -44,8 +42,8 @@ public class GlobalNameSpaceManager {
 		}
 		xmlToFileNode(doc);
 	};
-	
-	public FileNode getRoot(){
+
+	public FileNode getRoot() {
 		return this.root;
 	}
 
@@ -58,17 +56,16 @@ public class GlobalNameSpaceManager {
 	private static FileNode walk(FileNode fileNode, FileNode parentNode, Node node, String path) {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element element = (Element) node;
-			if(element.getAttribute("id").equalsIgnoreCase("/tmp")){
+			if (element.getAttribute("id").equalsIgnoreCase("/tmp")) {
 				path = element.getAttribute("id");
-			}
-			else {
+			} else {
 				path = "/tmp" + element.getAttribute("id");
 			}
 			System.out.println(path);
-			
-			String[] path_split =  element.getAttribute("id").split("/");
+
+			String[] path_split = element.getAttribute("id").split("/");
 			fileNode.filename = path_split[path_split.length - 1];
-			
+
 			System.out.println(fileNode.filename);
 			fileNode.path = path;
 			fileNode.parent = parentNode;
@@ -76,10 +73,10 @@ public class GlobalNameSpaceManager {
 			if (parentNode != null)
 				parentNode.children.put(path, fileNode);
 
-			if(element.getTagName().equalsIgnoreCase("folder")) {
+			if (element.getTagName().equalsIgnoreCase("folder")) {
 				fileNode.isDir = true;
 				fileNode.children = new TreeMap<String, FileNode>();
-				if(node.hasChildNodes()) {
+				if (node.hasChildNodes()) {
 					for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 						walk(new FileNode(), fileNode, node.getChildNodes().item(i), path);
 					}

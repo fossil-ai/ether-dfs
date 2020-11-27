@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 import links.ClientMasterJumpLink;
@@ -33,7 +32,6 @@ public class Client {
 	private int depth = 0;
 
 	public enum ClientOperation {
-		
 
 		RM {
 			@Override
@@ -47,7 +45,7 @@ public class Client {
 				}
 			}
 		},
-		
+
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
@@ -86,11 +84,10 @@ public class Client {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				String path = client.cwdNode.path;
-				if(cmds[1].equalsIgnoreCase("..")) {
+				if (cmds[1].equalsIgnoreCase("..")) {
 					client.cwdNode = client.cwdNode.parent;
 					client.depth -= 1;
-				}
-				else {
+				} else {
 					path = path + "/" + cmds[1];
 					client.cwdNode = client.cwdNode.children.get(path);
 					client.depth += 1;
@@ -105,7 +102,7 @@ public class Client {
 				try {
 					client.minionLink.createDir(cmds[1], client.cwdNode);
 					client.updateFileNode();
-					
+
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -129,7 +126,7 @@ public class Client {
 					e.printStackTrace();
 					System.exit(-1);
 				}
-				
+
 				try {
 					client.minionLink.writeFile(cmds[1], client.cwdNode);
 				} catch (RemoteException e) {
@@ -137,7 +134,7 @@ public class Client {
 					e.printStackTrace();
 				}
 				client.updateFileNode();
-				
+
 			}
 		};
 
@@ -147,7 +144,7 @@ public class Client {
 	public Client(String hostname, int port, String masterServerJumpLinkName) {
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
-			System.out.println("host name is " + hostname + "  port is " + port );
+			System.out.println("host name is " + hostname + "  port is " + port);
 			jumpLink = (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub.");
 			this.clientMasterStubName = jumpLink.clientJumpStart(registry);
@@ -156,7 +153,7 @@ public class Client {
 			System.out.println("Your assigned ID is: " + this.clientID);
 			masterLink = (ClientMasterLink) registry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-			
+
 			String minionID = masterLink.getRandomMinionID();
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
@@ -188,10 +185,9 @@ public class Client {
 	}
 
 	public void printCWD() {
-		if(depth == 0){
+		if (depth == 0) {
 			System.out.print("client" + this.clientID + "@ether-dfs:~");
-		}
-		else {
+		} else {
 			System.out.print("client" + this.clientID + "@ether-dfs:");
 			for (int i = 2; i < this.currentWorkingDirectory.size(); i++) {
 				System.out.print("/");
@@ -208,21 +204,20 @@ public class Client {
 			this.currentWorkingDirectory.add(path_split[i]);
 		}
 	}
-	
-	private void updateFileNode(){
+
+	private void updateFileNode() {
 		try {
-			if(depth > 0) {
+			if (depth > 0) {
 				String cwdPath = this.cwdNode.path;
 				String[] cwdPaths = cwdPath.split("/");
 				String search_path = cwdPaths[2];
 				this.cwdNode = this.masterLink.getRootNode();
-				for(int i = 1;  i <= depth; i++) {
+				for (int i = 1; i <= depth; i++) {
 					this.cwdNode = this.cwdNode.children.get("/tmp/" + search_path);
-					if(i != depth)
-						search_path = search_path + "/" + cwdPaths[2+i];
+					if (i != depth)
+						search_path = search_path + "/" + cwdPaths[2 + i];
 				}
-			}
-			else {
+			} else {
 				this.cwdNode = this.masterLink.getRootNode();
 			}
 		} catch (RemoteException e) {

@@ -3,25 +3,20 @@ package utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.*;
-import java.io.*;
 
 public class FileManager {
 
 	private Map<String, List<MinionLocation>> fileLocationMap;
 	private Map<String, MinionLocation> filePrimaryMinionMap;
 
-	public FileManager(){
+	public FileManager() {
 		this.fileLocationMap = new HashMap<String, List<MinionLocation>>();
 		this.filePrimaryMinionMap = new HashMap<String, MinionLocation>();
 	}
-	
-	public String getGlobalPath(String filename){
+
+	public String getGlobalPath(String filename) {
 		return filename;
-		
+
 	}
 
 	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex,

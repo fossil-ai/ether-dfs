@@ -7,51 +7,51 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ConfigReader {
-	
+
 	private Map<String, String> configs;
 	private BufferedReader reader;
-	
-	public ConfigReader(){
-		
+
+	public ConfigReader() {
+
 		try {
 			reader = new BufferedReader(new FileReader("resources/filesys.conf"));
 			configs = new TreeMap<String, String>();
 			String currentLine;
-			while((currentLine = reader.readLine()) != null) {
+			while ((currentLine = reader.readLine()) != null) {
 				String[] config = currentLine.split(" ");
 				configs.put(config[0], config[1]);
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	public int getRegistryPort(){
+
+	public int getRegistryPort() {
 		return Integer.parseInt(configs.get("REG_PORT"));
 	}
-	
-	public String getRegistryHost(){
+
+	public String getRegistryHost() {
 		return configs.get("REG_ADDRESS");
 	}
-	
-	public String getRegistryClientJumpName(){
+
+	public String getRegistryClientJumpName() {
 		return configs.get("MS_CLIENT_JUMPLINK");
 	}
-	
-	public String getRegistryMinionJumpName(){
+
+	public String getRegistryMinionJumpName() {
 		return configs.get("MS_MINION_JUMPLINK");
 	}
-	
-	public int getMinionNum(){
+
+	public int getMinionNum() {
 		return Integer.parseInt(configs.get("MINION_NUMS"));
 	}
-	
-	public String getMinions(){
+
+	public String getMinions() {
 		return configs.get("MINION_ADDRESSES");
 	}
-	
+
 	public static void main(String[] args) {
 		ConfigReader reader = new ConfigReader();
 		System.out.println(reader.getRegistryPort());
@@ -62,7 +62,4 @@ public class ConfigReader {
 		System.out.println(reader.getMinions());
 	}
 
-
 }
-
-

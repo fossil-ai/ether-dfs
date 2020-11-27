@@ -1,8 +1,6 @@
 package ether;
 
 import java.util.Scanner;
-import javax.naming.*;
-
 import utils.ConfigReader;
 
 public class ClientService {
@@ -40,6 +38,7 @@ public class ClientService {
 			done = client.execute(commandArr);
 		}
 
+		scanner.close();
 		System.out.println("Quitting Ether-DFS. Goodbye!");
 	}
 

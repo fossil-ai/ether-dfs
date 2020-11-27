@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,8 +20,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 public class LocalNameSpaceManager implements Serializable {
 	
@@ -33,7 +30,6 @@ public class LocalNameSpaceManager implements Serializable {
 	private String local_ns_filename;
 	private String directory;
 	private String minion_id;
-	private FileNode root;
 	private Document doc;
 
 	public LocalNameSpaceManager(String directory, String id) {
