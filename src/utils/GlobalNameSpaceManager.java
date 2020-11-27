@@ -61,12 +61,9 @@ public class GlobalNameSpaceManager {
 			} else {
 				path = "/tmp" + element.getAttribute("id");
 			}
-			System.out.println(path);
 
 			String[] path_split = element.getAttribute("id").split("/");
 			fileNode.filename = path_split[path_split.length - 1];
-
-			System.out.println(fileNode.filename);
 			fileNode.path = path;
 			fileNode.parent = parentNode;
 

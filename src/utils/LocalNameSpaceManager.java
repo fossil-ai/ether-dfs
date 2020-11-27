@@ -22,7 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class LocalNameSpaceManager implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -38,27 +38,27 @@ public class LocalNameSpaceManager implements Serializable {
 		this.local_ns_filename = "resources/minion_namespaces/minion_namespace_" + this.minion_id + ".xml";
 		this.buildXMLFromDir();
 	}
-	
-	public void buildXMLFromDir(){
-		
+
+	public void buildXMLFromDir() {
+
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder docBuilder;
+		DocumentBuilder docBuilder;
 		try {
 			docBuilder = docFactory.newDocumentBuilder();
 			this.doc = docBuilder.newDocument();
-		    Element rootElement = this.doc.createElement("root");
-		    rootElement.setAttribute("id", "/tmp");
-		    rootElement.setIdAttribute("id", true);
-		    this.doc.appendChild(rootElement);
-		    
-		    this.walkDirectoryToXML(this.doc, this.directory);
-		    
-		    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		    Transformer transformer = transformerFactory.newTransformer();
-		    DOMSource source = new DOMSource(this.doc);
-		    StreamResult result = new StreamResult(new File(this.local_ns_filename));
-		    transformer.transform(source, result);
-		    System.out.println("File saved!");
+			Element rootElement = this.doc.createElement("root");
+			rootElement.setAttribute("id", "/tmp");
+			rootElement.setIdAttribute("id", true);
+			this.doc.appendChild(rootElement);
+
+			this.walkDirectoryToXML(this.doc, this.directory);
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(this.doc);
+			StreamResult result = new StreamResult(new File(this.local_ns_filename));
+			transformer.transform(source, result);
+			System.out.println("File saved!");
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -69,40 +69,36 @@ public class LocalNameSpaceManager implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	};
-	
-	public Document walkDirectoryToXML(Document doc, String directory){
-		try (Stream<Path> filePathStream=Files.walk(Paths.get(directory))) {
-	        filePathStream.forEach(filePath -> {
-	        	
-	        	System.out.println(filePath);
-	        	System.out.println(filePath.getParent().toString());
-	        	Element parentElement = doc.getElementById(filePath.getParent().toString());
-	        	
-	            if (Files.isRegularFile(filePath)) {
-	                Element fileElement = doc.createElement("file");
-	                fileElement.setAttribute("id", filePath.toString());
-	                fileElement.setIdAttribute("id", true);
-	                parentElement.appendChild(fileElement);
-	            } 
-	            else if (Files.isDirectory(filePath)){
-	            	Element folderElement = doc.createElement("folder");
-	            	folderElement.setAttribute("id", filePath.toString());
-	            	folderElement.setIdAttribute("id", true);
-	                parentElement.appendChild(folderElement);
-	            }
-	        });
-	    } catch (IOException e) {
+
+	public Document walkDirectoryToXML(Document doc, String directory) {
+		try (Stream<Path> filePathStream = Files.walk(Paths.get(directory))) {
+			filePathStream.forEach(filePath -> {
+
+				Element parentElement = doc.getElementById(filePath.getParent().toString());
+
+				if (Files.isRegularFile(filePath)) {
+					Element fileElement = doc.createElement("file");
+					fileElement.setAttribute("id", filePath.toString());
+					fileElement.setIdAttribute("id", true);
+					parentElement.appendChild(fileElement);
+				} else if (Files.isDirectory(filePath)) {
+					Element folderElement = doc.createElement("folder");
+					folderElement.setAttribute("id", filePath.toString());
+					folderElement.setIdAttribute("id", true);
+					parentElement.appendChild(folderElement);
+				}
+			});
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return doc;
 	}
-	
+
 	public Document getDoc() {
 		return this.doc;
 	}
-	
 
 }

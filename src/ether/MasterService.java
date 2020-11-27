@@ -1,7 +1,6 @@
 package ether;
 
 import java.io.IOException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -17,7 +16,6 @@ public class MasterService {
 
 		ConfigReader reader = new ConfigReader();
 		int REG_PORT = reader.getRegistryPort();
-		String REG_HOST = reader.getRegistryHost();
 
 		try {
 			System.out.println("Creating Java RMI registry...");

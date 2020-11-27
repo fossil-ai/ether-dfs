@@ -31,7 +31,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public int minionID;
 	public String directory;
 	private MinionLocation location;
-	private Registry registry;
+	private Registry masterRegistry;
+	private Registry minionRegistry;
 	private MinionMasterJumpLink jumpLink;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
@@ -50,26 +51,29 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String masterServerJumpLinkName = reader.getRegistryMinionJumpName();
 
 		try {
-			registry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
+			masterRegistry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
 			System.out.println("locate registry success");
-			jumpLink = (MinionMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			jumpLink = (MinionMasterJumpLink) masterRegistry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub for minion.");
-			this.minionMasterStubName = jumpLink.minionJumpStart(registry);
+			this.minionMasterStubName = jumpLink.minionJumpStart(masterRegistry);
 			this.minionID = Integer.parseInt(minionMasterStubName.split("_")[1]);
 			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
 			System.out.println("Your assigned ID is: " + this.minionID);
-			masterLink = (MinionMasterLink) registry.lookup(this.minionMasterStubName);
+			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
+			
+			
+			System.out.println("Creating Java RMI registry for minion as well");
+			LocateRegistry.createRegistry(REG_PORT + 1);
+			System.out.println("Registry instance exported on port: " + REG_PORT + 1 + this.minionID);
+			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT + 1 + this.minionID);
 
-			// need to bind on master
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
-			jumpLink.registryBind(registry, "MasterMinionLink_" + this.minionID, mm_stub);
+			minionRegistry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
 			System.out.println("the MasterMinion Link is:  " + "MasterMinionLink_" + this.minionID);
-			// registry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
 
-			// start a new registry on Minion
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
-			jumpLink.registryBind2(registry, "ClientMinionLink_" + this.minionID, cm_stub);
+			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
 
 		} catch (RemoteException | NotBoundException e) {

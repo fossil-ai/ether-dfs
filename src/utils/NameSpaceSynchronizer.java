@@ -125,19 +125,4 @@ public class NameSpaceSynchronizer {
 
 	}
 
-	public static void main(String[] args) {
-		GlobalNameSpaceManager gManager = new GlobalNameSpaceManager();
-		LocalNameSpaceManager lManager_0 = new LocalNameSpaceManager("/tmp/" + "minion_" + 0, "0");
-		LocalNameSpaceManager lManager_1 = new LocalNameSpaceManager("/tmp/" + "minion_" + 1, "1");
-		NameSpaceSynchronizer syncro = new NameSpaceSynchronizer(gManager);
-		syncro.synchronize("0", lManager_0);
-		syncro.synchronize("1", lManager_1);
-		syncro.buildGlobalNameSpace();
-		gManager.rebuildGlobalPath();
-		syncro.synchronize("1", lManager_1);
-		syncro.buildGlobalNameSpace();
-		gManager.rebuildGlobalPath();
-
-	}
-
 }

@@ -18,7 +18,8 @@ import utils.FileNode;
 
 public class Client {
 
-	static Registry registry;
+	Registry masterRegistry;
+	Registry minionRegistry;
 	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
@@ -143,21 +144,22 @@ public class Client {
 
 	public Client(String hostname, int port, String masterServerJumpLinkName) {
 		try {
-			registry = LocateRegistry.getRegistry(hostname, port);
+			masterRegistry = LocateRegistry.getRegistry(hostname, port);
 			System.out.println("host name is " + hostname + "  port is " + port);
-			jumpLink = (ClientMasterJumpLink) registry.lookup(masterServerJumpLinkName);
+			jumpLink = (ClientMasterJumpLink) masterRegistry.lookup(masterServerJumpLinkName);
 			System.out.println("Successfully fetched master-server jump-link stub.");
-			this.clientMasterStubName = jumpLink.clientJumpStart(registry);
+			this.clientMasterStubName = jumpLink.clientJumpStart(masterRegistry);
 			this.clientID = Integer.parseInt(clientMasterStubName.split("_")[1]);
 			System.out.println("Your master-stub access name is: " + this.clientMasterStubName);
 			System.out.println("Your assigned ID is: " + this.clientID);
-			masterLink = (ClientMasterLink) registry.lookup(this.clientMasterStubName);
+			masterLink = (ClientMasterLink) masterRegistry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
 
 			String minionID = masterLink.getRandomMinionID();
+			minionRegistry = LocateRegistry.getRegistry(hostname, port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
-			minionLink = (ClientMinionLink) registry.lookup(this.clientMinionStubName);
+			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + minionID);
 
 		} catch (RemoteException | NotBoundException e) {
