@@ -150,6 +150,7 @@ public class Client {
 			
 			String minionID = masterLink.getRandomMinionID();
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
+			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) registry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + minionID);
 
