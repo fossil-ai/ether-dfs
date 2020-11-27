@@ -26,31 +26,31 @@ public class FileContent implements Serializable {
 		}
 	}
 	
-	// Method which write the bytes into a file 
-    static void writeByte(byte[] bytes) 
-    { 
-        try { 
-  
-            // Initialize a pointer 
-            // in file using OutputStream 
-            OutputStream 
-                os 
-                = new FileOutputStream(file); 
-  
-            // Starts writing the bytes in it 
-            os.write(bytes); 
-            System.out.println("Successfully"
-                               + " byte inserted"); 
-  
-            // Close the file 
-            os.close(); 
-        } 
-  
-        catch (Exception e) { 
-            System.out.println("Exception: " + e); 
-        } 
-    } 
-	
+//	// Method which write the bytes into a file 
+//    static void writeByte(byte[] bytes) 
+//    { 
+//        try { 
+//  
+//            // Initialize a pointer 
+//            // in file using OutputStream 
+//            OutputStream 
+//                os 
+//                = new FileOutputStream(file); 
+//  
+//            // Starts writing the bytes in it 
+//            os.write(bytes); 
+//            System.out.println("Successfully"
+//                               + " byte inserted"); 
+//  
+//            // Close the file 
+//            os.close(); 
+//        } 
+//  
+//        catch (Exception e) { 
+//            System.out.println("Exception: " + e); 
+//        } 
+//    } 
+//	
 	
 	
 

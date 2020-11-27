@@ -225,4 +225,5 @@ public class Master extends UnicastRemoteObject
 		// TODO Auto-generated method stub
 
 	}
+	
 }
