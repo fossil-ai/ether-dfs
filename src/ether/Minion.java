@@ -104,7 +104,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 			
 			//start a new registry on Minion
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
-			jumpLink.registryBind(registry, "ClientMinionLink_" + this.minionID, cm_stub);
+			jumpLink.registryBind2(registry, "ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
 
 		} catch (RemoteException | NotBoundException e) {
