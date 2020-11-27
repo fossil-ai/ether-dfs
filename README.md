@@ -4,9 +4,19 @@
 
 Ether-DFS is a simple distributed filesystem effort for our CS621 class' final project. We make use of Java RMI for RPC interfaces between client, master and minion servers. The filesystem was designed on the assumption that we are only dealing with only several minion servers. 
 
-## Master Server
+## Pre-requisites and Instructions
 
-The Java RMI registry sits along with the master server process. Running the MasterServer is essential before doing anything else.
+Ensure each server/machine involved in the cluster can run Java 8.
+
+We make the assumption that each minion server already has a dedicated /tmp folder which serves as the root for each minion file system.
+
+###  Simple Debugging/Testing
+
+1. bash compile.sh 
+2. bash startMaster.sh (on the master-server)
+3. bash startMinion.sh (xN times, on N minion servers)
+4. bash startClient.sh (You can do this locally)
+
 
 ## Accessing Amazon EC2 Instances
 
