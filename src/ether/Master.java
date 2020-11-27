@@ -225,7 +225,7 @@ public class Master extends UnicastRemoteObject
 		// TODO Auto-generated method stub
 
 	}
-	/*
+	
 	public void registryBind(Registry registry, String name, MasterMinionLink link) {
 		try {
 			registry.bind(name,link);
@@ -243,5 +243,5 @@ public class Master extends UnicastRemoteObject
 			e.printStackTrace();
 		}
 	}
-	*/
+	
 }
