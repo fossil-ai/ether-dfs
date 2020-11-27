@@ -6,12 +6,12 @@ The public IP changes everytime the VM starts. Private does not change.
 public IP:54.224.113.140 (connect with own pc)
 private:172.31.33.125 (connect with other VMs)
 
-Master:
+Client:
 i-087d6fa7e0bcdb475
 public IP:3.89.159.148
 private IP:172.31.46.197
 
-Client:
+Master:
 i-0f19e57fb0f9de13e
 public IP: not important, changes everytime reboots
 private:172.31.61.146
