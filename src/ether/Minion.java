@@ -208,5 +208,20 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Min
 		return file;
 	}
 
+	@Override
+	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length-1];
+		String newDirPath = this.directory + append_path + "/" + fileName;
+		File file = new File(newDirPath);
+		locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
+		ReentrantReadWriteLock lock = locks.get(newDirPath);
+		lock.writeLock().lock();
+		file.delete();
+		lock.writeLock().unlock();
+		locks.remove(newDirPath);
+		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+	}
+
 
 }

@@ -17,7 +17,9 @@ public interface ClientMinionLink extends Remote {
 	
 	void createDir(String dirName, FileNode cwd) throws RemoteException;
 
-	File readFile(String dirName, FileNode cwd) throws RemoteException;
+	File readFile(String filename, FileNode cwd) throws RemoteException;
+	
+	void deleteFile(String filename, FileNode cwd) throws RemoteException;
 
 //	void readFile(String filename) throws RemoteException;
 
