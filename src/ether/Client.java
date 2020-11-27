@@ -34,6 +34,20 @@ public class Client {
 
 	public enum ClientOperation {
 		
+
+		RM {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				try {
+					client.minionLink.deleteFile(cmds[1], client.cwdNode);
+					client.updateFileNode();
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		},
+		
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
@@ -187,14 +201,19 @@ public class Client {
 	
 	private void updateFileNode(){
 		try {
-			String cwdPath = this.cwdNode.path;
-			String[] cwdPaths = cwdPath.split("/");
-			String search_path = cwdPaths[2];
-			this.cwdNode = this.masterLink.getRootNode();
-			for(int i = 1;  i <= depth; i++) {
-				this.cwdNode = this.cwdNode.children.get("/tmp/" + search_path);
-				if(i != depth)
-					search_path = search_path + "/" + cwdPaths[2+i];
+			if(depth > 0) {
+				String cwdPath = this.cwdNode.path;
+				String[] cwdPaths = cwdPath.split("/");
+				String search_path = cwdPaths[2];
+				this.cwdNode = this.masterLink.getRootNode();
+				for(int i = 1;  i <= depth; i++) {
+					this.cwdNode = this.cwdNode.children.get("/tmp/" + search_path);
+					if(i != depth)
+						search_path = search_path + "/" + cwdPaths[2+i];
+				}
+			}
+			else {
+				this.cwdNode = this.masterLink.getRootNode();
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
