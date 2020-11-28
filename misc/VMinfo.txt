@@ -1,17 +1,20 @@
 VMs:
 
-Minion:
-i-08630abccc20852a7
-The public IP changes everytime the VM starts. Private does not change.
-public IP:54.224.113.140 (connect with own pc)
-private IP:172.31.46.197 (connect with other VMs)
+Client: i-087d6fa7e0bcdb475
+private IP:  172.31.33.125
 
-Client:
-i-087d6fa7e0bcdb475
-public IP:3.89.159.148
-private IP:172.31.33.125
+Client2: i-035e2ffe45a3fab99
+private IP:  172.31.86.233
 
-Master:
-i-0f19e57fb0f9de13e
-public IP: not important, changes everytime reboots
-private IP:172.31.61.146
+Master: i-0f19e57fb0f9de13e
+private IP:  172.31.61.146
+
+Minion: i-08630abccc20852a7
+private IP:  172.31.46.197 
+
+Minion1: i-0275e1c4b6d203e8b
+private IP:  172.31.82.142
+
+Minion2: i-0f83a3a63638fbf12 
+private IP:  172.31.91.107
+
