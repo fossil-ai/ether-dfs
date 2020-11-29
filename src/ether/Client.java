@@ -184,7 +184,8 @@ public class Client {
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
 			minionRegistry = LocateRegistry.getRegistry(minion2_Addr,port + Integer.parseInt(minionID) + 2);
-			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + port + Integer.parseInt(minionID) + 2); 
+			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + port + Integer.parseInt(minionID) + 2);
+			this.clientMinionStubName = "ClientMinionLink_" + (minionID+1)); 
 			nextMinionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
