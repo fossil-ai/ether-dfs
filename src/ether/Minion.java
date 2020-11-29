@@ -172,6 +172,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	@Override
 	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
+
+		try {
+			System.out.println("write at: " + InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + content.getName();
