@@ -67,12 +67,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("Successfully fetched master-server link stub.");
 
 
-			REG_PORT = reader.IP_PORT.get(ip);
-			System.out.println("Current Minion IP ADDR is " + ip);
 			System.out.println("Creating Java RMI registry for minion as well");
-			LocateRegistry.createRegistry(REG_PORT);
-			System.out.println("Registry instance exported on port: " + (REG_PORT));
-			minionRegistry = LocateRegistry.getRegistry(ip, (REG_PORT));
+			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
+			System.out.println("Registry instance exported on port: " + (REG_PORT + 1 + this.minionID));
+			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, (REG_PORT + 1 + this.minionID));
 			System.out.println("minion registry get");
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);

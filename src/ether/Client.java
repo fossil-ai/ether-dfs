@@ -173,9 +173,6 @@ public class Client {
 			String minion1_Addr = reader.getMinion1Addr();
 			String minion2_Addr = reader.getMinion2Addr();
 			String minion3_Addr = reader.getMinion3Addr();
-			int minion1_Port = reader.getMinion1Port();
-			int minion2_Port = reader.getMinion2Port();
-			int minion3_Port = reader.getMinion3Port();
 			
 			
 			String minionID = masterLink.getRandomMinionID();
