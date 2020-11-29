@@ -177,7 +177,7 @@ public class Client {
 			
 			String minionID = masterLink.getRandomMinionID();
 			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + Integer.parseInt(minionID) + 1 );
-			System.out.println("port is " +  port + Integer.parseInt(minionID) + 1 );
+			System.out.println("address is " minion1_Addr + "port is " +  (port + Integer.parseInt(minionID) + 1 ));
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
