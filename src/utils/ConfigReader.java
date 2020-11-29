@@ -63,7 +63,7 @@ public class ConfigReader {
 		return configs.get("MINION_ADDRESS2");
 	}
 	public String getMinion3Addr() {
-		return configs.get("MINION_ADDRESS2");
+		return configs.get("MINION_ADDRESS3");
 	}
 
 	public int getMinion1Port() {
