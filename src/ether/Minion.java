@@ -187,7 +187,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			minionRegistry = LocateRegistry.getRegistry(reader.getMinion2Addr(), (50903 + 1 + this.minionID));
 			System.out.println("registry get");
 			System.out.println("rebind next");
-			minionRegistry.rebind("MinionMinionLink_" + this.minionID, (MinionMinionLink) UnicastRemoteObject.toStub(this));
+			minionRegistry.rebind("MinionMinionLink_" + this.minionID, UnicastRemoteObject.toStub(this));
 			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
 			try {
 				minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
