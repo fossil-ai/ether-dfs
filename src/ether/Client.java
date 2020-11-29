@@ -181,7 +181,7 @@ public class Client {
 			IP_List[2] = reader.getMinion3Addr();
 	
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(reader.IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
 			System.out.println ( port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
