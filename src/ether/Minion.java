@@ -84,6 +84,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
+			
+
+			minionRegistry.rebind("ClientMinionLink_" + (this.minionID + 1), this);
+			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + (this.minionID+1));
+			minionRegistry.rebind("ClientMinionLink_" + (this.minionID + 2), this);
+			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + (this.minionID+2));
+			
+			
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
