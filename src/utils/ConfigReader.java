@@ -11,7 +11,6 @@ public class ConfigReader {
 
 	private Map<String, String> configs;
 	private BufferedReader reader;
-	public Map<String, Integer> IP_PORT;
 
 
 	public ConfigReader() {
@@ -24,10 +23,6 @@ public class ConfigReader {
 				String[] config = currentLine.split(" ");
 				configs.put(config[0], config[1]);
 			}
-			IP_PORT = new HashMap<String , Integer>();
-			IP_PORT.put(getMinion1Addr(),getMinion1Port() );
-			IP_PORT.put(getMinion2Addr(),getMinion2Port() );
-			IP_PORT.put(getMinion3Addr(),getMinion3Port() );
 			
 
 		} catch (IOException e) {
@@ -66,18 +61,6 @@ public class ConfigReader {
 		return configs.get("MINION_ADDRESS3");
 	}
 
-	public int getMinion1Port() {
-		return Integer.parseInt(configs.get("MINION_PORT1"));
-	}
-
-	public int getMinion2Port() {
-		return Integer.parseInt(configs.get("MINION_PORT2"));
-	}
-
-	public int getMinion3Port() {
-		return Integer.parseInt(configs.get("MINION_PORT3"));
-	}
-
 	public static void main(String[] args) {
 		ConfigReader reader = new ConfigReader();
 		System.out.println(reader.getRegistryPort());
@@ -88,9 +71,5 @@ public class ConfigReader {
 		System.out.println(reader.getMinion1Addr());
 		System.out.println(reader.getMinion2Addr());
 		System.out.println(reader.getMinion3Addr());
-		System.out.println(reader.getMinion1Port());
-		System.out.println(reader.getMinion2Port());
-		System.out.println(reader.getMinion3Port());
-	}
 
 }
