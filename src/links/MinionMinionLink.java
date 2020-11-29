@@ -1,6 +1,11 @@
 package links;
 
+import java.io.File;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+import utils.FileContent;
+import utils.FileNode;
 
 /**
  * @author mohamf1
@@ -10,5 +15,7 @@ import java.rmi.Remote;
  */
 
 public interface MinionMinionLink extends Remote{
+	
+	public File writeFile(FileContent content, FileNode cwd) throws RemoteException;
 
 }

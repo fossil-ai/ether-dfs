@@ -16,6 +16,7 @@ import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 import utils.CommandParser;
+import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
 
@@ -26,7 +27,8 @@ public class Client {
 	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
-
+	ClientMinionLink nextMinionLink;
+	ClientMinionLink nextNextMinionLink;
 	private int clientID;
 	private String clientMasterStubName;
 	private String clientMinionStubName;
@@ -133,6 +135,15 @@ public class Client {
 
 				try {
 					FileContent content = new FileContent(cmds[1]);
+					System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
+					
+					if (client.minionLink.getMemSpace() < 0.2) {
+						System.out.println("not enough space on this minion Server");
+						System.out.println("moving to another minion Server");
+						client.minionLink = client.nextMinionLink;
+						client.nextMinionLink = client.nextNextMinionLink;
+					}
+					
 					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
 					content.delete();
@@ -158,15 +169,49 @@ public class Client {
 			System.out.println("Your assigned ID is: " + this.clientID);
 			masterLink = (ClientMasterLink) masterRegistry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-
+			
+			ConfigReader reader = new ConfigReader();
+			String minion1_Addr = reader.getMinion1Addr();
+			String minion2_Addr = reader.getMinion2Addr();
+			String minion3_Addr = reader.getMinion3Addr();
+			
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(hostname, port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + Integer.parseInt(minionID) + 1);
 			System.out.println ( port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + minionID);
+			
+			
+			// get a different 2nd minion server
+			String nextMinionID =  masterLink.getRandomMinionID();
+			while(nextMinionID == minionID) {
+				nextMinionID = masterLink.getRandomMinionID();
+				System.out.println(nextMinionID);
+			}
+			minionRegistry = LocateRegistry.getRegistry(minion2_Addr, port + Integer.parseInt(nextMinionID) + 1);
+			String tempClientMinionStubName = "ClientMinionLink_" + nextMinionID;
+			System.out.println("BackUp ClientMinion Link is  :" + tempClientMinionStubName);
+			nextMinionLink = (ClientMinionLink) minionRegistry.lookup(tempClientMinionStubName);
+			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + nextMinionID);
+			
 
+			// get a different 3rd minion server
+			String nextNextMinionID = masterLink.getRandomMinionID();
+			while( nextNextMinionID == minionID && nextNextMinionID == nextMinionID) {
+				nextNextMinionID = masterLink.getRandomMinionID();
+				System.out.println(nextNextMinionID);
+			}
+			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, port + Integer.parseInt(nextMinionID) + 1);
+			String tempClientMinionStubName1 = "ClientMinionLink_" + nextNextMinionID;
+			System.out.println("BackUp ClientMinion Link is  :" + tempClientMinionStubName1);
+			nextNextMinionLink = (ClientMinionLink) minionRegistry.lookup(tempClientMinionStubName1);
+			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + nextNextMinionID);
+			
+			
+
+		
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
 			e.printStackTrace();

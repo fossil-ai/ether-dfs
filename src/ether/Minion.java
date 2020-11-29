@@ -80,6 +80,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
+			
+			
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -99,15 +101,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
-		/*
-		 * try { socket = new Socket(IpAddress, myPort); } catch (UnknownHostException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); } catch
-		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * Timer timer = new Timer(); timer.schedule(new TimerTask() {
-		 * 
-		 * @Override public void run() { try { heartBeat(); } catch (IOException e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } ; } }, 0, 1000);
-		 */
 
 	}
 
@@ -130,10 +123,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		heartBeat.writeDouble(getMemSpace());
 	}
 
-	// return free memory space in percentage.
+	// return memory space used in percentage.
 	public double getMemSpace() {
-		File file = new File("/dev/xvda1");
-		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
+		File file = new File("/");
+		return (int)(file.getFreeSpace() / file.getTotalSpace());
+
 	}
 
 	@Override
