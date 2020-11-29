@@ -184,6 +184,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("current minion capacity is "  + getMemSpace());
 			System.out.println("current minion has reached capacity, move to next minion");
 			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+			System.out.println("rebind next");
 			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
 			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
 			try {
@@ -196,6 +197,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			if (minionMinionLink.getMemSpace() < 0.2 )
 			{
 				MinionMinionLink mtom1_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+				System.out.println("rebind next");
 				minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom1_stub);
 				System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
 				try {
@@ -210,7 +212,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 				minionMinionLink.writeFile( content,  cwd);
 			}
 		}
-		else {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
@@ -221,8 +222,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		    e.printStackTrace();
 		}
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		return null;
-		}
 		return null;
 	}
 
