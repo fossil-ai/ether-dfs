@@ -16,6 +16,7 @@ import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 import utils.CommandParser;
+import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
 
@@ -34,6 +35,11 @@ public class Client {
 	private ArrayList<String> currentWorkingDirectory;
 	private FileNode cwdNode;
 	private int depth = 0;
+	ConfigReader reader;
+	int IPListCount = 0;
+
+	public String[] IP_List = new String [3];
+	
 
 	public enum ClientOperation {
 
@@ -132,7 +138,15 @@ public class Client {
 				}
 
 				try {
-					FileContent content = new FileContent(cmds[1]);
+					FileContent content = new FileContent(cmds[1]);					
+					if (client.minionLink.getMemSpace() < 0.2) {
+						System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
+						System.out.println("not enough space on this minion Server");
+						System.out.println("moving to another minion Server");
+						minionRegistry = LocateRegistry.getRegistry(reader.IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
+						
+					}
+					
 					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
 					content.delete();
@@ -159,8 +173,15 @@ public class Client {
 			masterLink = (ClientMasterLink) masterRegistry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
 
+
+			reader = new ConfigReader();
+
+			IP_List[0] = reader.getMinion1Addr();
+			IP_List[1] = reader.getMinion2Addr();
+			IP_List[2] = reader.getMinion3Addr();
+	
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(hostname, port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(reader.IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
 			System.out.println ( port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
