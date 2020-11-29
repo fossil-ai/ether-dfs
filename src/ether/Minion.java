@@ -86,10 +86,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
 			
 
-			minionRegistry.rebind("MinionMinionLink_" + (this.minionID + 1), UnicastRemoteObject.toStub(this));
-			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + (this.minionID+1));
-			minionRegistry.rebind("MinionMinionLink_" + (this.minionID + 2), this);
-			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + (this.minionID+2));
+			minionRegistry.rebind("MinionMinionLink", UnicastRemoteObject.toStub(this));
+			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink");
 			
 			
 
@@ -194,11 +192,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ConfigReader reader = new ConfigReader();
 			minionRegistry = LocateRegistry.getRegistry(reader.getMinion3Addr(), (50903 + 1 + this.minionID));
 			System.out.println("registry get");
-			System.out.println("rebind next");
-			//minionRegistry.rebind("MinionMinionLink_" + this.minionID, (MinionMinionLink) UnicastRemoteObject.toStub(this));
-			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + (this.minionID + 1));
 			try {
-				minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + (this.minionID + 1));
+				minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink");
 			} catch (RemoteException | NotBoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
