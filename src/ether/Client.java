@@ -176,7 +176,7 @@ public class Client {
 			String minion3_Addr = reader.getMinion3Addr();
 			
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, 50905);
 			System.out.println ( port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink";
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
@@ -190,7 +190,7 @@ public class Client {
 				nextMinionID = masterLink.getRandomMinionID();
 				System.out.println("next Minion ID is " + nextMinionID);
 			}
-			minionRegistry = LocateRegistry.getRegistry(minion2_Addr, port + Integer.parseInt(nextMinionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(minion2_Addr, 50906);
 			String tempClientMinionStubName = "ClientMinionLink";
 			System.out.println("BackUp ClientMinion Link is  :" + tempClientMinionStubName);
 			nextMinionLink = (ClientMinionLink) minionRegistry.lookup(tempClientMinionStubName);
@@ -203,7 +203,7 @@ public class Client {
 				nextNextMinionID = masterLink.getRandomMinionID();
 				System.out.println(nextNextMinionID);
 			}
-			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, port + Integer.parseInt(nextMinionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, 50907);
 			String tempClientMinionStubName1 = "ClientMinionLink";
 			System.out.println("BackUp ClientMinion Link is  :" + tempClientMinionStubName1);
 			nextNextMinionLink = (ClientMinionLink) minionRegistry.lookup(tempClientMinionStubName1);

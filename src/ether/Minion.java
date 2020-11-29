@@ -65,20 +65,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("Your assigned ID is: " + this.minionID);
 			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-			
-			InetAddress IP = null;
-			try {
-				IP = InetAddress.getLocalHost();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String minion_Addr = IP.getHostAddress();
-			System.out.println("Current Minion IP ADDR is " + minion_Addr);
+
+
+			REG_PORT = reader.IP_PORT.get(ip);
+			System.out.println("Current Minion IP ADDR is " + ip);
 			System.out.println("Creating Java RMI registry for minion as well");
-			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
-			System.out.println("Registry instance exported on port: " + (REG_PORT + 1 + this.minionID));
-			minionRegistry = LocateRegistry.getRegistry(minion_Addr, (REG_PORT + 1 + this.minionID));
+			LocateRegistry.createRegistry(REG_PORT);
+			System.out.println("Registry instance exported on port: " + (REG_PORT));
+			minionRegistry = LocateRegistry.getRegistry(ip, (REG_PORT));
 			System.out.println("minion registry get");
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
@@ -87,7 +81,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink", cm_stub);
-			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink");
+			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
 			
 			
 
