@@ -136,7 +136,6 @@ public class Client {
 				try {
 					FileContent content = new FileContent(cmds[1]);
 					System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
-					
 					if (client.minionLink.getMemSpace() < 0.2) {
 						System.out.println("not enough space on this minion Server");
 						System.out.println("moving to another minion Server");
@@ -180,25 +179,24 @@ public class Client {
 			
 			
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, minion1_Port);
-			this.clientMinionStubName = "ClientMinionLink";
+			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + Integer.parseInt(minionID) + 1 );
+			System.out.println("port is " +  port + Integer.parseInt(minionID) + 1 );
+			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
-			
-
-			minionRegistry = LocateRegistry.getRegistry(minion2_Addr, minion2_Port);
-			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + minion2_Port); 
+			minionRegistry = LocateRegistry.getRegistry(minion2_Addr,port + Integer.parseInt(minionID) + 2);
+			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + port + Integer.parseInt(minionID) + 2); 
 			nextMinionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
-
+/*
 			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, minion3_Port);
 			System.out.println("minion 3 addr is " + minion3_Addr + "  minion 3 port is " + minion3_Port); 
 			nextNextMinionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
-			
+	*/
 			
 
 		
