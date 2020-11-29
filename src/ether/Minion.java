@@ -185,6 +185,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("current minion has reached capacity, move to next minion");
 			ConfigReader reader = new ConfigReader();
 			minionRegistry = LocateRegistry.getRegistry(reader.getMinion2Addr(), (50903 + 1 + this.minionID));
+			System.out.println("registry get");
 			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
 			System.out.println("rebind next");
 			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
