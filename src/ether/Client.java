@@ -143,7 +143,6 @@ public class Client {
 						System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
 						System.out.println("not enough space on this minion Server");
 						System.out.println("moving to another minion Server");
-						minionRegistry = LocateRegistry.getRegistry(reader.IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
 						
 					}
 					
