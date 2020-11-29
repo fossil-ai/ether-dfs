@@ -85,16 +85,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
 
-			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
-			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
-			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
-			minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
-			
-			MinionMinionLink mtom1_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
-			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom1_stub);
-			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
-			minionMinionLink2 = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
-
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
 		}
@@ -193,9 +183,28 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		{
 			System.out.println("current minion capacity is "  + getMemSpace());
 			System.out.println("current minion has reached capacity, move to next minion");
+			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
+			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
+			try {
+				minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
+			} catch (RemoteException | NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			minionMinionLink.writeFile( content,  cwd);
 			if (minionMinionLink.getMemSpace() < 0.2 )
 			{
+				MinionMinionLink mtom1_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+				minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom1_stub);
+				System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
+				try {
+					minionMinionLink2 = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
+				} catch (RemoteException | NotBoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				System.out.println("current minion capacity is "  + minionMinionLink.getMemSpace());
 				System.out.println("current minion has reached capacity, move to next minion");
 				minionMinionLink.writeFile( content,  cwd);
