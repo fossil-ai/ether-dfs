@@ -1,4 +1,4 @@
-VMs:
+VMs:test
 
 Client: i-087d6fa7e0bcdb475
 private IP:  172.31.33.125
