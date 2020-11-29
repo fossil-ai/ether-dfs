@@ -188,7 +188,7 @@ public class Client {
 			String nextMinionID =  masterLink.getRandomMinionID();
 			while(nextMinionID == minionID) {
 				nextMinionID = masterLink.getRandomMinionID();
-				System.out.println(nextMinionID);
+				System.out.println("next Minion ID is " + nextMinionID);
 			}
 			minionRegistry = LocateRegistry.getRegistry(minion2_Addr, port + Integer.parseInt(nextMinionID) + 1);
 			String tempClientMinionStubName = "ClientMinionLink_" + nextMinionID;
