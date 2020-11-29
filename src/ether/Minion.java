@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import links.MasterMinionLink;
 import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
+import links.MinionMinionLink;
 import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
@@ -40,6 +41,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	private MinionMasterJumpLink jumpLink;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
+	private MinionMinionLink minionMinionLink;
+	private MinionMinionLink minionMinionLink2;
 	private LocalNameSpaceManager nsManager;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 
@@ -81,6 +84,16 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
+
+			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
+			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
+			minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
+			
+			MinionMinionLink mtom1_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom1_stub);
+			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
+			minionMinionLink2 = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -176,6 +189,19 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+		if (getMemSpace() < 0.2)
+		{
+			System.out.println("current minion capacity is "  + getMemSpace());
+			System.out.println("current minion has reached capacity, move to next minion");
+			minionMinionLink.writeFile( content,  cwd);
+			if (minionMinionLink.getMemSpace() < 0.2 )
+			{
+				System.out.println("current minion capacity is "  + minionMinionLink.getMemSpace());
+				System.out.println("current minion has reached capacity, move to next minion");
+				minionMinionLink.writeFile( content,  cwd);
+			}
+		}
+		else {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
@@ -186,6 +212,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		    e.printStackTrace();
 		}
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		return null;
+		}
 		return null;
 	}
 

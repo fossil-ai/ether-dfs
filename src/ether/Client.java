@@ -15,6 +15,7 @@ import java.util.Scanner;
 import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
+import links.MinionMinionLink;
 import utils.CommandParser;
 import utils.ConfigReader;
 import utils.FileContent;
@@ -36,10 +37,6 @@ public class Client {
 	private FileNode cwdNode;
 	private int depth = 0;
 	ConfigReader reader;
-	int IPListCount = 0;
-
-	public String[] IP_List = new String [3];
-	
 
 	public enum ClientOperation {
 
@@ -139,13 +136,6 @@ public class Client {
 
 				try {
 					FileContent content = new FileContent(cmds[1]);					
-					if (client.minionLink.getMemSpace() < 0.2) {
-						System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
-						System.out.println("not enough space on this minion Server");
-						System.out.println("moving to another minion Server");
-						
-					}
-					
 					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
 					content.delete();
@@ -174,18 +164,15 @@ public class Client {
 
 
 			reader = new ConfigReader();
-
-			IP_List[0] = reader.getMinion1Addr();
-			IP_List[1] = reader.getMinion2Addr();
-			IP_List[2] = reader.getMinion3Addr();
 	
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(IP_List[IPListCount], port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(reader.getMinion1Addr(), port + Integer.parseInt(minionID) + 1);
 			System.out.println ( port + Integer.parseInt(minionID) + 1);
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " + minionID);
+			
 
 		} catch (RemoteException | NotBoundException e) {
 			System.err.println("Master Server Broken");
