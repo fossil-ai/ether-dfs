@@ -71,5 +71,5 @@ public class ConfigReader {
 		System.out.println(reader.getMinion1Addr());
 		System.out.println(reader.getMinion2Addr());
 		System.out.println(reader.getMinion3Addr());
-
+	}
 }
