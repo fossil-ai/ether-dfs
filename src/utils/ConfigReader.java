@@ -26,11 +26,8 @@ public class ConfigReader {
 			}
 			IP_PORT = new HashMap<String , Integer>();
 			IP_PORT.put(getMinion1Addr(),getMinion1Port() );
-			System.out.println(getMinion1Addr() + getMinion1Port());
 			IP_PORT.put(getMinion2Addr(),getMinion2Port() );
-			System.out.println(getMinion2Addr() + getMinion2Port());
 			IP_PORT.put(getMinion3Addr(),getMinion3Port() );
-			System.out.println(getMinion3Addr() + getMinion3Port());
 			
 
 		} catch (IOException e) {
