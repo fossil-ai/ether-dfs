@@ -26,6 +26,6 @@ public interface ClientMasterLink extends Remote {
 	
 	FileNode getRootNode() throws RemoteException;
 
-	String getRandomMinionID() throws RemoteException;
+	int getRandomMinionID() throws RemoteException;
 
 }

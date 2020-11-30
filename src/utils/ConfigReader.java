@@ -60,6 +60,15 @@ public class ConfigReader {
 	public String getMinion3Addr() {
 		return configs.get("MINION_ADDRESS3");
 	}
+	public int getMinion1Port() {
+		return Integer.parseInt(configs.get("MINION_PORT1"));
+	}
+	public int getMinion2Port() {
+		return Integer.parseInt(configs.get("MINION_PORT2"));
+	}
+	public int getMinion3Port() {
+		return Integer.parseInt(configs.get("MINION_PORT3"));
+	}
 
 	public static void main(String[] args) {
 		ConfigReader reader = new ConfigReader();

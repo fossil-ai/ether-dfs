@@ -139,12 +139,12 @@ public class Client {
 					System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
 					System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
 					
-				    if (client.minionLink.getMemSpace() < 0.2 ) {
+				    if (client.minionLink.getMemSpace() > 0.8 ) {
 						System.out.println("not enough space on this minion Server");
 						System.out.println("moving to another minion Server");
 						client.minionLink = client.nextMinionLink;
 						client.nextMinionLink = client.nextNextMinionLink;
-						if (client.minionLink.getMemSpace() <0.2) {
+						if (client.minionLink.getMemSpace() > 0.8 ) {
 							System.out.println("not enough space on this minion Server");
 							System.out.println("moving to another minion Server");
 							client.minionLink = client.nextMinionLink;
@@ -181,27 +181,30 @@ public class Client {
 			String minion1_Addr = reader.getMinion1Addr();
 			String minion2_Addr = reader.getMinion2Addr();
 			String minion3_Addr = reader.getMinion3Addr();
+			int minion1_Port = reader.getMinion1Port();
+			int minion2_Port = reader.getMinion2Port();
+			int minion3_Port = reader.getMinion3Port();
 			
 			
-			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + Integer.parseInt(minionID) + 1 );
-			System.out.println("address is " + minion1_Addr + "port is " +  (port + Integer.parseInt(minionID) + 1 ));
+			int minionID = masterLink.getRandomMinionID();
+			minionRegistry = LocateRegistry.getRegistry(minion1_Addr, port + minionID + 1 );
+			System.out.println("address is " + minion1_Addr + "port is " +  (port + minionID + 1 ));
 			//this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			this.clientMinionStubName = "ClientMinionLink";
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
-			minionRegistry = LocateRegistry.getRegistry(minion2_Addr,port + Integer.parseInt(minionID) + 2);
-			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + port + Integer.parseInt(minionID) + 2);
+			minionRegistry = LocateRegistry.getRegistry(minion2_Addr,port + minionID + 2);
+			System.out.println("minion 2 addr is " + minion2_Addr + "  minion 2 port is " + port + minionID + 2);
 			this.clientMinionStubName = "ClientMinionLink"; 
 			//this.clientMinionStubName = "ClientMinionLink_" + (minionID+1); 
 			nextMinionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
 
-			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, port + Integer.parseInt(minionID) + 3);
-			System.out.println("minion 3 addr is " + minion3_Addr + "  minion 3 port is " + port + Integer.parseInt(minionID) + 3); 
+			minionRegistry = LocateRegistry.getRegistry(minion3_Addr, port + minionID + 3);
+			System.out.println("minion 3 addr is " + minion3_Addr + "  minion 3 port is " + port + minionID + 3); 
 			nextNextMinionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
 			System.out.println("Successfully fetched minion link stub - client is connected to Minion " );
 			
