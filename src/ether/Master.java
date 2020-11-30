@@ -37,8 +37,7 @@ import utils.NameSpaceSynchronizer;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 
-public class Master extends UnicastRemoteObject
-		implements MinionMasterLink, ClientMasterLink {
+public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink {
 
 	public String name;
 	public String address;
@@ -48,6 +47,7 @@ public class Master extends UnicastRemoteObject
 	ClientManager clientManager;
 	GlobalNameSpaceManager globalNameSpaceManager;
 	NameSpaceSynchronizer nameSpaceSynchronizer;
+	ConfigReader reader;
 
 	private ServerSocket serverSocket;
 	private Socket socket;
@@ -64,28 +64,17 @@ public class Master extends UnicastRemoteObject
 		this.clientManager = new ClientManager();
 		this.random = new Random();
 
-		/*
-		 * try { serverSocket = new ServerSocket(port);
-		 * System.out.println("server socket started!!!!"); while(true) {
-		 * 
-		 * socket = serverSocket.accept();
-		 * System.out.println("connection established!!!!"); threadServer thread = new
-		 * threadServer(socket); thread.start(); } } catch (IOException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } // include all the minions
-		 * IP address; initialize minions memory space to 1; //
-		 * MinionsList.put("172.31.33.125", 1); MinionsList.put("172.31.46.197", 1.00);
-		 */
-		ConfigReader reader = new ConfigReader();
-		int REG_PORT = reader.getRegistryPort();
-		
+		this.reader = new ConfigReader();
+		int REG_PORT = this.reader.getRegistryPort();
+
 		Registry registry = LocateRegistry.getRegistry(REG_PORT);
-		
+
 		registry.rebind("ClientMasterLink", (ClientMasterLink) UnicastRemoteObject.toStub(this));
 		System.out.println("ClientMasterLink rebind success");
-		
+
 		registry.rebind("MinionMasterLink", (MinionMasterLink) UnicastRemoteObject.toStub(this));
 		System.out.println("MinionMasterLink rebind success");
-		
+
 	}
 
 	public String assignMinionToClient(int clientID) {
@@ -113,9 +102,9 @@ public class Master extends UnicastRemoteObject
 	public int getClientCount() {
 		return this.clientManager.clientsNum();
 	}
-	
+
 	@Override
-	public int connectme() {
+	public int assignID() {
 		this.client_count = this.client_count + 1;
 		return this.client_count;
 	}
@@ -184,17 +173,14 @@ public class Master extends UnicastRemoteObject
 	}
 
 	@Override
-	public int getRandomMinionID() throws RemoteException {
+	public String[] getRandomMinionInfo() throws RemoteException {
+		String[] minionInfo = new String[3]; // Returns MinionID, HOST, PORT
 		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
-		return  randID;
+		minionInfo[0] = Integer.toString(randID);
+		minionInfo[1] = this.reader.getMinionHost(Integer.toString(randID));
+		minionInfo[2] = Integer.toString(this.reader.getMinionPort(Integer.toString(randID)));
+		return minionInfo;
 	}
 
 
-	@Override
-	public void createFile(String filename) throws AccessException, RemoteException, NotBoundException {
-		// TODO Auto-generated method stub
-
-	}
-
-	
 }
