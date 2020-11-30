@@ -52,7 +52,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	private ServerSocket serverSocket;
 	private Socket socket;
 	private int port = 50000;
-	Map<String, Double> MinionsList = new HashMap<String, Double>();
 	private int client_count = 0;
 	Random random;
 
@@ -175,6 +174,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		minionInfo[1] = location.getAddress();
 		minionInfo[2] = Integer.toString(location.getPort());
 		return minionInfo;
+	}
+
+	@Override
+	public List<MinionLocation> getMinionLocations() throws RemoteException {
+		return this.minionManager.getMinionLocations();
 	}
 
 }

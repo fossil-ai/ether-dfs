@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import links.ClientMasterLink;
@@ -19,6 +20,7 @@ import utils.CommandParser;
 import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
+import utils.MinionLocation;
 
 public class Client {
 
@@ -36,6 +38,24 @@ public class Client {
 	ConfigReader reader;
 
 	public enum ClientOperation {
+		
+		LSM {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+				try {
+					List<MinionLocation> list = client.masterLink.getMinionLocations();
+					for(int i = 0; i < list.size(); i++){
+						MinionLocation location = list.get(i);
+						System.out.println("ID:" +location.getId() + "@" + location.getAddress() + ":" + location.getPort());
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		},
 
 		TIME {
 			@Override
