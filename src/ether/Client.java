@@ -148,6 +148,8 @@ public class Client {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						client.minionLink = client.nextMinionLink;
+						client.nextMinionLink = client.nextNextMinionLink;
+						System.out.println("catch !!!!!!!!");
 					}
 					try {
 					    if ( client.minionLink.getMemSpace()  < 0.2 ) {
