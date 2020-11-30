@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,19 +22,15 @@ import org.w3c.dom.Node;
 public class NameSpaceSynchronizer {
 
 	private GlobalNameSpaceManager globalManager;
-	private TreeMap<String, LocalNameSpaceManager> localManagerMap;
+	private TreeMap<String, FileTree> localDirectoryTrees;
 
 	public NameSpaceSynchronizer(GlobalNameSpaceManager globalManager) {
 		this.globalManager = globalManager;
-		this.localManagerMap = new TreeMap<String, LocalNameSpaceManager>();
+		this.localDirectoryTrees = new TreeMap<String, FileTree>();
 	}
 
-	/*
-	 * Ensure the global namespace can see every file and folder
-	 */
-	public void synchronize(String id, LocalNameSpaceManager nsManager) {
-		this.localManagerMap.put(id, nsManager);
-		this.localManagerMap.get(id).buildXMLFromDir();
+	public void update(String id, LocalNameSpaceManager nsManager) {
+		this.localDirectoryTrees.put(id, nsManager.getTreeData());
 	}
 
 	public void buildGlobalNameSpace() {
@@ -71,13 +68,28 @@ public class NameSpaceSynchronizer {
 	}
 
 	private Document buildXMLFromLocalNameSpaces(Document doc) {
-		for (Map.Entry<String, LocalNameSpaceManager> entry : this.localManagerMap.entrySet()) {
+		for (Map.Entry<String, FileTree> entry : this.localDirectoryTrees.entrySet()) {
 			String minionID = entry.getKey();
 			String minionRootDir = "/tmp/minion_" + minionID;
-			doc = walk(entry.getValue().getDoc().getDocumentElement(), doc.getDocumentElement(), doc, minionRootDir);
+			FileTree tree = entry.getValue();
+			Document doc_ = null;
+			try {
+				doc_ = this.extractDocFromByte(tree.getData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			doc = walk(doc_.getDocumentElement(), doc.getDocumentElement(), doc, minionRootDir);
 		}
 		return doc;
 	};
+
+	private Document extractDocFromByte(byte[] data) throws Exception {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		return builder.parse(new ByteArrayInputStream(data));
+	}
 
 	private Document walk(Node localNode, Node globalNode, Document doc, String dirID) {
 		if (localNode.getNodeType() == Node.ELEMENT_NODE && globalNode.getNodeType() == Node.ELEMENT_NODE) {

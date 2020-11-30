@@ -24,9 +24,9 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 
 import links.MasterMinionLink;
-import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import utils.ClientManager;
+import utils.ConfigReader;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
@@ -34,12 +34,11 @@ import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
 import utils.MinionManager;
 import utils.NameSpaceSynchronizer;
-import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 
 public class Master extends UnicastRemoteObject
-		implements MinionMasterLink, ClientMasterLink, ClientMasterJumpLink, MinionMasterJumpLink {
+		implements MinionMasterLink, ClientMasterLink {
 
 	public String name;
 	public String address;
@@ -54,7 +53,7 @@ public class Master extends UnicastRemoteObject
 	private Socket socket;
 	private int port = 50000;
 	Map<String, Double> MinionsList = new HashMap<String, Double>();
-
+	private int client_count = 0;
 	Random random;
 
 	public Master() throws RemoteException {
@@ -76,6 +75,17 @@ public class Master extends UnicastRemoteObject
 		 * IP address; initialize minions memory space to 1; //
 		 * MinionsList.put("172.31.33.125", 1); MinionsList.put("172.31.46.197", 1.00);
 		 */
+		ConfigReader reader = new ConfigReader();
+		int REG_PORT = reader.getRegistryPort();
+		
+		Registry registry = LocateRegistry.getRegistry(REG_PORT);
+		
+		registry.rebind("ClientMasterLink", (ClientMasterLink) UnicastRemoteObject.toStub(this));
+		System.out.println("ClientMasterLink rebind success");
+		
+		registry.rebind("MinionMasterLink", (MinionMasterLink) UnicastRemoteObject.toStub(this));
+		System.out.println("MinionMasterLink rebind success");
+		
 	}
 
 	public String assignMinionToClient(int clientID) {
@@ -102,6 +112,12 @@ public class Master extends UnicastRemoteObject
 	@Override
 	public int getClientCount() {
 		return this.clientManager.clientsNum();
+	}
+	
+	@Override
+	public int connectme() {
+		this.client_count = this.client_count + 1;
+		return this.client_count;
 	}
 
 	public void listenHeartBeat() {
@@ -140,52 +156,6 @@ public class Master extends UnicastRemoteObject
 	}
 
 	@Override
-	public String clientJumpStart(Registry registry) {
-		System.out.println("HEY! Connecting new client...");
-		System.out.println("Looks like there are " + this.getClientCount() + " clients connected to the DFS...");
-		System.out.println("Assigning client with ID: " + this.getClientCount() + 1);
-		int id = this.getClientCount() + 1;
-
-		try {
-			registry.rebind("ClientMasterLink_" + id, (ClientMasterLink) UnicastRemoteObject.toStub(this));
-			System.out.println("ClientMasterLink rebind success");
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return "ClientMasterLink_" + id;
-	}
-
-	@Override
-	public String minionJumpStart(Registry registry) {
-		System.out.println("HEY! Connecting new minion...");
-		System.out.println("Looks like there are " + this.getMinionCount() + " minions connected...");
-		System.out.println("Assigning minion with ID: " + this.getMinionCount());
-		int id = this.getMinionCount();
-
-		try {
-			registry.rebind("MinionMasterLink_" + id, (MinionMasterLink) UnicastRemoteObject.toStub(this));
-		} catch (AccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "MinionMasterLink_" + id;
-	}
-
-	@Override
 	public ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
 		ArrayList<String> listOfFiles = new ArrayList<String>();
 		for (Map.Entry<String, FileNode> entry : cwdNode.children.entrySet()) {
@@ -208,7 +178,7 @@ public class Master extends UnicastRemoteObject
 	@Override
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException {
 		// TODO Auto-generated method stub
-		this.nameSpaceSynchronizer.synchronize(id, nsManager);
+		this.nameSpaceSynchronizer.update(id, nsManager);
 		this.nameSpaceSynchronizer.buildGlobalNameSpace();
 		this.globalNameSpaceManager.rebuildGlobalPath();
 	}
@@ -225,5 +195,6 @@ public class Master extends UnicastRemoteObject
 		// TODO Auto-generated method stub
 
 	}
+
 	
 }

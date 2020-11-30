@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -11,6 +12,8 @@ import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -27,19 +30,20 @@ public class LocalNameSpaceManager implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6719694067564124068L;
-	private String local_ns_filename;
 	private String directory;
 	private String minion_id;
 	private Document doc;
+	private FileTree tree;
+	
 
 	public LocalNameSpaceManager(String directory, String id) {
 		this.directory = directory;
 		this.minion_id = id;
-		this.local_ns_filename = "resources/minion_namespaces/minion_namespace_" + this.minion_id + ".xml";
-		this.buildXMLFromDir();
+		tree = new FileTree(Integer.parseInt(this.minion_id));
+		this.buildTreeFromDir();
 	}
 
-	public void buildXMLFromDir() {
+	public void buildTreeFromDir() {
 
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
@@ -51,14 +55,16 @@ public class LocalNameSpaceManager implements Serializable {
 			rootElement.setIdAttribute("id", true);
 			this.doc.appendChild(rootElement);
 
-			this.walkDirectoryToXML(this.doc, this.directory);
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(this.doc);
-			StreamResult result = new StreamResult(new File(this.local_ns_filename));
+			this.doc = this.walkDirectoryToDoc(this.doc, this.directory);
+			
+			Source source = new DOMSource(this.doc);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			Result result = new StreamResult(out);
+			TransformerFactory factory = TransformerFactory.newInstance();
+			Transformer transformer = factory.newTransformer();
 			transformer.transform(source, result);
-			System.out.println("File saved!");
+			this.tree.setData(out.toByteArray());
+
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,8 +77,12 @@ public class LocalNameSpaceManager implements Serializable {
 		}
 
 	};
+	
+	public FileTree getTreeData() {
+		return this.tree;
+	}
 
-	public Document walkDirectoryToXML(Document doc, String directory) {
+	public Document walkDirectoryToDoc(Document doc, String directory) {
 		try (Stream<Path> filePathStream = Files.walk(Paths.get(directory))) {
 			filePathStream.forEach(filePath -> {
 

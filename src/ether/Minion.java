@@ -17,7 +17,6 @@ import java.net.*;
 import java.nio.file.Files;
 
 import links.MasterMinionLink;
-import links.MinionMasterJumpLink;
 import links.MinionMasterLink;
 import utils.ConfigReader;
 import utils.FileContent;
@@ -37,7 +36,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	private MinionLocation location;
 	private Registry masterRegistry;
 	private Registry minionRegistry;
-	private MinionMasterJumpLink jumpLink;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
 	private LocalNameSpaceManager nsManager;
@@ -52,25 +50,23 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		System.out.println("Registry address is " + REG_ADDR);
 		int REG_PORT = reader.getRegistryPort();
 		System.out.println("Registry port is " + REG_PORT);
-		String masterServerJumpLinkName = reader.getRegistryMinionJumpName();
 
 		try {
 			masterRegistry = LocateRegistry.getRegistry(REG_ADDR, REG_PORT);
 			System.out.println("locate registry success");
-			jumpLink = (MinionMasterJumpLink) masterRegistry.lookup(masterServerJumpLinkName);
-			System.out.println("Successfully fetched master-server jump-link stub for minion.");
-			this.minionMasterStubName = jumpLink.minionJumpStart(masterRegistry);
-			this.minionID = Integer.parseInt(minionMasterStubName.split("_")[1]);
-			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
-			System.out.println("Your assigned ID is: " + this.minionID);
+			
+			this.minionMasterStubName = "MinionMasterLink";
 			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
+			this.minionID = masterLink.getMinionCount();
+			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
+			System.out.println("Your assigned ID is: " + this.minionID);
 			
 			
 			System.out.println("Creating Java RMI registry for minion as well");
 			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
-			System.out.println("Registry instance exported on port: " + (REG_PORT + 1 + this.minionID));
-			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, (REG_PORT + 1 + this.minionID));
+			System.out.println("Registry instance exported on port: " + (REG_PORT + this.minionID));
+			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, (REG_PORT + this.minionID));
 			System.out.println("minion registry get");
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
@@ -111,15 +107,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	}
 
-//	@Override
-//	public void createFile(String fileName) throws IOException {
-//		File file = new File(this.directory + fileName);
-//		locks.putIfAbsent(fileName, new ReentrantReadWriteLock());
-//		ReentrantReadWriteLock lock = locks.get(fileName);
-//		lock.writeLock().lock();
-//		file.createNewFile();
-//		lock.writeLock().unlock();
-//	}
 
 	public MinionLocation getLocation() {
 		return this.location;
@@ -146,6 +133,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		if (!file.exists()) {
 			file.mkdir();
 		}
+		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
 
@@ -171,6 +159,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		file.delete();
 		lock.writeLock().unlock();
 		locks.remove(newDirPath);
+		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
 
@@ -185,6 +174,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
+		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		return null;
 	}

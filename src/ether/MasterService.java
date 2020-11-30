@@ -6,8 +6,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import links.ClientMasterJumpLink;
-import links.MinionMasterJumpLink;
 import utils.ConfigReader;
 
 public class MasterService {
@@ -25,16 +23,6 @@ public class MasterService {
 			try {
 				System.out.println("Launching MasterServer");
 				Master masterServer = new Master();
-				// Bind the remote object's stub in the registry
-				Registry registry = LocateRegistry.getRegistry(REG_PORT);
-
-				ClientMasterJumpLink clientMasterJLStub = (ClientMasterJumpLink) UnicastRemoteObject
-						.toStub(masterServer);
-				registry.rebind(reader.getRegistryClientJumpName(), clientMasterJLStub);
-
-				MinionMasterJumpLink minionMasterJLStub = (MinionMasterJumpLink) UnicastRemoteObject
-						.toStub(masterServer);
-				registry.rebind(reader.getRegistryMinionJumpName(), minionMasterJLStub);
 
 				System.err.println("Ready and running...");
 

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import utils.FileNode;
 
-
 /**
  * @author mohamf1
  *
@@ -21,11 +20,13 @@ public interface ClientMasterLink extends Remote {
 	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
 
 	int getClientCount() throws RemoteException;
-	
+
 	ArrayList<String> listFilesAtCWD(FileNode cwdNode) throws RemoteException;
-	
+
 	FileNode getRootNode() throws RemoteException;
 
 	String getRandomMinionID() throws RemoteException;
+
+	int connectme() throws RemoteException;
 
 }

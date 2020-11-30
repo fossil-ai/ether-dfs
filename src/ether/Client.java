@@ -12,7 +12,6 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import links.ClientMasterJumpLink;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 import utils.CommandParser;
@@ -23,7 +22,6 @@ public class Client {
 
 	Registry masterRegistry;
 	Registry minionRegistry;
-	ClientMasterJumpLink jumpLink;
 	ClientMasterLink masterLink;
 	ClientMinionLink minionLink;
 
@@ -36,6 +34,27 @@ public class Client {
 	private int depth = 0;
 
 	public enum ClientOperation {
+		
+		TIME {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+			}
+		},
+		
+		FIND {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+			}
+		},
+		
+		DU {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+			}
+		},
 
 		RM {
 			@Override
@@ -146,22 +165,20 @@ public class Client {
 		public abstract void executeOp(String[] cmds, Client client);
 	}
 
-	public Client(String hostname, int port, String masterServerJumpLinkName) {
+	public Client(String hostname, int port, String masterServerStubName) {
 		try {
 			masterRegistry = LocateRegistry.getRegistry(hostname, port);
 			System.out.println("host name is " + hostname + "  port is " + port);
-			jumpLink = (ClientMasterJumpLink) masterRegistry.lookup(masterServerJumpLinkName);
-			System.out.println("Successfully fetched master-server jump-link stub.");
-			this.clientMasterStubName = jumpLink.clientJumpStart(masterRegistry);
-			this.clientID = Integer.parseInt(clientMasterStubName.split("_")[1]);
+			this.clientMasterStubName = "ClientMasterLink";
 			System.out.println("Your master-stub access name is: " + this.clientMasterStubName);
-			System.out.println("Your assigned ID is: " + this.clientID);
 			masterLink = (ClientMasterLink) masterRegistry.lookup(this.clientMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-
+			this.clientID = masterLink.connectme();
+			System.out.println("Your ID is: " + this.clientID);
+			
 			String minionID = masterLink.getRandomMinionID();
-			minionRegistry = LocateRegistry.getRegistry(hostname, port + Integer.parseInt(minionID) + 1);
-			System.out.println ( port + Integer.parseInt(minionID) + 1);
+			minionRegistry = LocateRegistry.getRegistry(hostname, port + Integer.parseInt(minionID));
+			System.out.println ( port + Integer.parseInt(minionID));
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println("ClientMinion Link is  :" + this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
