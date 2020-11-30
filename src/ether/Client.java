@@ -136,12 +136,12 @@ public class Client {
 				try {
 					FileContent content = new FileContent(cmds[1]);
 					System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
-				    if (client.minionLink.getMemSpace() < 0.2 ) {
+				    if (client.minionLink.getMemSpace() > 0.8 ) {
 						System.out.println("not enough space on this minion Server");
 						System.out.println("moving to another minion Server");
 						client.minionLink = client.nextMinionLink;
 						client.nextMinionLink = client.nextNextMinionLink;
-						if (client.minionLink.getMemSpace() < 0.2 ) {
+						if (client.minionLink.getMemSpace() > 0.8 ) {
 							System.out.println("current minion mem space is used %" + client.minionLink.getMemSpace());
 							System.out.println("not enough space on this minion Server");
 							System.out.println("moving to another minion Server");
