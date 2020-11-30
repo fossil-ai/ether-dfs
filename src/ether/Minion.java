@@ -68,12 +68,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			System.out.println("Your assigned ID is: " + this.minionID);
 			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
-			
-			
+
+
 			System.out.println("Creating Java RMI registry for minion as well");
 			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
 			System.out.println("Registry instance exported on port: " + (REG_PORT + 1 + this.minionID));
-			//minionRegistry = LocateRegistry.getRegistry(REG_ADDR, (REG_PORT + 1 + this.minionID));
+
 			minionRegistry = LocateRegistry.getRegistry(ip, (REG_PORT + 1 + this.minionID));
 			System.out.println("minion registry get");
 
@@ -87,8 +87,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			
 			minionRegistry.rebind("MinionMinionLink", (MinionMinionLink) UnicastRemoteObject.toStub(this));
 			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink");
-			
-			
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -108,15 +106,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
-		/*
-		 * try { socket = new Socket(IpAddress, myPort); } catch (UnknownHostException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); } catch
-		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * Timer timer = new Timer(); timer.schedule(new TimerTask() {
-		 * 
-		 * @Override public void run() { try { heartBeat(); } catch (IOException e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } ; } }, 0, 1000);
-		 */
 
 	}
 
@@ -142,7 +131,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	// return memory space used in percentage.
 	public double getMemSpace() {
 		File file = new File("/");
-		return (int)(file.getFreeSpace() / file.getTotalSpace());
+		return ((double)file.getFreeSpace() / (double)file.getTotalSpace());
+
 	}
 	@Override
 	public void createDir(String dirName, FileNode cwd) throws RemoteException {
@@ -219,6 +209,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			}
 		}
 		// TODO Auto-generated method stub
+
+		try {
+			System.out.println("write at: " + InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + content.getName();

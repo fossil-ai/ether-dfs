@@ -20,4 +20,5 @@ public interface MinionMinionLink extends Remote{
 	
 	public double getMemSpace() throws RemoteException ;
 
+
 }

@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,6 +11,7 @@ public class ConfigReader {
 
 	private Map<String, String> configs;
 	private BufferedReader reader;
+	
 	public ConfigReader() {
 
 		try {
@@ -20,6 +22,7 @@ public class ConfigReader {
 				String[] config = currentLine.split(" ");
 				configs.put(config[0], config[1]);
 			}
+			
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -56,6 +59,15 @@ public class ConfigReader {
 	public String getMinion3Addr() {
 		return configs.get("MINION_ADDRESS3");
 	}
+	public int getMinion1Port() {
+		return Integer.parseInt(configs.get("MINION_PORT1"));
+	}
+	public int getMinion2Port() {
+		return Integer.parseInt(configs.get("MINION_PORT2"));
+	}
+	public int getMinion3Port() {
+		return Integer.parseInt(configs.get("MINION_PORT3"));
+	}
 
 
 	public static void main(String[] args) {
@@ -69,5 +81,4 @@ public class ConfigReader {
 		System.out.println(reader.getMinion2Addr());
 		System.out.println(reader.getMinion3Addr());
 	}
-
 }

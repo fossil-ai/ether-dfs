@@ -1,6 +1,6 @@
 VMs:test
 
-Client: i-087d6fa7e0bcdb475
+Client: i-08630abccc20852a7 
 private IP:  172.31.33.125
 
 Client2: i-035e2ffe45a3fab99
@@ -9,7 +9,7 @@ private IP:  172.31.86.233
 Master: i-0f19e57fb0f9de13e
 private IP:  172.31.61.146
 
-Minion: i-08630abccc20852a7
+Minion:  i-087d6fa7e0bcdb475
 private IP:  172.31.46.197 
 
 Minion1: i-0275e1c4b6d203e8b
