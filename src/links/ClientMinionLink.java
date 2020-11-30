@@ -22,5 +22,7 @@ public interface ClientMinionLink extends Remote {
 	void deleteFile(String filename, FileNode cwd) throws RemoteException;
 	
 	File writeFile(FileContent fileContent, FileNode cwd) throws RemoteException;
+	
+	double getMemSpace() throws RemoteException;
 
 }

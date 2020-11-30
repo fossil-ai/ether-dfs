@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,7 +11,7 @@ public class ConfigReader {
 
 	private Map<String, String> configs;
 	private BufferedReader reader;
-
+	
 	public ConfigReader() {
 
 		try {
@@ -21,6 +22,7 @@ public class ConfigReader {
 				String[] config = currentLine.split(" ");
 				configs.put(config[0], config[1]);
 			}
+			
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -48,9 +50,25 @@ public class ConfigReader {
 		return Integer.parseInt(configs.get("MINION_NUMS"));
 	}
 
-	public String getMinions() {
-		return configs.get("MINION_ADDRESSES");
+	public String getMinion1Addr() {
+		return configs.get("MINION_ADDRESS1");
 	}
+	public String getMinion2Addr() {
+		return configs.get("MINION_ADDRESS2");
+	}
+	public String getMinion3Addr() {
+		return configs.get("MINION_ADDRESS3");
+	}
+	public int getMinion1Port() {
+		return Integer.parseInt(configs.get("MINION_PORT1"));
+	}
+	public int getMinion2Port() {
+		return Integer.parseInt(configs.get("MINION_PORT2"));
+	}
+	public int getMinion3Port() {
+		return Integer.parseInt(configs.get("MINION_PORT3"));
+	}
+
 
 	public static void main(String[] args) {
 		ConfigReader reader = new ConfigReader();
@@ -59,7 +77,8 @@ public class ConfigReader {
 		System.out.println(reader.getRegistryClientJumpName());
 		System.out.println(reader.getRegistryMinionJumpName());
 		System.out.println(reader.getMinionNum());
-		System.out.println(reader.getMinions());
+		System.out.println(reader.getMinion1Addr());
+		System.out.println(reader.getMinion2Addr());
+		System.out.println(reader.getMinion3Addr());
 	}
-
 }

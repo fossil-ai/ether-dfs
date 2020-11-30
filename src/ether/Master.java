@@ -184,9 +184,9 @@ public class Master extends UnicastRemoteObject
 	}
 
 	@Override
-	public String getRandomMinionID() throws RemoteException {
+	public int getRandomMinionID() throws RemoteException {
 		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
-		return Integer.toString(randID);
+		return  randID;
 	}
 
 

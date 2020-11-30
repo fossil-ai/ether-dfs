@@ -18,6 +18,7 @@ import java.nio.file.Files;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
+import links.MinionMinionLink;
 import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
@@ -38,6 +39,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	private Registry minionRegistry;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
+	private MinionMinionLink minionMinionLink;
+	private MinionMinionLink minionMinionLink2;
 	private LocalNameSpaceManager nsManager;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 
@@ -58,6 +61,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.minionMasterStubName = "MinionMasterLink";
 			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
 			System.out.println("Successfully fetched master-server link stub.");
+
 			this.minionID = masterLink.getMinionCount();
 			System.out.println("Your master-stub access name is: " + this.minionMasterStubName);
 			System.out.println("Your assigned ID is: " + this.minionID);
@@ -67,6 +71,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
 			System.out.println("Registry instance exported on port: " + (REG_PORT + this.minionID));
 			minionRegistry = LocateRegistry.getRegistry(REG_ADDR, (REG_PORT + this.minionID));
+
+
+			System.out.println("Creating Java RMI registry for minion as well");
+			LocateRegistry.createRegistry(REG_PORT + 1 + this.minionID);
+			System.out.println("Registry instance exported on port: " + (REG_PORT + 1 + this.minionID));
+
+			minionRegistry = LocateRegistry.getRegistry(ip, (REG_PORT + 1 + this.minionID));
+
 			System.out.println("minion registry get");
 
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
@@ -76,6 +88,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
+			
+			minionRegistry.rebind("MinionMinionLink", (MinionMinionLink) UnicastRemoteObject.toStub(this));
+			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink");
 
 		} catch (RemoteException | NotBoundException e) {
 			e.printStackTrace();
@@ -95,15 +110,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
-		/*
-		 * try { socket = new Socket(IpAddress, myPort); } catch (UnknownHostException
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); } catch
-		 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * Timer timer = new Timer(); timer.schedule(new TimerTask() {
-		 * 
-		 * @Override public void run() { try { heartBeat(); } catch (IOException e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } ; } }, 0, 1000);
-		 */
 
 	}
 
@@ -117,12 +123,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		heartBeat.writeDouble(getMemSpace());
 	}
 
-	// return free memory space in percentage.
+	// return memory space used in percentage.
 	public double getMemSpace() {
-		File file = new File("/dev/xvda1");
-		return (double) (file.getFreeSpace() / (1024 * 1024)) / (file.getTotalSpace() / (1024 * 1024));
-	}
+		File file = new File("/");
+		return ((double)file.getFreeSpace() / (double)file.getTotalSpace());
 
+	}
 	@Override
 	public void createDir(String dirName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -165,7 +171,48 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+		if (getMemSpace() < 0.2)
+		{
+			System.out.println("current minion capacity is "  + getMemSpace());
+			System.out.println("current minion has reached capacity, move to next minion");
+			ConfigReader reader = new ConfigReader();
+			minionRegistry = LocateRegistry.getRegistry(reader.getMinion3Addr(), (50903 + 2 + this.minionID));
+			System.out.println( (50903 + 2 + this.minionID));
+			System.out.println("registry get");
+			try {
+				minionMinionLink = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink");
+				System.out.println("registry lookup after");
+			} catch (RemoteException | NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			minionMinionLink.writeFile( content,  cwd);
+			if (minionMinionLink.getMemSpace() < 0.2 )
+			{
+				MinionMinionLink mtom1_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
+				System.out.println("rebind next");
+				minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom1_stub);
+				System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
+				try {
+					minionMinionLink2 = (MinionMinionLink) minionRegistry.lookup("MinionMinionLink_" + this.minionID);
+				} catch (RemoteException | NotBoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				System.out.println("current minion capacity is "  + minionMinionLink.getMemSpace());
+				System.out.println("current minion has reached capacity, move to next minion");
+				minionMinionLink2.writeFile( content,  cwd);
+			}
+		}
 		// TODO Auto-generated method stub
+
+		try {
+			System.out.println("write at: " + InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + content.getName();
