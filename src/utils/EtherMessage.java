@@ -3,7 +3,7 @@ package utils;
 import java.io.Serializable;
 
 public class EtherMessage implements Serializable {
-	
+
 	/**
 	 * 
 	 */
@@ -12,11 +12,11 @@ public class EtherMessage implements Serializable {
 	private String destination;
 	private long txid;
 	private long timestamp;
-	
+
 	private String message;
-	
-	public EtherMessage(){
-		
+
+	public EtherMessage() {
+
 	}
 
 	public String getDestination() {

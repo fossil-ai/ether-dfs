@@ -74,23 +74,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 		registry.rebind("MinionMasterLink", (MinionMasterLink) UnicastRemoteObject.toStub(this));
 		System.out.println("MinionMasterLink rebind success");
-
-	}
-
-	public String assignMinionToClient(int clientID) {
-		System.out.println("Master: Assigning minion to client");
-		if (this.minionManager.minionsNum() < 1) {
-			System.out.println("No minion active in the minion manager - are any minions active?");
-			return "FAILED TO ASSIGN";
-		}
-		try {
-			this.minionManager.getMinionMasterInvocation().get(0).addClientToMinion(clientID, null);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		;
-		return "";
 	}
 
 	@Override
@@ -104,9 +87,20 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public int assignID() {
+	public int assignClientID() {
+		/*
+		 * Infinitely increment this - do not worry about looking up the old ID: If the
+		 * client is turned off and logs back on - simply increment and give a new ID.
+		 * This is okay because we will kill the cache anyways so nothing is preserved
+		 * once a client session is dead.
+		 */
 		this.client_count = this.client_count + 1;
 		return this.client_count;
+	}
+
+	@Override
+	public String[] assignMinionInfo(String hostname, String port) {
+		return this.minionManager.getMinionInfo(hostname, port);
 	}
 
 	public void listenHeartBeat() {
@@ -176,11 +170,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public String[] getRandomMinionInfo() throws RemoteException {
 		String[] minionInfo = new String[3]; // Returns MinionID, HOST, PORT
 		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
-		minionInfo[0] = Integer.toString(randID);
-		minionInfo[1] = this.reader.getMinionHost(Integer.toString(randID));
-		minionInfo[2] = Integer.toString(this.reader.getMinionPort(Integer.toString(randID)));
+		MinionLocation location = this.minionManager.getMinionLocations().get(randID);
+		minionInfo[0] = Integer.toString(location.getId());
+		minionInfo[1] = location.getAddress();
+		minionInfo[2] = Integer.toString(location.getPort());
 		return minionInfo;
 	}
-
 
 }

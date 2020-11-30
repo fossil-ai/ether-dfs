@@ -31,7 +31,7 @@ public class FileContent implements Serializable {
 	public void writeByte(String filePath) {
 		File transferredFile = new File(filePath);
 		try {
-			
+
 			OutputStream os = new FileOutputStream(transferredFile);
 			os.write(this.bytes);
 			os.close();
@@ -41,12 +41,12 @@ public class FileContent implements Serializable {
 			System.out.println("Exception: " + e);
 		}
 	}
-	
-	public void delete(){
+
+	public void delete() {
 		this.file.delete();
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return filename;
 	}
 

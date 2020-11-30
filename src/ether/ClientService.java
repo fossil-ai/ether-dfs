@@ -10,7 +10,6 @@ public class ClientService {
 		ConfigReader reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
 		int REG_PORT = reader.getRegistryPort();
-		String MS_JUMPLINKNAME = reader.getRegistryClientJumpName();
 
 		System.out.println("********* ************************** ********");
 		System.out.println("********* ** WELCOME TO ETHER-DFS ** ********");
@@ -26,7 +25,7 @@ public class ClientService {
 		System.out.println("* nano  [file]  - write to file             *");
 		System.out.println("********* ************************* ********");
 
-		Client client = new Client(REG_ADDR, REG_PORT, MS_JUMPLINKNAME);
+		Client client = new Client(REG_ADDR, REG_PORT);
 
 		Scanner scanner = new Scanner(System.in);
 		boolean done = false;

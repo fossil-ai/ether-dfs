@@ -34,7 +34,6 @@ public class LocalNameSpaceManager implements Serializable {
 	private String minion_id;
 	private Document doc;
 	private FileTree tree;
-	
 
 	public LocalNameSpaceManager(String directory, String id) {
 		this.directory = directory;
@@ -56,7 +55,7 @@ public class LocalNameSpaceManager implements Serializable {
 			this.doc.appendChild(rootElement);
 
 			this.doc = this.walkDirectoryToDoc(this.doc, this.directory);
-			
+
 			Source source = new DOMSource(this.doc);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			Result result = new StreamResult(out);
@@ -77,7 +76,7 @@ public class LocalNameSpaceManager implements Serializable {
 		}
 
 	};
-	
+
 	public FileTree getTreeData() {
 		return this.tree;
 	}

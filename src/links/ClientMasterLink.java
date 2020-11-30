@@ -17,16 +17,14 @@ import utils.FileNode;
 
 public interface ClientMasterLink extends Remote {
 
-	void createFile(String filename) throws AccessException, RemoteException, NotBoundException;
-
 	int getClientCount() throws RemoteException;
 
 	ArrayList<String> listFilesAtCWD(FileNode cwdNode) throws RemoteException;
 
 	FileNode getRootNode() throws RemoteException;
 
-	int getRandomMinionID() throws RemoteException;
-
-	int connectme() throws RemoteException;
+	public String[] getRandomMinionInfo() throws RemoteException;
+	
+	int assignClientID() throws RemoteException;
 
 }

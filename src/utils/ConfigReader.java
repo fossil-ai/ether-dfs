@@ -21,7 +21,6 @@ public class ConfigReader {
 			minionConfigs = new TreeMap<String, Map<String, String>>();
 			String currentLine;
 			while ((currentLine = reader.readLine()) != null) {
-				System.out.println(currentLine);
 				String[] config = currentLine.split(" ");
 				if(config[0].equalsIgnoreCase("MINION_ADDRESS_PORT")) {
 					String[] info = config[1].split(",");

@@ -8,42 +8,49 @@ public class MinionLocation implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -3209888687514514650L;
-	
-	private static String address;
-	private String directory;
+
 	private int id;
+	private String address;
+	private int port;
+	private String directory;
+
 	private boolean alive;
 	private double memSpace;
-	
-	public MinionLocation(int id, String address, String directory, boolean alive, double memSpace) {
+
+	public MinionLocation(int id, String address, int port, String directory, boolean alive) {
 		this.id = id;
 		this.address = address;
+		this.port = port;
 		this.directory = directory;
 		this.alive = alive;
-		this.memSpace = memSpace; // init to 0 = space is empty;
+		this.memSpace = 0;
 	}
-	
-	public boolean isAlive(){
+
+	public boolean isAlive() {
 		return alive;
 	}
-	
-	public int getId(){
+
+	public int getId() {
 		return id;
 	}
-	
-	public void setAlive(boolean alive){
+
+	public void setAlive(boolean alive) {
 		this.alive = alive;
 	}
-	
-	public static String getAddress(){
-		return address;
+
+	public String getAddress() {
+		return this.address;
 	}
 	
+	public int getPort() {
+		return this.port;
+	}
+
 	public double getMemSpace() {
 		return memSpace;
 	}
-	
-	public void setMemSpace( double memSpace) {
+
+	public void setMemSpace(double memSpace) {
 		this.memSpace = memSpace;
 	}
 

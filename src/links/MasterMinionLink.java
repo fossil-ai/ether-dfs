@@ -11,6 +11,5 @@ import java.rmi.RemoteException;
  */
 public interface MasterMinionLink extends Remote {
 
-	void addClientToMinion(int id, ClientMinionLink link) throws RemoteException;
 
 }
