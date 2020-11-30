@@ -6,6 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import utils.FileNode;
 import utils.MinionLocation;
@@ -31,4 +32,5 @@ public interface ClientMasterLink extends Remote {
 
 	List<MinionLocation> getMinionLocations() throws RemoteException;
 	
+	TreeMap<String, Integer> getMemoryDistribution() throws RemoteException;
 }

@@ -12,6 +12,8 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import links.ClientMasterLink;
 import links.ClientMinionLink;
@@ -38,22 +40,56 @@ public class Client {
 	ConfigReader reader;
 
 	public enum ClientOperation {
-		
+
+		HELP {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+				System.out.println("*                                           *");
+				System.out.println("* ls            - list files in directory   *");
+				System.out.println("* lsm           - list minion locations     *");
+				System.out.println("* cd    [dir]   - navigate to directory     *");
+				System.out.println("* cat   [file]  - read a file               *");
+				System.out.println("* mkdir [file]  - create a directory        *");
+				System.out.println("* rm    [file]  - delete a file             *");
+				System.out.println("* find  [file]  - find primary minion       *");
+				System.out.println("* time  [file]  - get timestamp             *");
+				System.out.println("* du    [file]  - size of file/dir          *");
+				System.out.println("* nano  [file]  - write to file             *");
+			}
+		},
+
 		LSM {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated
 				try {
 					List<MinionLocation> list = client.masterLink.getMinionLocations();
-					for(int i = 0; i < list.size(); i++){
+					for (int i = 0; i < list.size(); i++) {
 						MinionLocation location = list.get(i);
-						System.out.println("ID:" +location.getId() + "@" + location.getAddress() + ":" + location.getPort());
+						System.out.println(
+								"ID:" + location.getId() + "@" + location.getAddress() + ":" + location.getPort());
 					}
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+			}
+		},
+
+		MEM {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+				try {
+					TreeMap<String, Integer> dist = client.masterLink.getMemoryDistribution();
+					for (Entry<String, Integer> entry : dist.entrySet()) {
+						System.out.println("ID:" + entry.getKey() + " w/ % Allocation: " + entry.getValue());
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		},
 
@@ -205,11 +241,11 @@ public class Client {
 			String minionID = minionInfo[0];
 			String minionHostname = minionInfo[1];
 			String minionPort = minionInfo[2];
-			
+
 			System.out.println("Attempting to connection to minion at registry: " + minionHostname + ":" + minionPort);
-			
+
 			minionRegistry = LocateRegistry.getRegistry(minionHostname, Integer.parseInt(minionPort));
-			
+
 			this.clientMinionStubName = "ClientMinionLink_" + minionID;
 			System.out.println(this.clientMinionStubName);
 			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);

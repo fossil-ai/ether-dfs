@@ -10,6 +10,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -21,6 +22,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import links.MasterMinionLink;
@@ -30,6 +32,7 @@ import utils.ConfigReader;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
+import utils.LoadBalancer;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
 import utils.MinionManager;
@@ -41,18 +44,16 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	public String name;
 	public String address;
+	private int client_count = 0;
 
 	FileManager fileManager;
 	MinionManager minionManager;
 	ClientManager clientManager;
 	GlobalNameSpaceManager globalNameSpaceManager;
 	NameSpaceSynchronizer nameSpaceSynchronizer;
+	LoadBalancer balancer;
 	ConfigReader reader;
 
-	private ServerSocket serverSocket;
-	private Socket socket;
-	private int port = 50000;
-	private int client_count = 0;
 	Random random;
 
 	public Master() throws RemoteException {
@@ -61,6 +62,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.nameSpaceSynchronizer = new NameSpaceSynchronizer(this.globalNameSpaceManager);
 		this.minionManager = new MinionManager();
 		this.clientManager = new ClientManager();
+		this.balancer = new LoadBalancer();
 		this.random = new Random();
 
 		this.reader = new ConfigReader();
@@ -102,40 +104,40 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.getMinionInfo(hostname, port);
 	}
 
-	public void listenHeartBeat() {
-		class threadServer extends Thread {
-			Socket threadSocket;
-			MinionLocation minionLocation;
-
-			public threadServer(Socket threadSocket) {
-				this.threadSocket = threadSocket;
-			}
-
-			public void run() {
-				double percent;
-				String tempAddress;
-				try {
-					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
-					tempAddress = threadSocket.getRemoteSocketAddress().toString();
-					System.out.println("input is " + input + "address is " + tempAddress);
-					if (minionLocation.getAddress() == tempAddress) {
-						minionLocation.setAlive(true);
-						minionLocation.setMemSpace(input.readDouble());
-					} else {
-						System.out.println(minionLocation.getId() + "minions is down, " + minionLocation.getAddress()
-								+ " remove from the list");
-						minionLocation.setAlive(false);
-						minionLocation.setMemSpace(1); // full space, do not write to this server.
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-
-		}
-	}
+//	public void listenHeartBeat() {
+//		class threadServer extends Thread {
+//			Socket threadSocket;
+//			MinionLocation minionLocation;
+//
+//			public threadServer(Socket threadSocket) {
+//				this.threadSocket = threadSocket;
+//			}
+//
+//			public void run() {
+//				double percent;
+//				String tempAddress;
+//				try {
+//					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
+//					tempAddress = threadSocket.getRemoteSocketAddress().toString();
+//					System.out.println("input is " + input + "address is " + tempAddress);
+//					if (minionLocation.getAddress() == tempAddress) {
+//						minionLocation.setAlive(true);
+//						minionLocation.setMemSpace(input.readDouble());
+//					} else {
+//						System.out.println(minionLocation.getId() + "minions is down, " + minionLocation.getAddress()
+//								+ " remove from the list");
+//						minionLocation.setAlive(false);
+//						minionLocation.setMemSpace(1); // full space, do not write to this server.
+//					}
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//
+//			}
+//
+//		}
+//	}
 
 	@Override
 	public ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
@@ -179,6 +181,21 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public List<MinionLocation> getMinionLocations() throws RemoteException {
 		return this.minionManager.getMinionLocations();
+	}
+
+	@Override
+	public void updateMemory(String id, double size) {
+		// TODO Auto-generated method stub
+		this.balancer.updateMemoryStats(id, size);
+	}
+
+	@Override
+	public TreeMap<String, Integer> getMemoryDistribution() throws RemoteException {
+		TreeMap<String, Integer> memInfo = new TreeMap<String, Integer>();
+		for (Entry<String, Integer> entry : this.balancer.getMemDist().entrySet()) {
+			memInfo.put(entry.getKey(), entry.getValue());
+		}
+		return memInfo;
 	}
 
 }

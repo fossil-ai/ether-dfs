@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
@@ -35,6 +37,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public int minionID;
 	public String directory;
 	private MinionLocation location;
+	private long memoryUsed;
 	
 	private Registry masterRegistry;
 	private Registry minionRegistry;
@@ -88,6 +91,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		if (!file.exists()) {
 			file.mkdir();
 		}
+		
+		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
@@ -179,8 +184,41 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		}
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 		return null;
 	}
+	
+	
+	public double sizeofDir(){
+		Path folder = Paths.get(this.directory);
+		double size = 0;
+	    try {
+			size = Files.walk(folder)
+			  .filter(p -> p.toFile().isFile())
+			  .mapToLong(p -> p.toFile().length())
+			  .sum();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return size;
+	}
+	
 
+	@Override
+	public double getSizeOfDir() {
+		Path folder = Paths.get(this.directory);
+		double size = 0;
+	    try {
+			size = Files.walk(folder)
+			  .filter(p -> p.toFile().isFile())
+			  .mapToLong(p -> p.toFile().length())
+			  .sum();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return size;
+	}
 
 }

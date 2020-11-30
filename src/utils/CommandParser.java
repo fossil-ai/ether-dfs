@@ -4,7 +4,7 @@ public class CommandParser {
 
 	enum Command {
 
-		LS(1), CD(2), CAT(2), NANO(2), PWD(1), MKDIR(2), RM(2), FIND(2), DU(2), TIME(2), LSM(1);
+		LS(1), CD(2), CAT(2), NANO(2), PWD(1), MKDIR(2), RM(2), FIND(2), DU(2), TIME(2), LSM(1), MEM(1), HELP(1);
 
 		private int argsNum;
 

@@ -15,7 +15,7 @@ public class MinionLocation implements Serializable {
 	private String directory;
 
 	private boolean alive;
-	private double memSpace;
+	private double memory;
 
 	public MinionLocation(int id, String address, int port, String directory, boolean alive) {
 		this.id = id;
@@ -23,7 +23,7 @@ public class MinionLocation implements Serializable {
 		this.port = port;
 		this.directory = directory;
 		this.alive = alive;
-		this.memSpace = 0;
+		this.memory = 0;
 	}
 
 	public boolean isAlive() {
@@ -46,12 +46,12 @@ public class MinionLocation implements Serializable {
 		return this.port;
 	}
 
-	public double getMemSpace() {
-		return memSpace;
+	public double getMemory() {
+		return memory;
 	}
 
-	public void setMemSpace(double memSpace) {
-		this.memSpace = memSpace;
+	public void setMemory(double memSpace) {
+		this.memory = memSpace;
 	}
 
 }
