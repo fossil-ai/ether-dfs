@@ -129,7 +129,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	// return memory space used in percentage.
 	public double getMemSpace() {
 		File file = new File("/");
-		return ((double)file.getFreeSpace() / (double)file.getTotalSpace())*100;
+		return ((double)file.getFreeSpace() / (double)file.getTotalSpace());
 
 	}
 
