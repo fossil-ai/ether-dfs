@@ -129,7 +129,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		File file = new File("/");
 		System.out.println("free space is " +file.getFreeSpace() );
 		System.out.println("total space  is " +file.getTotalSpace() );
-		return (double)(file.getFreeSpace() / file.getTotalSpace());
+		return (double)(file.getFreeSpace() / file.getTotalSpace())*100;
 
 	}
 
