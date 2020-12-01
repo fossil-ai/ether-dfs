@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,11 +36,13 @@ public class LocalNameSpaceManager implements Serializable {
 	private String minion_id;
 	private Document doc;
 	private FileTree tree;
+	private Map<String, Integer> filesMap;
 
 	public LocalNameSpaceManager(String directory, String id) {
 		this.directory = directory;
 		this.minion_id = id;
 		tree = new FileTree(Integer.parseInt(this.minion_id));
+		filesMap = new TreeMap<String, Integer>();
 		this.buildTreeFromDir();
 	}
 
@@ -80,13 +84,17 @@ public class LocalNameSpaceManager implements Serializable {
 	public FileTree getTreeData() {
 		return this.tree;
 	}
+	
+	public boolean hasFile(String filePath){
+		return this.filesMap.containsKey(filePath);
+	}
 
 	public Document walkDirectoryToDoc(Document doc, String directory) {
 		try (Stream<Path> filePathStream = Files.walk(Paths.get(directory))) {
 			filePathStream.forEach(filePath -> {
 
 				Element parentElement = doc.getElementById(filePath.getParent().toString());
-
+				this.filesMap.put(filePath.toString(), 1);
 				if (Files.isRegularFile(filePath)) {
 					Element fileElement = doc.createElement("file");
 					fileElement.setAttribute("id", filePath.toString());

@@ -104,40 +104,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.getMinionInfo(hostname, port);
 	}
 
-//	public void listenHeartBeat() {
-//		class threadServer extends Thread {
-//			Socket threadSocket;
-//			MinionLocation minionLocation;
-//
-//			public threadServer(Socket threadSocket) {
-//				this.threadSocket = threadSocket;
-//			}
-//
-//			public void run() {
-//				double percent;
-//				String tempAddress;
-//				try {
-//					DataInputStream input = new DataInputStream(threadSocket.getInputStream());
-//					tempAddress = threadSocket.getRemoteSocketAddress().toString();
-//					System.out.println("input is " + input + "address is " + tempAddress);
-//					if (minionLocation.getAddress() == tempAddress) {
-//						minionLocation.setAlive(true);
-//						minionLocation.setMemSpace(input.readDouble());
-//					} else {
-//						System.out.println(minionLocation.getId() + "minions is down, " + minionLocation.getAddress()
-//								+ " remove from the list");
-//						minionLocation.setAlive(false);
-//						minionLocation.setMemSpace(1); // full space, do not write to this server.
-//					}
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//
-//			}
-//
-//		}
-//	}
 
 	@Override
 	public ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
@@ -196,6 +162,19 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			memInfo.put(entry.getKey(), entry.getValue());
 		}
 		return memInfo;
+	}
+
+	@Override
+	public int getFileMinionOwner(String id, String dirPath) throws RemoteException {
+		String minionRootDir = "/tmp/minion_" + id;
+		String globalPath = dirPath.split(minionRootDir)[1];
+		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(globalPath);
+		int randID = ThreadLocalRandom.current().nextInt(0, minionOwners.size());
+		ArrayList<Integer> minionIDsWithFile = new ArrayList<Integer>();
+		for (Entry<String, String> entry : minionOwners.entrySet()) {
+			minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
+		}
+		return minionIDsWithFile.get(randID);
 	}
 
 }

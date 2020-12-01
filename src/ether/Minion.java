@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -41,10 +42,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public String directory;
 	private MinionLocation location;
 	private long memoryUsed;
-	
+
+	ConfigReader reader;
 	private Registry masterRegistry;
 	private Registry minionRegistry;
-	
+
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
 	private LocalNameSpaceManager nsManager;
@@ -54,26 +56,26 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 		System.out.println("Running minion server node on: " + hostname);
 
-		ConfigReader reader = new ConfigReader();
+		this.reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
 		System.out.println("Registry address is " + REG_ADDR);
 		int REG_PORT = reader.getRegistryPort();
 		System.out.println("Registry port is " + REG_PORT);
 
 		try {
-			
+
 			this.connectToMaster(REG_ADDR, REG_PORT);
-			
+
 			String[] minionInfo = masterLink.assignMinionInfo(hostname, port);
 			this.minionID = Integer.parseInt(minionInfo[0]);
 			this.directory = minionInfo[1];
-			
+
 			System.out.println("Creating Java RMI registry for minion as well");
 			LocateRegistry.createRegistry(Integer.parseInt(port));
 			System.out.println("Registry instance exported on port: " + port);
 
 			minionRegistry = LocateRegistry.getRegistry(hostname, Integer.parseInt(port));
-			
+
 			MasterMinionLink mm_stub = (MasterMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("MasterMinionLink_" + this.minionID, mm_stub);
 			System.out.println("the MasterMinion Link is:  " + "MasterMinionLink_" + this.minionID);
@@ -81,11 +83,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			ClientMinionLink cm_stub = (ClientMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("ClientMinionLink_" + this.minionID, cm_stub);
 			System.out.println("the ClientMinion Link is:  " + "ClientMinionLink_" + this.minionID);
-			
+
 			MinionMinionLink mtom_stub = (MinionMinionLink) UnicastRemoteObject.toStub(this);
 			minionRegistry.rebind("MinionMinionLink_" + this.minionID, mtom_stub);
 			System.out.println("the MinionMinion Link is:  " + "MinionMinionLink_" + this.minionID);
-			
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -99,7 +100,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		if (!file.exists()) {
 			file.mkdir();
 		}
-		
+
 		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
@@ -107,8 +108,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
 	}
-	
-	private void connectToMaster(String masterRegAddr, int masterRegPort){
+
+	private void connectToMaster(String masterRegAddr, int masterRegPort) {
 		try {
 			masterRegistry = LocateRegistry.getRegistry(masterRegAddr, masterRegPort);
 			this.minionMasterStubName = "MinionMasterLink";
@@ -122,12 +123,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			e.printStackTrace();
 		}
 	}
-	
 
 	public MinionLocation getLocation() {
 		return this.location;
 	}
-
 
 	@Override
 	public void createDir(String dirName, FileNode cwd) throws RemoteException {
@@ -144,12 +143,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public ArrayList<String> readFile(String fileName, FileNode cwd) throws RemoteException {
+	public ArrayList<String> rerouteReadFile(String fileName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		ArrayList<String> lines = new ArrayList<String>();
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + fileName;
+
 		File file = new File(newDirPath);
 		Scanner scanner;
 		try {
@@ -162,6 +162,45 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+		return lines;
+	}
+
+	@Override
+	public ArrayList<String> readFile(String fileName, FileNode cwd) throws RemoteException {
+		// TODO Auto-generated method stub
+		String[] path = cwd.path.split("tmp");
+		ArrayList<String> lines = new ArrayList<String>();
+		String append_path = path[path.length - 1];
+		String newDirPath = this.directory + append_path + "/" + fileName;
+		
+		if(this.nsManager.hasFile(newDirPath)) {
+			File file = new File(newDirPath);
+			Scanner scanner;
+			try {
+				scanner = new Scanner(file);
+				while (scanner.hasNextLine()) {
+					String data = scanner.nextLine();
+					lines.add(data);
+				}
+				scanner.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			String newMinionID = Integer.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+			String minionMinionLink = "MinionMinionLink_" + newMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(this.reader.getMinionHost(newMinionID), this.reader.getMinionPort(newMinionID));
+			try {
+				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+				lines = mmstub.rerouteReadFile(fileName, cwd);
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		return lines;
 	}
@@ -197,33 +236,25 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 		return null;
 	}
-	
-	
-	public double sizeofDir(){
+
+	public double sizeofDir() {
 		Path folder = Paths.get(this.directory);
 		double size = 0;
-	    try {
-			size = Files.walk(folder)
-			  .filter(p -> p.toFile().isFile())
-			  .mapToLong(p -> p.toFile().length())
-			  .sum();
+		try {
+			size = Files.walk(folder).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return size;
 	}
-	
 
 	@Override
 	public double getSizeOfDir() {
 		Path folder = Paths.get(this.directory);
 		double size = 0;
-	    try {
-			size = Files.walk(folder)
-			  .filter(p -> p.toFile().isFile())
-			  .mapToLong(p -> p.toFile().length())
-			  .sum();
+		try {
+			size = Files.walk(folder).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -236,6 +267,5 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

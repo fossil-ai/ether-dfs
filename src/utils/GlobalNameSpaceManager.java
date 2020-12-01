@@ -2,6 +2,7 @@ package utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,9 +18,10 @@ public class GlobalNameSpaceManager {
 
 	public final String GLOBAL_NS_FILENAME = "resources/globalnamespace.xml";
 	private FileNode root;
+	private Map<String, Integer[]> allFilesMap;
 
 	public GlobalNameSpaceManager() {
-
+	
 	}
 
 	public void rebuildGlobalPath() {
@@ -53,7 +55,7 @@ public class GlobalNameSpaceManager {
 		root = walk(root, null, doc.getDocumentElement().getFirstChild(), "/");
 	}
 
-	private static FileNode walk(FileNode fileNode, FileNode parentNode, Node node, String path) {
+	private FileNode walk(FileNode fileNode, FileNode parentNode, Node node, String path) {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			Element element = (Element) node;
 			if (element.getAttribute("id").equalsIgnoreCase("/tmp")) {
