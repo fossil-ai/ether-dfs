@@ -30,6 +30,7 @@ import utils.FileContent;
 import utils.FileNode;
 import utils.LocalNameSpaceManager;
 import utils.MinionLocation;
+import utils.MinionManager;
 import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, ClientMinionLink, MinionMinionLink {
@@ -51,6 +52,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	private MinionMasterLink masterLink;
 	private LocalNameSpaceManager nsManager;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
+	private MinionManager minionManager;
 
 	public Minion(String hostname, String port) throws RemoteException {
 
@@ -105,7 +107,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
+		this.locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
+		this.minionManager = new MinionManager();
 
 	}
 
@@ -192,7 +195,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		} else {
 			String newMinionID = Integer.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.reader.getMinionHost(newMinionID), this.reader.getMinionPort(newMinionID));
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID), this.minionManager.getMinionPort(newMinionID));
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
 				lines = mmstub.rerouteReadFile(fileName, cwd);

@@ -15,26 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import links.MasterMinionLink;
-import links.MinionMasterLink;
-import links.MinionMinionLink;
 
 public class MinionManager {
 
 	private List<MinionLocation> minionLocations;
-	private List<MasterMinionLink> masterMinionInvocation;
-	private List<MinionMasterLink> minionMasterInvocation;
-	private List<MinionMinionLink> minionMinionInvocation;
 	private Map<String, Integer> idMapping;
+	private Map<Integer, Map<String, String>> minionConnectionInfo;
 	private String minionMetaFile;
 	BufferedReader reader;
 
 	public MinionManager() {
 		this.minionLocations = new ArrayList<MinionLocation>();
-		this.minionMasterInvocation = new ArrayList<MinionMasterLink>();
-		this.minionMinionInvocation = new ArrayList<MinionMinionLink>();
-		this.masterMinionInvocation = new ArrayList<MasterMinionLink>();
 		this.idMapping = new TreeMap<String, Integer>();
+		this.minionConnectionInfo = new TreeMap<Integer, Map<String, String>>();
 		this.minionMetaFile = "resources/minionmeta.conf";
 		this.parseMinionMeta();
 	}
@@ -47,6 +40,10 @@ public class MinionManager {
 			while ((currentLine = reader.readLine()) != null) {
 				String[] split = currentLine.split(" ");
 				this.idMapping.put(split[0], Integer.valueOf(split[1]));
+				Map<String, String> info = new TreeMap<String, String>();
+				info.put("hostname", split[0].split(":")[0]);
+				info.put("port", split[0].split(":")[1]);
+				this.minionConnectionInfo.put(Integer.valueOf(split[1]), info);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -56,7 +53,7 @@ public class MinionManager {
 	}
 
 	public String[] getMinionInfo(String hostname, String port) {
-		String text = hostname + port;
+		String text = hostname + ":" + port;
 		String[] info = new String[2];
 		BufferedWriter bw = null;
 
@@ -74,7 +71,7 @@ public class MinionManager {
 				FileWriter fw;
 				fw = new FileWriter(file, true);
 				bw = new BufferedWriter(fw);
-				if(this.idMapping.size() > 0)
+				if (this.idMapping.size() > 0)
 					fw.write(System.getProperty("line.separator"));
 				bw.write(text + " " + this.idMapping.size());
 			} catch (IOException e) {
@@ -100,6 +97,14 @@ public class MinionManager {
 
 	};
 
+	public String getMinionHost(String id) {
+		return this.minionConnectionInfo.get(Integer.parseInt(id)).get("hostname");
+	}
+
+	public int getMinionPort(String id) {
+		return Integer.parseInt(this.minionConnectionInfo.get(Integer.parseInt(id)).get("port"));
+	}
+
 	public void addMinion(MinionLocation minionLocation) {
 		this.minionLocations.add(minionLocation);
 	}
@@ -121,7 +126,7 @@ public class MinionManager {
 		MinionManager manager = new MinionManager();
 //		manager.getMinionInfo("localhost", "59602");
 //		manager.getMinionInfo("localhost", "59601");
-		for(int i = 0; i < manager.idMapping.size(); i++) {
+		for (int i = 0; i < manager.idMapping.size(); i++) {
 			System.out.println(manager.idMapping.toString());
 		}
 
