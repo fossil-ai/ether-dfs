@@ -16,8 +16,6 @@ import utils.FileNode;
 
 public interface MinionMinionLink extends Remote {
 
-	public File writeFile(FileContent content, FileNode cwd) throws RemoteException;
-
-	public double getMemSpace() throws RemoteException;
+	public File createReplica(FileContent content, FileNode cwd) throws RemoteException;
 
 }

@@ -130,15 +130,13 @@ public class Client {
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
+				ArrayList<String> lines;
 				try {
-					File file = client.minionLink.readFile(cmds[1], client.cwdNode);
-					Scanner scanner = new Scanner(file);
-					while (scanner.hasNextLine()) {
-						String data = scanner.nextLine();
-						System.out.println(data);
+					lines = client.minionLink.readFile(cmds[1], client.cwdNode);
+					for(int i = 0; i < lines.size(); i++) {
+						System.out.println(lines.get(i));
 					}
-					scanner.close();
-				} catch (RemoteException | FileNotFoundException e) {
+				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
