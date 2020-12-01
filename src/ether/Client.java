@@ -103,7 +103,17 @@ public class Client {
 		FIND {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				// TODO Auto-generated
+				try {
+					System.out.println("The file: " + cmds[1] + " is located on the following minions:");
+					ArrayList<Integer> list = client.masterLink.getAllMinionOwners(cmds[1], client.cwdNode);
+					for (int i = 0; i < list.size(); i++) {
+						int minionID = list.get(i);
+						System.out.println("Minion ID: " + minionID);
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		},
 

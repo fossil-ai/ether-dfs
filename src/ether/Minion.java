@@ -49,7 +49,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	private Registry minionRegistry;
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
-	
+
 	private LocalNameSpaceManager nsManager;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	private MinionManager minionManager;
@@ -258,7 +258,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			}
 		}
 	}
-	
+
 	@Override
 	public void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -277,7 +277,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
-		if(this.loadStatus == -1 || this.loadStatus == 0) {
+		if (this.loadStatus == -1 || this.loadStatus == 0) {
 			String[] path = cwd.path.split("tmp");
 			String append_path = path[path.length - 1];
 			String newDirPath = this.directory + append_path + "/" + content.getName();
@@ -289,11 +289,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
-		}
-		else {
+		} else {
 			System.out.println("High load status detected - re-routing file write.");
-			String newMinionID = Integer
-					.toString(this.masterLink.getUnderLoadedMinionID());
+			String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
 			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID),
 					this.minionManager.getMinionPort(newMinionID));
@@ -304,7 +302,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		return null;
 	}
@@ -339,6 +337,5 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

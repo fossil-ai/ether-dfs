@@ -172,8 +172,27 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public int getUnderLoadedMinionID() throws RemoteException {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.balancer.getNonOverloadedMinion();
+	}
+
+	@Override
+	public ArrayList<Integer> getAllMinionOwners(String fileName, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		String globalPath;
+		if(path.length > 1) {
+			globalPath = append_path + "/" + fileName;
+		}
+		else {
+			globalPath = "/" + fileName;
+		}
+		System.out.println(globalPath);
+		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(globalPath);
+		ArrayList<Integer> minionIDsWithFile = new ArrayList<Integer>();
+		for (Entry<String, String> entry : minionOwners.entrySet()) {
+			minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
+		}
+		return minionIDsWithFile;
 	}
 
 }
