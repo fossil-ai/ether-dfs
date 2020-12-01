@@ -1,10 +1,5 @@
 package ether;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -104,7 +99,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.minionManager.getMinionInfo(hostname, port);
 	}
 
-
 	@Override
 	public ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
 		ArrayList<String> listOfFiles = new ArrayList<String>();
@@ -150,9 +144,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public void updateMemory(String id, double size) {
-		// TODO Auto-generated method stub
-		this.balancer.updateMemoryStats(id, size);
+	public int updateMemory(String id, double size) {
+		return this.balancer.updateMemoryStats(id, size);
 	}
 
 	@Override
@@ -175,6 +168,12 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
 		}
 		return minionIDsWithFile.get(randID);
+	}
+
+	@Override
+	public int getUnderLoadedMinionID() throws RemoteException {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

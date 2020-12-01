@@ -10,7 +10,7 @@ public class MinionService {
 
 		String hostname = args[0];
 		String port = args[1];
-		
+
 		try {
 			System.out.println("Launching Minion at: " + InetAddress.getLocalHost().getHostAddress());
 			Minion minion = new Minion(hostname, port);

@@ -133,7 +133,7 @@ public class Client {
 				ArrayList<String> lines;
 				try {
 					lines = client.minionLink.readFile(cmds[1], client.cwdNode);
-					for(int i = 0; i < lines.size(); i++) {
+					for (int i = 0; i < lines.size(); i++) {
 						System.out.println(lines.get(i));
 					}
 				} catch (RemoteException e) {

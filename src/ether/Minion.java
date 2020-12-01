@@ -35,21 +35,21 @@ import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, ClientMinionLink, MinionMinionLink {
 
-	private static int myPort = 50000;
-	private static Socket socket;
-	private static String IpAddress = "172.31.33.125"; // need to configure later. should be the main server address.
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1569010521124125903L;
 	public int minionID;
 	public String directory;
 	private MinionLocation location;
-	private long memoryUsed;
+	private int loadStatus;
 
 	ConfigReader reader;
 	private Registry masterRegistry;
 	private Registry minionRegistry;
-
 	private String minionMasterStubName;
 	private MinionMasterLink masterLink;
+	
 	private LocalNameSpaceManager nsManager;
 	private ConcurrentMap<String, ReentrantReadWriteLock> locks;
 	private MinionManager minionManager;
@@ -103,7 +103,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			file.mkdir();
 		}
 
-		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
@@ -177,8 +177,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		ArrayList<String> lines = new ArrayList<String>();
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + fileName;
-		
-		if(this.nsManager.hasFile(newDirPath)) {
+
+		if (this.nsManager.hasFile(newDirPath)) {
 			File file = new File(newDirPath);
 			Scanner scanner;
 			try {
@@ -193,9 +193,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 				e.printStackTrace();
 			}
 		} else {
-			String newMinionID = Integer.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+			String newMinionID = Integer
+					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID), this.minionManager.getMinionPort(newMinionID));
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID),
+					this.minionManager.getMinionPort(newMinionID));
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
 				lines = mmstub.rerouteReadFile(fileName, cwd);
@@ -203,18 +205,17 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 		return lines;
 	}
-	
-	
+
 	@Override
 	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + fileName;
-	
+
 		File file = new File(newDirPath);
 		locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
 		ReentrantReadWriteLock lock = locks.get(newDirPath);
@@ -225,15 +226,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 	}
-	
 
 	@Override
 	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + fileName;
-		
-		if(this.nsManager.hasFile(newDirPath)) {
+
+		if (this.nsManager.hasFile(newDirPath)) {
 			File file = new File(newDirPath);
 			locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
 			ReentrantReadWriteLock lock = locks.get(newDirPath);
@@ -243,11 +243,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			locks.remove(newDirPath);
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		}
-		else {
-			String newMinionID = Integer.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+		} else {
+			String newMinionID = Integer
+					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID), this.minionManager.getMinionPort(newMinionID));
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID),
+					this.minionManager.getMinionPort(newMinionID));
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
 				mmstub.rerouteDeleteFile(fileName, cwd);
@@ -257,9 +258,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			}
 		}
 	}
-
+	
 	@Override
-	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+	public void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException {
+		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + content.getName();
@@ -271,6 +273,39 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+	}
+
+	@Override
+	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+		if(this.loadStatus == -1 || this.loadStatus == 0) {
+			String[] path = cwd.path.split("tmp");
+			String append_path = path[path.length - 1];
+			String newDirPath = this.directory + append_path + "/" + content.getName();
+			try {
+				content.writeByte(newDirPath);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			this.nsManager.buildTreeFromDir();
+			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+			this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+		}
+		else {
+			System.out.println("High load status detected - re-routing file write.");
+			String newMinionID = Integer
+					.toString(this.masterLink.getUnderLoadedMinionID());
+			String minionMinionLink = "MinionMinionLink_" + newMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID),
+					this.minionManager.getMinionPort(newMinionID));
+			try {
+				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+				mmstub.rerouteWriteFile(content, cwd);
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		return null;
 	}
 

@@ -23,11 +23,13 @@ public interface MinionMasterLink extends Remote {
 
 	public void storeMinionLocation(MinionLocation location) throws RemoteException;
 	
-	public void updateMemory(String id, double size) throws RemoteException;
+	public int updateMemory(String id, double size) throws RemoteException;
 
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException;
 
 	public String[] assignMinionInfo(String hostname, String port) throws RemoteException;
 
 	public int getFileMinionOwner(String id, String newDirPath) throws RemoteException;
+	
+	public int getUnderLoadedMinionID() throws RemoteException;
 }
