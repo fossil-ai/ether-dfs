@@ -21,4 +21,6 @@ public interface MinionMinionLink extends Remote {
 	
 	public ArrayList<String> rerouteReadFile(String fileName, FileNode cwd) throws RemoteException;
 
+	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException;
+
 }

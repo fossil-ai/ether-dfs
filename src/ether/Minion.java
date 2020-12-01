@@ -207,12 +207,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		}
 		return lines;
 	}
-
+	
+	
 	@Override
-	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
+	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String newDirPath = this.directory + append_path + "/" + fileName;
+	
 		File file = new File(newDirPath);
 		locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
 		ReentrantReadWriteLock lock = locks.get(newDirPath);
@@ -222,6 +224,38 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		locks.remove(newDirPath);
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+	}
+	
+
+	@Override
+	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		String newDirPath = this.directory + append_path + "/" + fileName;
+		
+		if(this.nsManager.hasFile(newDirPath)) {
+			File file = new File(newDirPath);
+			locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
+			ReentrantReadWriteLock lock = locks.get(newDirPath);
+			lock.writeLock().lock();
+			file.delete();
+			lock.writeLock().unlock();
+			locks.remove(newDirPath);
+			this.nsManager.buildTreeFromDir();
+			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		}
+		else {
+			String newMinionID = Integer.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+			String minionMinionLink = "MinionMinionLink_" + newMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID), this.minionManager.getMinionPort(newMinionID));
+			try {
+				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+				mmstub.rerouteDeleteFile(fileName, cwd);
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -270,5 +304,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }
