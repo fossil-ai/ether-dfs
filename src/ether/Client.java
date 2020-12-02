@@ -47,6 +47,8 @@ public class Client {
 				// TODO Auto-generated
 				System.out.println("*                                           *");
 				System.out.println("* ls            - list files in directory   *");
+				System.out.println("* pwd           - print the CWD             *");
+				System.out.println("* mem           - print minion memory usage *");
 				System.out.println("* lsm           - list minion locations     *");
 				System.out.println("* cd    [dir]   - navigate to directory     *");
 				System.out.println("* cat   [file]  - read a file               *");
@@ -54,8 +56,8 @@ public class Client {
 				System.out.println("* rm    [file]  - delete a file             *");
 				System.out.println("* find  [file]  - find primary minion       *");
 				System.out.println("* time  [file]  - get timestamp             *");
-				System.out.println("* du    [file]  - size of file/dir          *");
 				System.out.println("* nano  [file]  - write to file             *");
+				System.out.println("* help          - print all commands        *");
 			}
 		},
 		
@@ -122,13 +124,6 @@ public class Client {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-		},
-
-		DU {
-			@Override
-			public void executeOp(String[] cmds, Client client) {
-				// TODO Auto-generated
 			}
 		},
 
