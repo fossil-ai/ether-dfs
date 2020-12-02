@@ -58,6 +58,14 @@ public class Client {
 				System.out.println("* nano  [file]  - write to file             *");
 			}
 		},
+		
+		PWD {
+			@Override
+			public void executeOp(String[] cmds, Client client) {
+				// TODO Auto-generated
+				System.out.println(client.cwdNode.path);
+			}
+		},
 
 		LSM {
 			@Override
