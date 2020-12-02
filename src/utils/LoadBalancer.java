@@ -42,18 +42,20 @@ public class LoadBalancer {
 	
 	// Send back random minionID of under-loaded minion, if not normal loaded minion, if not return -1
 	public int getNonOverloadedMinion(){
-		if(this.loadToMinionMap.get(0).size() > 0){
-			int size = this.loadToMinionMap.get(0).size();
+		System.out.println(this.loadToMinionMap.toString());
+		System.out.println(this.loadStatus.toString());
+		if(this.loadToMinionMap.get(-1).size() > 0){
+			int size = this.loadToMinionMap.get(-1).size();
 			int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
 			int i = 0;
-			for(String id : this.loadToMinionMap.get(0)){
+			for(String id : this.loadToMinionMap.get(-1)){
 			    if (i == item) {
 			    	return Integer.parseInt(id);
 			    }
 			    i++;
 			}
 		}
-		else if(this.loadToMinionMap.get(1).size() > 0){
+		else if(this.loadToMinionMap.get(0).size() > 0){
 			int size = this.loadToMinionMap.get(0).size();
 			int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
 			int i = 0;
@@ -77,25 +79,25 @@ public class LoadBalancer {
 			int percentage = (int) (100.0 * (entry.getValue() / this.globalMemory));
 			this.minionDistMap.put(entry.getKey(), percentage);
 			if(bounds[0] < this.minionDistMap.get(entry.getKey()) && this.minionDistMap.get(entry.getKey()) < bounds[1]){
-				this.loadStatus.put(entry.getKey(), 0);
-				this.loadToMinionMap.get(0).add(entry.getKey());
 				if(this.loadStatus.get(entry.getKey()) != 0){
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
 				}
+				this.loadStatus.put(entry.getKey(), 0);
+				this.loadToMinionMap.get(0).add(entry.getKey());
 			}
 			else if (bounds[0] >= this.minionDistMap.get(entry.getKey())) {
-				this.loadStatus.put(entry.getKey(), -1);
-				this.loadToMinionMap.get(-1).add(entry.getKey());
 				if(this.loadStatus.get(entry.getKey()) != -1){
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
 				}
+				this.loadStatus.put(entry.getKey(), -1);
+				this.loadToMinionMap.get(-1).add(entry.getKey());
 			}
 			else {
-				this.loadStatus.put(entry.getKey(), 1);
-				this.loadToMinionMap.get(1).add(entry.getKey());
 				if(this.loadStatus.get(entry.getKey()) != 1){
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
 				}
+				this.loadStatus.put(entry.getKey(), 1);
+				this.loadToMinionMap.get(1).add(entry.getKey());
 			}
 		}
 	}

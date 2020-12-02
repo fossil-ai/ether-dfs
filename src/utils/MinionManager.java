@@ -98,6 +98,8 @@ public class MinionManager {
 	};
 
 	public String getMinionHost(String id) {
+		System.out.println(id);
+		System.out.println(this.minionConnectionInfo.toString());
 		return this.minionConnectionInfo.get(Integer.parseInt(id)).get("hostname");
 	}
 
