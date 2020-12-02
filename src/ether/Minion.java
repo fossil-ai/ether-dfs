@@ -225,6 +225,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		locks.remove(newDirPath);
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 	}
 
 	@Override
@@ -243,6 +244,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			locks.remove(newDirPath);
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+			this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
 		} else {
 			String newMinionID = Integer
 					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
