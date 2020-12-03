@@ -30,6 +30,9 @@ public class FileContent implements Serializable {
 
 	public void writeByte(String filePath) {
 		File transferredFile = new File(filePath);
+		if (!transferredFile.exists()) {
+			file.mkdir();
+		}
 		try {
 
 			OutputStream os = new FileOutputStream(transferredFile);

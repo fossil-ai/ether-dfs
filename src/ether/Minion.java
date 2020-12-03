@@ -139,7 +139,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String newDirPath = this.directory + append_path + "/" + dirName;
 		File file = new File(newDirPath);
 		if (!file.exists()) {
-			file.mkdir();
+			file.mkdirs();
 		}
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
