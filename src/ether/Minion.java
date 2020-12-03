@@ -346,12 +346,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	public String pathCheck(String path) {
-		System.out.println("path is " + path);
-		if ( !path.substring(path.length()-1, path.length() ).equals("/"))
+		if (!path.substring(path.length() - 1, path.length()).equals("/"))
 			path += "/";
-		System.out.println("path is " + path);
 		return path;
 	}
 }
