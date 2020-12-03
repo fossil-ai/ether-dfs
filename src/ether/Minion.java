@@ -136,7 +136,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + dirName;
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + dirName;
 		File file = new File(newDirPath);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -151,7 +152,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String[] path = cwd.path.split("tmp");
 		ArrayList<String> lines = new ArrayList<String>();
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + fileName;
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
 
 		File file = new File(newDirPath);
 		Scanner scanner;
@@ -176,7 +178,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String[] path = cwd.path.split("tmp");
 		ArrayList<String> lines = new ArrayList<String>();
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + fileName;
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
 
 		if (this.nsManager.hasFile(newDirPath)) {
 			File file = new File(newDirPath);
@@ -214,7 +217,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + fileName;
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
 
 		File file = new File(newDirPath);
 		locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
@@ -232,7 +236,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + fileName;
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
 
 		if (this.nsManager.hasFile(newDirPath)) {
 			File file = new File(newDirPath);
@@ -266,7 +271,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
-		String newDirPath = this.directory + append_path + "/" + content.getName();
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + content.getName();
 		try {
 			content.writeByte(newDirPath);
 		} catch (Exception e) {
@@ -282,7 +288,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		if (this.loadStatus == -1 || this.loadStatus == 0) {
 			String[] path = cwd.path.split("tmp");
 			String append_path = path[path.length - 1];
-			String newDirPath = this.directory + append_path + "/" + content.getName();
+			append_path = pathCheck(append_path);
+			String newDirPath = this.directory + append_path + content.getName();
 			try {
 				content.writeByte(newDirPath);
 			} catch (Exception e) {
@@ -339,5 +346,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	public String pathCheck(String path) {
+		System.out.println("path is " + path);
+		if ( !path.substring(path.length()-1, path.length() ).equals("/"))
+			path += "/";
+		System.out.println("path is " + path);
+		return path;
+	}
 }
