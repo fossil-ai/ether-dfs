@@ -159,6 +159,7 @@ public class Client {
 		LS {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
+				client.updateFileNode();
 				ArrayList<String> files;
 				try {
 					files = client.masterLink.listFilesAtCWD(client.cwdNode);
