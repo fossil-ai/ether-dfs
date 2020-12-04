@@ -22,14 +22,13 @@ public class ConfigReader {
 			String currentLine;
 			while ((currentLine = reader.readLine()) != null) {
 				String[] config = currentLine.split(" ");
-				if(config[0].equalsIgnoreCase("MINION_ADDRESS_PORT")) {
+				if (config[0].equalsIgnoreCase("MINION_ADDRESS_PORT")) {
 					String[] info = config[1].split(",");
 					TreeMap<String, String> minion_info = new TreeMap<String, String>();
 					minion_info.put("minionHost", info[1]);
 					minion_info.put("minionPort", info[2]);
 					this.minionConfigs.put(info[0], minion_info);
-				}
-				else {
+				} else {
 					configs.put(config[0], config[1]);
 				}
 			}
@@ -48,35 +47,33 @@ public class ConfigReader {
 		return configs.get("REG_ADDRESS");
 	}
 
-
 	public int getMinionNum() {
 		return Integer.parseInt(configs.get("MINION_NUMS"));
 	}
-	
+
 	public String getMinionHost(String id) {
 		return this.minionConfigs.get(id).get("minionHost");
 	}
-	
+
 	public int getMinionPort(String id) {
 		return Integer.parseInt(this.minionConfigs.get(id).get("minionPort"));
 	}
-
 
 	public static void main(String[] args) {
 		ConfigReader reader = new ConfigReader();
 		System.out.println(reader.getRegistryPort());
 		System.out.println(reader.getRegistryHost());
 		System.out.println(reader.getMinionNum());
-		
+
 		System.out.println(reader.getMinionHost("0"));
 		System.out.println(reader.getMinionPort("0"));
-		
+
 		System.out.println(reader.getMinionHost("1"));
 		System.out.println(reader.getMinionPort("1"));
-		
+
 		System.out.println(reader.getMinionHost("2"));
 		System.out.println(reader.getMinionPort("2"));
-		
+
 		System.out.println(reader.getMinionHost("3"));
 		System.out.println(reader.getMinionPort("3"));
 	}

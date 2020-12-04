@@ -6,12 +6,12 @@ import java.util.Map;
 
 public class FileManager {
 
-	private Map<String, List<MinionLocation>> fileLocationMap;
-	private Map<String, MinionLocation> filePrimaryMinionMap;
+	private Map<String, List<MinionInfo>> fileLocationMap;
+	private Map<String, MinionInfo> filePrimaryMinionMap;
 
 	public FileManager() {
-		this.fileLocationMap = new HashMap<String, List<MinionLocation>>();
-		this.filePrimaryMinionMap = new HashMap<String, MinionLocation>();
+		this.fileLocationMap = new HashMap<String, List<MinionInfo>>();
+		this.filePrimaryMinionMap = new HashMap<String, MinionInfo>();
 	}
 
 	public String getGlobalPath(String filename) {
@@ -20,19 +20,19 @@ public class FileManager {
 	}
 
 	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex,
-			List<MinionLocation> minionLocations) {
+			List<MinionInfo> minionLocations) {
 		filePrimaryMinionMap.put(filename, minionLocations.get(primaryMinionIndex));
 	}
 
-	public void assignSelectedMinionsToFile(String filename, List<MinionLocation> selectedMinions) {
+	public void assignSelectedMinionsToFile(String filename, List<MinionInfo> selectedMinions) {
 		fileLocationMap.put(filename, selectedMinions);
 	}
 
-	public MinionLocation getPrimaryFileLocation(String fileName) {
+	public MinionInfo getPrimaryFileLocation(String fileName) {
 		return filePrimaryMinionMap.get(fileName);
 	}
 
-	public List<MinionLocation> getAllFileLocation(String fileName) {
+	public List<MinionInfo> getAllFileLocation(String fileName) {
 		return fileLocationMap.get(fileName);
 	}
 

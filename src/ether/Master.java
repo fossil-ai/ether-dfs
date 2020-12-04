@@ -22,14 +22,13 @@ import java.util.TreeSet;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
-import utils.ClientManager;
 import utils.ConfigReader;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
 import utils.LoadBalancer;
 import utils.LocalNameSpaceManager;
-import utils.MinionLocation;
+import utils.MinionInfo;
 import utils.MinionManager;
 import utils.NameSpaceSynchronizer;
 import links.ClientMasterLink;
@@ -43,7 +42,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	FileManager fileManager;
 	MinionManager minionManager;
-	ClientManager clientManager;
 	GlobalNameSpaceManager globalNameSpaceManager;
 	NameSpaceSynchronizer nameSpaceSynchronizer;
 	LoadBalancer balancer;
@@ -56,7 +54,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.globalNameSpaceManager = new GlobalNameSpaceManager();
 		this.nameSpaceSynchronizer = new NameSpaceSynchronizer(this.globalNameSpaceManager);
 		this.minionManager = new MinionManager();
-		this.clientManager = new ClientManager();
 		this.balancer = new LoadBalancer();
 		this.random = new Random();
 
@@ -78,11 +75,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public synchronized int getClientCount() {
-		return this.clientManager.clientsNum();
-	}
-
-	@Override
 	public synchronized int assignClientID() {
 		/*
 		 * Infinitely increment this - do not worry about looking up the old ID: If the
@@ -94,10 +86,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.client_count;
 	}
 
-	@Override
-	public synchronized String[] assignMinionInfo(String hostname, String port) {
-		return this.minionManager.getMinionInfo(hostname, port);
-	}
+//	@Override
+//	public synchronized String[] assignMinionInfo(String hostname, String port) {
+//		return this.minionManager.getMinionInfo(hostname, port);
+//	}
 
 	@Override
 	public synchronized ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
@@ -114,7 +106,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public synchronized void storeMinionLocation(MinionLocation location) throws RemoteException {
+	public synchronized void storeMinionInfo(MinionInfo location) throws RemoteException {
 		// TODO Auto-generated method stub
 		this.minionManager.addMinion(location);
 	}
@@ -131,7 +123,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public synchronized String[] getRandomMinionInfo() throws RemoteException {
 		String[] minionInfo = new String[3]; // Returns MinionID, HOST, PORT
 		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
-		MinionLocation location = this.minionManager.getMinionLocations().get(randID);
+		MinionInfo location = this.minionManager.getMinionLocations().get(randID);
 		minionInfo[0] = Integer.toString(location.getId());
 		minionInfo[1] = location.getAddress();
 		minionInfo[2] = Integer.toString(location.getPort());
@@ -139,7 +131,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public synchronized List<MinionLocation> getMinionLocations() throws RemoteException {
+	public synchronized List<MinionInfo> getMinionLocations() throws RemoteException {
 		return this.minionManager.getMinionLocations();
 	}
 
@@ -180,10 +172,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		String globalPath;
-		if(path.length > 1) {
+		if (path.length > 1) {
 			globalPath = append_path + "/" + fileName;
-		}
-		else {
+		} else {
 			globalPath = "/" + fileName;
 		}
 		System.out.println(globalPath);
@@ -198,6 +189,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public synchronized boolean doesFileExist(String path) throws RemoteException {
 		return this.nameSpaceSynchronizer.fileExists(path);
+	}
+
+	@Override
+	public MinionInfo getMinionInfo(String id) throws RemoteException {
+		return null;
 	}
 
 }

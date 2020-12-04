@@ -22,7 +22,7 @@ import utils.CommandParser;
 import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
-import utils.MinionLocation;
+import utils.MinionInfo;
 
 public class Client {
 
@@ -74,9 +74,9 @@ public class Client {
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated
 				try {
-					List<MinionLocation> list = client.masterLink.getMinionLocations();
+					List<MinionInfo> list = client.masterLink.getMinionLocations();
 					for (int i = 0; i < list.size(); i++) {
-						MinionLocation location = list.get(i);
+						MinionInfo location = list.get(i);
 						System.out.println(
 								"ID:" + location.getId() + "@" + location.getAddress() + ":" + location.getPort());
 					}
@@ -211,7 +211,7 @@ public class Client {
 				String filename = client.cwdNode.path + "/" + cmds[1];
 				filename = filename.split("tmp")[1];
 				System.out.println(filename);
-				
+
 				try {
 					if (client.masterLink.doesFileExist(filename)) {
 						System.out.println("Already exists.");
@@ -222,8 +222,8 @@ public class Client {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					} 
-					
+					}
+
 					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);

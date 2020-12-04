@@ -21,7 +21,7 @@ public class GlobalNameSpaceManager {
 	private Map<String, Integer[]> allFilesMap;
 
 	public GlobalNameSpaceManager() {
-	
+
 	}
 
 	public void rebuildGlobalPath() {

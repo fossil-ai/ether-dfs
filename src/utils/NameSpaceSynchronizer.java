@@ -35,8 +35,8 @@ public class NameSpaceSynchronizer {
 	public void update(String id, LocalNameSpaceManager nsManager) {
 		this.localDirectoryTrees.put(id, nsManager.getTreeData());
 	}
-	
-	public TreeMap<String, String> getMinionOwners(String path){
+
+	public TreeMap<String, String> getMinionOwners(String path) {
 		return this.allFilesMap.get(path);
 	}
 
@@ -73,7 +73,7 @@ public class NameSpaceSynchronizer {
 		}
 
 	}
-	
+
 	public boolean fileExists(String filename) {
 		System.out.println(this.allFilesMap.toString());
 		return this.allFilesMap.containsKey(filename);
@@ -113,22 +113,21 @@ public class NameSpaceSynchronizer {
 				element = doc.createElement("folder");
 
 			String localFileID = ((Element) localNode).getAttribute("id");
-			
+
 			String[] path = localFileID.split(dirID);
 			String globalFileID = null;
 
 			if (path.length > 1) {
 				globalFileID = localFileID.split(dirID)[1];
-				
-				if(!this.allFilesMap.containsKey(globalFileID)) {
+
+				if (!this.allFilesMap.containsKey(globalFileID)) {
 					TreeMap<String, String> minionIDMap = new TreeMap<String, String>();
 					minionIDMap.put(ID, ID);
 					this.allFilesMap.put(globalFileID, minionIDMap);
-				}
-				else {
+				} else {
 					this.allFilesMap.get(globalFileID).put(ID, ID);
 				}
-				
+
 				if (doc.getElementById(globalFileID) == null) {
 					element.setAttribute("id", globalFileID);
 					element.setIdAttribute("id", true);

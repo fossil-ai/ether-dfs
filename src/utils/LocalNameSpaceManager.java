@@ -84,8 +84,8 @@ public class LocalNameSpaceManager implements Serializable {
 	public FileTree getTreeData() {
 		return this.tree;
 	}
-	
-	public boolean hasFile(String filePath){
+
+	public boolean hasFile(String filePath) {
 		return this.filesMap.containsKey(filePath);
 	}
 
