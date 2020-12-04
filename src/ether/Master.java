@@ -76,20 +76,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public synchronized int assignClientID() {
-		/*
-		 * Infinitely increment this - do not worry about looking up the old ID: If the
-		 * client is turned off and logs back on - simply increment and give a new ID.
-		 * This is okay because we will kill the cache anyways so nothing is preserved
-		 * once a client session is dead.
-		 */
 		this.client_count = this.client_count + 1;
 		return this.client_count;
 	}
 
-//	@Override
-//	public synchronized String[] assignMinionInfo(String hostname, String port) {
-//		return this.minionManager.getMinionInfo(hostname, port);
-//	}
 
 	@Override
 	public synchronized ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
@@ -106,9 +96,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public synchronized void storeMinionInfo(MinionInfo location) throws RemoteException {
+	public synchronized void storeMinionInfo(MinionInfo info) throws RemoteException {
 		// TODO Auto-generated method stub
-		this.minionManager.addMinion(location);
+		this.minionManager.addMinion(info);
 	}
 
 	@Override

@@ -67,10 +67,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 			this.connectToMaster(REG_ADDR, REG_PORT);
 
-//			String[] minionInfo = masterLink.assignMinionInfo(hostname, port);
-//			this.minionID = Integer.parseInt(minionInfo[0]);
-//			this.directory = minionInfo[1];
-
 			System.out.println("Creating Java RMI registry for minion as well");
 			LocateRegistry.createRegistry(Integer.parseInt(port));
 			System.out.println("Registry instance exported on port: " + port);
@@ -386,5 +382,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String newDirPath = this.directory + append_path + fileName;
 		FileContent content = new FileContent(newDirPath);
 		return content;
+	}
+
+	@Override
+	public boolean checkAlive() throws RemoteException {
+		// TODO Auto-generated method stub
+		return true;
 	}
 }

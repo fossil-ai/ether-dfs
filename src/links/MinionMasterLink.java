@@ -22,8 +22,6 @@ public interface MinionMasterLink extends Remote {
 	public void storeMinionInfo(MinionInfo location) throws RemoteException;
 
 	public void synchronize(String id, LocalNameSpaceManager nsManager) throws RemoteException;
-
-//	public String[] assignMinionInfo(String hostname, String port) throws RemoteException;
 	
 	public int updateMemory(String id, double size) throws RemoteException;
 
