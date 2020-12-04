@@ -185,5 +185,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public MinionInfo getMinionInfo(String id) throws RemoteException {
 		return null;
 	}
+	
+	public void pingMinions(){
+		
+	}
 
 }

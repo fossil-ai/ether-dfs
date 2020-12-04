@@ -10,8 +10,6 @@ import java.rmi.RemoteException;
  *
  */
 public interface MasterMinionLink extends Remote {
-
-	double getSizeOfDir() throws RemoteException;
 	
 	boolean checkAlive() throws RemoteException;
 }

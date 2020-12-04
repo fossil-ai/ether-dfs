@@ -99,7 +99,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			file.mkdir();
 		}
 
-		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		this.locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
@@ -221,7 +221,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		locks.remove(newDirPath);
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+		this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 	}
 
 	@Override
@@ -241,7 +241,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			locks.remove(newDirPath);
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-			this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+			this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		} else {
 			String newMinionID = Integer
 					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
@@ -272,7 +272,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		}
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+		this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			}
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-			this.masterLink.updateMemory(Integer.toString(this.minionID), this.getSizeOfDir());
+			this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		} else {
 			System.out.println("High load status detected - re-routing file write.");
 			String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
@@ -320,18 +320,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		return size;
 	}
 
-	@Override
-	public synchronized double getSizeOfDir() {
-		Path folder = Paths.get(this.directory);
-		double size = 0;
-		try {
-			size = Files.walk(folder).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return size;
-	}
 
 	@Override
 	public synchronized File createReplica(FileContent content, FileNode cwd) throws RemoteException {
