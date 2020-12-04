@@ -132,7 +132,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public void createDir(String dirName, FileNode cwd) throws RemoteException {
+	public synchronized void createDir(String dirName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
@@ -147,7 +147,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public ArrayList<String> rerouteReadFile(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized ArrayList<String> rerouteReadFile(String fileName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		ArrayList<String> lines = new ArrayList<String>();
@@ -173,7 +173,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public ArrayList<String> readFile(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized ArrayList<String> readFile(String fileName, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		ArrayList<String> lines = new ArrayList<String>();
@@ -214,7 +214,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
@@ -233,7 +233,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public void deleteFile(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized void deleteFile(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
@@ -267,7 +267,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException {
+	public synchronized void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
@@ -284,8 +284,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public File writeFile(FileContent content, FileNode cwd) throws RemoteException {
-		if (this.loadStatus == -1 || this.loadStatus == 0) {
+	public synchronized File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+		if (this.loadStatus == -1 || this.loadStatus == 0 || this.masterLink.getMinionCount() < 2) {
 			String[] path = cwd.path.split("tmp");
 			String append_path = path[path.length - 1];
 			append_path = pathCheck(append_path);
@@ -329,7 +329,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public double getSizeOfDir() {
+	public synchronized double getSizeOfDir() {
 		Path folder = Paths.get(this.directory);
 		double size = 0;
 		try {
@@ -342,7 +342,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public File createReplica(FileContent content, FileNode cwd) throws RemoteException {
+	public synchronized File createReplica(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -354,7 +354,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public FileContent getFileContent(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized FileContent getFileContent(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
@@ -384,7 +384,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	}
 
 	@Override
-	public FileContent rerouteGetFileContent(String fileName, FileNode cwd) throws RemoteException {
+	public synchronized FileContent rerouteGetFileContent(String fileName, FileNode cwd) throws RemoteException {
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
