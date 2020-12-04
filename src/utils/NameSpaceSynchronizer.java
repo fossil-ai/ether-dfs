@@ -73,6 +73,11 @@ public class NameSpaceSynchronizer {
 		}
 
 	}
+	
+	public boolean fileExists(String filename) {
+		System.out.println(this.allFilesMap.toString());
+		return this.allFilesMap.containsKey(filename);
+	}
 
 	private Document buildXMLFromLocalNameSpaces(Document doc) {
 		for (Map.Entry<String, FileTree> entry : this.localDirectoryTrees.entrySet()) {

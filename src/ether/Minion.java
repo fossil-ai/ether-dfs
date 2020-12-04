@@ -352,4 +352,44 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			path += "/";
 		return path;
 	}
+
+	@Override
+	public FileContent getFileContent(String fileName, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
+		FileContent content = null;
+		System.out.println(newDirPath);
+		if (this.nsManager.hasFile(newDirPath)) {
+			System.out.println("WE HAVE");
+			content = new FileContent(newDirPath);
+		}
+		else {
+			String newMinionID = Integer
+					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+			String minionMinionLink = "MinionMinionLink_" + newMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(this.minionManager.getMinionHost(newMinionID),
+					this.minionManager.getMinionPort(newMinionID));
+			try {
+				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+				content = mmstub.rerouteGetFileContent(fileName, cwd);
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return content;
+	}
+
+	@Override
+	public FileContent rerouteGetFileContent(String fileName, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + fileName;
+		FileContent content = new FileContent(newDirPath);
+		return content;
+	}
 }

@@ -195,4 +195,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return minionIDsWithFile;
 	}
 
+	@Override
+	public boolean doesFileExist(String path) throws RemoteException {
+		return this.nameSpaceSynchronizer.fileExists(path);
+	}
+
 }

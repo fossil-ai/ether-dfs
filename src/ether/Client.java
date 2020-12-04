@@ -60,7 +60,7 @@ public class Client {
 				System.out.println("* help          - print all commands        *");
 			}
 		},
-		
+
 		PWD {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
@@ -207,28 +207,45 @@ public class Client {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated method stub
+
+				String filename = client.cwdNode.path + "/" + cmds[1];
+				filename = filename.split("tmp")[1];
+				System.out.println(filename);
+				
 				try {
+					if (client.masterLink.doesFileExist(filename)) {
+						System.out.println("Already exists.");
+						FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
+
+						try {
+							content.writeByte(cmds[1]);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} 
+					
 					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
-				} catch (IOException | InterruptedException e) {
+
+					FileContent content = new FileContent(cmds[1]);
+					client.minionLink.writeFile(content, client.cwdNode);
+					client.updateFileNode();
+					content.delete();
+
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (InterruptedException | IOException e) {
+					// TODO Auto-generated catch block
 					System.out.println("exception happened - here's what I know: ");
 					e.printStackTrace();
 					System.exit(-1);
 				}
 
-				try {
-					FileContent content = new FileContent(cmds[1]);
-					client.minionLink.writeFile(content, client.cwdNode);
-					client.updateFileNode();
-					content.delete();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		};
 

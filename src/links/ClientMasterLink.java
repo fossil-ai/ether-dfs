@@ -35,5 +35,7 @@ public interface ClientMasterLink extends Remote {
 	TreeMap<String, Integer> getMemoryDistribution() throws RemoteException;
 	
 	ArrayList<Integer> getAllMinionOwners(String fileName, FileNode cwd) throws RemoteException;
+	
+	boolean doesFileExist(String path) throws RemoteException;
 
 }
