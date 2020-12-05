@@ -74,7 +74,7 @@ public class Client {
 			public void executeOp(String[] cmds, Client client) {
 				// TODO Auto-generated
 				try {
-					List<MinionInfo> list = client.masterLink.getMinionLocations();
+					List<MinionInfo> list = client.masterLink.getMinionInfoList();
 					for (int i = 0; i < list.size(); i++) {
 						MinionInfo location = list.get(i);
 						System.out.println(

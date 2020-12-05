@@ -22,82 +22,39 @@ public class MinionManager implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -134611602620742089L;
-	private List<MinionInfo> minionInfoList;
+	private Map<String, MinionInfo> activeMinionMap;
 	private Map<String, MinionInfo> minionInfoMap;
 	private String minionMetaFile;
 	BufferedReader reader;
 
 	public MinionManager() {
-		this.minionInfoList = new ArrayList<MinionInfo>();
+		this.activeMinionMap = new TreeMap<String, MinionInfo>();
 		this.minionInfoMap = new TreeMap<String, MinionInfo>();
-//		this.minionMetaFile = "resources/minionmeta.conf";
-//		this.parseMinionMeta();
+		this.minionMetaFile = "resources/minionmeta.conf";
+		this.parseMinionMeta();
 	}
 
-//	private void parseMinionMeta() {
-//
-//		try {
-//			reader = new BufferedReader(new FileReader(this.minionMetaFile));
-//			String currentLine;
-//			while ((currentLine = reader.readLine()) != null) {
-//				String[] split = currentLine.split(" ");
-//				this.idMapping.put(split[0], Integer.valueOf(split[1]));
-//				Map<String, String> info = new TreeMap<String, String>();
-//				info.put("hostname", split[0].split(":")[0]);
-//				info.put("port", split[0].split(":")[1]);
-//				this.minionConnectionInfo.put(Integer.valueOf(split[1]), info);
-//			}
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//	}
+	private void parseMinionMeta() {
 
-//	public String[] getMinionInfo(String hostname, String port) {
-//		String text = hostname + ":" + port;
-//		String[] info = new String[2];
-//		BufferedWriter bw = null;
-//
-//		if (this.idMapping.containsKey(text)) {
-//			System.out.println("Minion Exists");
-//			info[0] = Integer.toString(this.idMapping.get(text));
-//			info[1] = "/tmp/minion_" + info[0];
-//		} else {
-//
-//			File file = new File(this.minionMetaFile);
-//			try {
-//				if (!file.exists()) {
-//					file.createNewFile();
-//				}
-//				FileWriter fw;
-//				fw = new FileWriter(file, true);
-//				bw = new BufferedWriter(fw);
-//				if (this.idMapping.size() > 0)
-//					fw.write(System.getProperty("line.separator"));
-//				bw.write(text + " " + this.idMapping.size());
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} finally {
-//				try {
-//					if (bw != null)
-//						bw.close();
-//				} catch (Exception ex) {
-//					System.out.println("Error in closing the BufferedWriter" + ex);
-//				}
-//			}
-//
-//			this.idMapping.put(text, this.idMapping.size());
-//			info[0] = Integer.toString(this.idMapping.get(text));
-//			info[1] = "/tmp/minion_" + info[0];
-//
-//			System.out.println("File written Successfully");
-//		}
-//
-//		return info;
-//
-//	};
+		try {
+			reader = new BufferedReader(new FileReader(this.minionMetaFile));
+			String currentLine;
+			while ((currentLine = reader.readLine()) != null) {
+				String[] split = currentLine.split(" ");
+				int id = Integer.parseInt(split[1]);
+				String hostname = split[0].split(":")[0];
+				int port = Integer.parseInt(split[0].split(":")[1]);
+				String directory = "tmp/minion_" + id;
+				boolean alive = false;
+				MinionInfo info = new MinionInfo(id, hostname, port, directory, alive);
+				this.minionInfoMap.put(Integer.toString(id), info);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	public MinionInfo getMinionInfo(String id) {
 		return this.minionInfoMap.get(id);
@@ -118,16 +75,25 @@ public class MinionManager implements Serializable {
 		return info.getPort();
 	}
 
-	public void addMinion(MinionInfo minionLocation) {
-		this.minionInfoList.add(minionLocation);
+	public void addMinion(MinionInfo info) {
+		MinionInfo info_ = this.minionInfoMap.get(Integer.toString(info.getId()));
+		info_.setAlive(true);
+		this.activeMinionMap.put(Integer.toString(info.getId()), info_);
 	}
-
+	
+	public void removeMinion(MinionInfo info) {
+		MinionInfo info_ = this.minionInfoMap.get(Integer.toString(info.getId()));
+		info_.setAlive(false);
+		this.activeMinionMap.remove(Integer.toString(info.getId()));
+	}
+	
 	public int minionsNum() {
-		return this.minionInfoList.size();
+		return this.activeMinionMap.size();
 	}
 
-	public List<MinionInfo> getMinionLocations() {
-		return this.minionInfoList;
+	public List<MinionInfo> getMinionInfoList() {
+		List<MinionInfo> list = new ArrayList<MinionInfo>(this.activeMinionMap.values());
+		return list;
 	}
 
 	public static void main(String[] args) {

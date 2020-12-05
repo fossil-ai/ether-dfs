@@ -113,7 +113,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public synchronized String[] getRandomMinionInfo() throws RemoteException {
 		String[] minionInfo = new String[3]; // Returns MinionID, HOST, PORT
 		int randID = ThreadLocalRandom.current().nextInt(0, this.getMinionCount());
-		MinionInfo location = this.minionManager.getMinionLocations().get(randID);
+		MinionInfo location = this.minionManager.getMinionInfoList().get(randID);
 		minionInfo[0] = Integer.toString(location.getId());
 		minionInfo[1] = location.getAddress();
 		minionInfo[2] = Integer.toString(location.getPort());
@@ -121,8 +121,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public synchronized List<MinionInfo> getMinionLocations() throws RemoteException {
-		return this.minionManager.getMinionLocations();
+	public synchronized List<MinionInfo> getMinionInfoList() throws RemoteException {
+		return this.minionManager.getMinionInfoList();
 	}
 
 	@Override
@@ -183,11 +183,24 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public MinionInfo getMinionInfo(String id) throws RemoteException {
-		return null;
+		return this.getMinionInfo(id);
 	}
 	
 	public void pingMinions(){
-		
+		List<MinionInfo> list = this.minionManager.getMinionInfoList();
+		for(int i = 0; i < list.size(); i++){
+			MinionInfo info = list.get(i);
+			try {
+				Registry registry = LocateRegistry.getRegistry(info.getAddress(), info.getPort());
+				registry.lookup("MasterMinionLink_" + info.getId());
+			} catch (RemoteException | NotBoundException e) {
+				// TODO Auto-generated catch block
+				info.setAlive(false);
+				System.out.println("Pinging Minion " + info.getId() + " failed.");
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 }

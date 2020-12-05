@@ -24,7 +24,7 @@ public interface ClientMasterLink extends Remote {
 
 	ArrayList<Integer> getAllMinionOwners(String fileName, FileNode cwd) throws RemoteException;
 
-	List<MinionInfo> getMinionLocations() throws RemoteException;
+	List<MinionInfo> getMinionInfoList() throws RemoteException;
 
 	FileNode getRootNode() throws RemoteException;
 
