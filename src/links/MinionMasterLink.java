@@ -31,6 +31,8 @@ public interface MinionMasterLink extends Remote {
 	
 	public int getMinionCount() throws RemoteException;
 	
+	public int getMyID(String code) throws RemoteException;
+	
 	public MinionInfo getMinionInfo(String id) throws RemoteException;
 
 }

@@ -39,6 +39,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	 * 
 	 */
 	private static final long serialVersionUID = 1569010521124125903L;
+	public String hostname;
+	public int port;
 	public int minionID;
 	public String directory;
 	private MinionInfo info;
@@ -56,6 +58,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public Minion(String hostname, String port) throws RemoteException {
 
 		System.out.println("Running minion server node on: " + hostname);
+		this.port = Integer.parseInt(port);
+		this.hostname = hostname;
 
 		this.reader = new ConfigReader();
 		String REG_ADDR = reader.getRegistryHost();
@@ -110,6 +114,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			masterRegistry = LocateRegistry.getRegistry(masterRegAddr, masterRegPort);
 			this.minionMasterStubName = "MinionMasterLink";
 			masterLink = (MinionMasterLink) masterRegistry.lookup(this.minionMasterStubName);
+			this.minionID = this.masterLink.getMyID(this.hostname + this.port);
 			System.out.println("Successfully fetched master-server link stub.");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

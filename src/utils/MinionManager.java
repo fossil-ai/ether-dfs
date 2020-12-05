@@ -24,13 +24,15 @@ public class MinionManager implements Serializable {
 	private static final long serialVersionUID = -134611602620742089L;
 	private Map<String, MinionInfo> activeMinionMap;
 	private Map<String, MinionInfo> minionInfoMap;
+	private Map<String, Integer> idMapping;
 	private String minionMetaFile;
 	BufferedReader reader;
 
 	public MinionManager() {
 		this.activeMinionMap = new TreeMap<String, MinionInfo>();
 		this.minionInfoMap = new TreeMap<String, MinionInfo>();
-		this.minionMetaFile = "resources/minionmeta.conf";
+		this.idMapping = new TreeMap<String, Integer>();
+		this.minionMetaFile = "resources/minionmeta_local.conf";
 		this.parseMinionMeta();
 	}
 
@@ -48,12 +50,17 @@ public class MinionManager implements Serializable {
 				boolean alive = false;
 				MinionInfo info = new MinionInfo(id, hostname, port, directory, alive);
 				this.minionInfoMap.put(Integer.toString(id), info);
+				this.idMapping.put(hostname + port, id);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+	
+	public int getID(String code){
+		return this.idMapping.get(code);
 	}
 
 	public MinionInfo getMinionInfo(String id) {

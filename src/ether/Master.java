@@ -203,4 +203,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		}
 	}
 
+	@Override
+	public synchronized int getMyID(String code) throws RemoteException {
+		// TODO Auto-generated method stub
+		return this.minionManager.getID(code);
+	}
+
 }
