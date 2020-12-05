@@ -34,7 +34,7 @@ import utils.NameSpaceSynchronizer;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
 
-public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink {
+public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, Runnable {
 
 	public String name;
 	public String address;
@@ -191,15 +191,15 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		for(int i = 0; i < list.size(); i++){
 			MinionInfo info = list.get(i);
 			try {
+				System.out.println("Ping minion with ID: " + info.getId());
 				Registry registry = LocateRegistry.getRegistry(info.getAddress(), info.getPort());
 				registry.lookup("MasterMinionLink_" + info.getId());
 			} catch (RemoteException | NotBoundException e) {
 				// TODO Auto-generated catch block
 				info.setAlive(false);
 				System.out.println("Pinging Minion " + info.getId() + " failed.");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
-			
 		}
 	}
 
@@ -207,6 +207,13 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public synchronized int getMyID(String code) throws RemoteException {
 		// TODO Auto-generated method stub
 		return this.minionManager.getID(code);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		this.pingMinions();
+		
 	}
 
 }
