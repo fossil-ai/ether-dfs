@@ -112,8 +112,10 @@ public class Client {
 		FIND {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
+
 				if (fileNameCheck(cmds, client) == false)
 					return;
+
 				try {
 					System.out.println("The file: " + cmds[1] + " is located on the following minions:");
 					ArrayList<Integer> list = client.masterLink.getAllMinionOwners(cmds[1], client.cwdNode);
@@ -131,8 +133,10 @@ public class Client {
 		RM {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
+
 				if (fileNameCheck(cmds, client) == false)
 					return;
+
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
 					client.updateFileNode();
@@ -146,8 +150,10 @@ public class Client {
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
+
 				if (fileNameCheck(cmds, client) == false)
 					return;
+
 				ArrayList<String> lines;
 				try {
 					lines = client.minionLink.readFile(cmds[1], client.cwdNode);
@@ -227,6 +233,7 @@ public class Client {
 								e.printStackTrace();
 							}
 						}
+
 
 						ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 						processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
@@ -382,4 +389,5 @@ public class Client {
 		}
 
 	}
+	
 }
