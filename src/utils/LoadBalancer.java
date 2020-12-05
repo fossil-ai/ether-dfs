@@ -40,15 +40,13 @@ public class LoadBalancer {
 		return this.loadStatus.get(id);
 	}
 
-	// Send back random minionID of under-loaded minion, if not normal loaded
-	// minion, if not return -1
+	
 	public int getNonOverloadedMinion() {
 		System.out.println(this.loadToMinionMap.toString());
 		System.out.println(this.loadStatus.toString());
 		if (this.loadToMinionMap.get(-1).size() > 0) {
 			int size = this.loadToMinionMap.get(-1).size();
-			int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than
-													// this
+			int item = new Random().nextInt(size);
 			int i = 0;
 			for (String id : this.loadToMinionMap.get(-1)) {
 				if (i == item) {
@@ -58,8 +56,7 @@ public class LoadBalancer {
 			}
 		} else if (this.loadToMinionMap.get(0).size() > 0) {
 			int size = this.loadToMinionMap.get(0).size();
-			int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than
-													// this
+			int item = new Random().nextInt(size);							
 			int i = 0;
 			for (String id : this.loadToMinionMap.get(0)) {
 				if (i == item) {
@@ -107,6 +104,7 @@ public class LoadBalancer {
 		System.out.println(this.minionMemoryMap.toString());
 		System.out.println(this.minionDistMap.toString());
 		System.out.println(this.loadToMinionMap.toString());
+		System.out.println(this.loadStatus.toString());
 	}
 
 	private void updateGlobal() {

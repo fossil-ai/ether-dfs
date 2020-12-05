@@ -285,8 +285,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		} else {
-			System.out.println("High load status detected - re-routing file write.");
 			String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+			System.out.println("High load status detected - re-routing file write to Minion " + newMinionID);
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
 			Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
 					this.masterLink.getMinionInfo(newMinionID).getPort());
