@@ -234,7 +234,6 @@ public class Client {
 							}
 						}
 
-
 						ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
 						processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
 						processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
@@ -245,7 +244,7 @@ public class Client {
 						client.minionLink.writeFile(content, client.cwdNode);
 						client.updateFileNode();
 						content.delete();
-					}else {
+					} else {
 						System.out.println("Another client is currently leasing this file.");
 					}
 
@@ -389,5 +388,5 @@ public class Client {
 		}
 
 	}
-	
+
 }

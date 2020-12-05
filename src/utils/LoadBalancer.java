@@ -76,6 +76,8 @@ public class LoadBalancer {
 	}
 
 	private void assignStatus() {
+	
+		
 		for (Entry<String, Double> entry : this.minionMemoryMap.entrySet()) {
 			System.out.println("Minion with ID " + entry.getKey() + " has size " + entry.getValue());
 			int percentage = (int) (100.0 * (entry.getValue() / this.globalMemory));
@@ -101,6 +103,10 @@ public class LoadBalancer {
 				this.loadToMinionMap.get(1).add(entry.getKey());
 			}
 		}
+		
+		System.out.println(this.minionMemoryMap.toString());
+		System.out.println(this.minionDistMap.toString());
+		System.out.println(this.loadToMinionMap.toString());
 	}
 
 	private void updateGlobal() {

@@ -103,9 +103,10 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			file.mkdir();
 		}
 
-		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
+
 	}
 
 	private void connectToMaster(String masterRegAddr, int masterRegPort) {
@@ -215,14 +216,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
 		String newDirPath = this.directory + append_path + fileName;
-
 		File file = new File(newDirPath);
-		locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
-		ReentrantReadWriteLock lock = locks.get(newDirPath);
-		lock.writeLock().lock();
 		file.delete();
-		lock.writeLock().unlock();
-		locks.remove(newDirPath);
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
@@ -237,12 +232,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 		if (this.nsManager.hasFile(newDirPath)) {
 			File file = new File(newDirPath);
-			locks.putIfAbsent(newDirPath, new ReentrantReadWriteLock());
-			ReentrantReadWriteLock lock = locks.get(newDirPath);
-			lock.writeLock().lock();
 			file.delete();
-			lock.writeLock().unlock();
-			locks.remove(newDirPath);
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
