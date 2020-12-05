@@ -113,8 +113,6 @@ public class Client {
 		FIND {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
 				try {
 					System.out.println("The file: " + cmds[1] + " is located on the following minions:");
 					ArrayList<Integer> list = client.masterLink.getAllMinionOwners(cmds[1], client.cwdNode);
@@ -132,8 +130,6 @@ public class Client {
 		RM {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
 					client.updateFileNode();
@@ -147,8 +143,6 @@ public class Client {
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
 				ArrayList<String> lines;
 				try {
 					lines = client.minionLink.readFile(cmds[1], client.cwdNode);
@@ -235,11 +229,8 @@ public class Client {
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
-					System.out.println("nano ends");
 					FileContent content = new FileContent(cmds[1]);
-					System.out.println("content ends");
 					client.minionLink.writeFile(content, client.cwdNode);
-					System.out.println("minion link ends");
 					client.updateFileNode();
 					content.delete();
 
@@ -365,27 +356,4 @@ public class Client {
 		}
 	}
 	
-	public static boolean fileNameCheck(String[] cmds, Client client) {			
-		System.out.println("cmds length" + cmds.length);
-		if (cmds[1] == null)
-		{
-			System.out.println("Please enter enough commands");
-			return false;
-		}
-		System.out.println("file name "   + client.cwdNode.path + "/" );
-		try {
-			if (client.masterLink.doesFileExist((client.cwdNode.path + "/" + cmds[1]).split("tmp")[1])) {
-				System.out.println("file exits");
-				return true;
-			}
-			else {
-				System.out.println("Please enter a valid file name");
-				return false;
-				}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			return false;
-		}
-					
-	}
 }
