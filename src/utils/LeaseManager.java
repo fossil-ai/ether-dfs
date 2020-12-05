@@ -25,7 +25,7 @@ public class LeaseManager {
 			}
 		}
 		else {
-			Lease lease = new Lease(globalFileName, ClientID, 60);
+			Lease lease = new Lease(globalFileName, ClientID, 10);
 			this.leases.put(globalFileName, lease);
 			this.scheduler.schedule(this.leases.get(globalFileName), 5, TimeUnit.SECONDS);
 			return true;
