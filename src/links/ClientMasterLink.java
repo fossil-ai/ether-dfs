@@ -35,5 +35,7 @@ public interface ClientMasterLink extends Remote {
 	TreeMap<String, Integer> getMemoryDistribution() throws RemoteException;
 
 	boolean doesFileExist(String path) throws RemoteException;
+	
+	boolean lease(String ClientID, String globalFilename) throws RemoteException;
 
 }

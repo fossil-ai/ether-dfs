@@ -106,7 +106,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		this.locks = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 	}
 
 	private void connectToMaster(String masterRegAddr, int masterRegPort) {
@@ -347,7 +346,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		FileContent content = null;
 		System.out.println(newDirPath);
 		if (this.nsManager.hasFile(newDirPath)) {
-			System.out.println("WE HAVE");
 			content = new FileContent(newDirPath);
 		} else {
 			String newMinionID = Integer

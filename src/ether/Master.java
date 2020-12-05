@@ -26,6 +26,7 @@ import utils.ConfigReader;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
+import utils.LeaseManager;
 import utils.LoadBalancer;
 import utils.LocalNameSpaceManager;
 import utils.MinionInfo;
@@ -42,6 +43,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	FileManager fileManager;
 	MinionManager minionManager;
+	LeaseManager leaseManager;
 	GlobalNameSpaceManager globalNameSpaceManager;
 	NameSpaceSynchronizer nameSpaceSynchronizer;
 	LoadBalancer balancer;
@@ -55,6 +57,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.nameSpaceSynchronizer = new NameSpaceSynchronizer(this.globalNameSpaceManager);
 		this.minionManager = new MinionManager();
 		this.balancer = new LoadBalancer();
+		this.leaseManager = new LeaseManager();
 		this.random = new Random();
 
 		this.reader = new ConfigReader();
@@ -213,6 +216,12 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public void run() {
 		this.pingMinions();
+	}
+
+	@Override
+	public boolean lease(String clientID, String globalFileName) throws RemoteException {
+		boolean isGranted = this.leaseManager.grantLease(clientID, globalFileName);
+		return isGranted;
 	}
 
 }

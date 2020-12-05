@@ -39,7 +39,6 @@ public class Client {
 	private int depth = 0;
 	ConfigReader reader;
 
-
 	public enum ClientOperation {
 
 		HELP {
@@ -65,7 +64,7 @@ public class Client {
 		PWD {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-					System.out.println(client.cwdNode.path);
+				System.out.println(client.cwdNode.path);
 			}
 		},
 
@@ -113,8 +112,8 @@ public class Client {
 		FIND {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
+				if (fileNameCheck(cmds, client) == false)
+					return;
 				try {
 					System.out.println("The file: " + cmds[1] + " is located on the following minions:");
 					ArrayList<Integer> list = client.masterLink.getAllMinionOwners(cmds[1], client.cwdNode);
@@ -132,8 +131,8 @@ public class Client {
 		RM {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
+				if (fileNameCheck(cmds, client) == false)
+					return;
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
 					client.updateFileNode();
@@ -147,8 +146,8 @@ public class Client {
 		CAT {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				if (fileNameCheck(cmds,client) == false)
-					return ;
+				if (fileNameCheck(cmds, client) == false)
+					return;
 				ArrayList<String> lines;
 				try {
 					lines = client.minionLink.readFile(cmds[1], client.cwdNode);
@@ -215,33 +214,33 @@ public class Client {
 				// TODO Auto-generated method stub
 				String filename = client.cwdNode.path + "/" + cmds[1];
 				filename = filename.split("tmp")[1];
-				System.out.println("file name is " + filename);
-				
+
 				try {
-					if (client.masterLink.doesFileExist(filename)) {
-						System.out.println("Already exists.");
-						FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
+					if (client.masterLink.lease(Integer.toString(client.clientID), filename)) {
+						if (client.masterLink.doesFileExist(filename)) {
+							System.out.println("Already exists.");
+							FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
 
-						try {
-							content.writeByte(cmds[1]);
-						} catch (Exception e) {
-							e.printStackTrace();
+							try {
+								content.writeByte(cmds[1]);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
-					}
 
-					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
-					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
-					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-					Process p = processBuilder.start();
-					p.waitFor();
-					System.out.println("nano ends");
-					FileContent content = new FileContent(cmds[1]);
-					System.out.println("content ends");
-					client.minionLink.writeFile(content, client.cwdNode);
-					System.out.println("minion link ends");
-					client.updateFileNode();
-					content.delete();
+						ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
+						processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+						processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+						processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+						Process p = processBuilder.start();
+						p.waitFor();
+						FileContent content = new FileContent(cmds[1]);
+						client.minionLink.writeFile(content, client.cwdNode);
+						client.updateFileNode();
+						content.delete();
+					}else {
+						System.out.println("Another client is currently leasing this file.");
+					}
 
 				} catch (RemoteException e1) {
 					// TODO Auto-generated catch block
@@ -309,19 +308,16 @@ public class Client {
 			String op = CommandParser.parse(cmds);
 			try {
 				operation = ClientOperation.valueOf(op);
-			}
-			catch(IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {
 				System.out.println("Operation not valid!");
 				return false;
-			}
-			catch(Exception e){
+			} catch (Exception e) {
 				return false;
 			}
 			operation.executeOp(cmds, this);
 			return false;
 		}
 	}
-
 
 	public void printCWD() {
 		if (depth == 0) {
@@ -364,28 +360,26 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
-	public static boolean fileNameCheck(String[] cmds, Client client) {			
+
+	public static boolean fileNameCheck(String[] cmds, Client client) {
 		System.out.println("cmds length" + cmds.length);
-		if (cmds[1] == null)
-		{
+		if (cmds[1] == null) {
 			System.out.println("Please enter enough commands");
 			return false;
 		}
-		System.out.println("file name "   + client.cwdNode.path + "/" );
+		System.out.println("file name " + client.cwdNode.path + "/");
 		try {
 			if (client.masterLink.doesFileExist((client.cwdNode.path + "/" + cmds[1]).split("tmp")[1])) {
 				System.out.println("file exits");
 				return true;
-			}
-			else {
+			} else {
 				System.out.println("Please enter a valid file name");
 				return false;
-				}
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			return false;
 		}
-					
+
 	}
 }
