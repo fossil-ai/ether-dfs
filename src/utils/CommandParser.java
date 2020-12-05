@@ -28,10 +28,16 @@ public class CommandParser {
 	public static String parse(String[] cmds) {
 		try {
 			Command cmd = Command.valueOf(cmds[0].toUpperCase());
+			if (cmds.length < cmd.argsNum()){
+				System.out.println("Please provide a file name");
+			}
+			if (cmds.length > cmd.argsNum()){
+				System.out.println("Too many arguments");
+			}
 			if (cmd.isValid(cmds))
 				return cmd.toString();
 			else
-				return "Operation missing required number of arguments.";
+				return "";
 		} catch (IllegalArgumentException e) {
 			return "Operation does not exist!";
 		}
