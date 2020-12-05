@@ -298,8 +298,13 @@ public class Client {
 		if (cmds[0].equals("exit")) {
 			return true;
 		} else {
-			String op = CommandParser.parse(cmds);
-			ClientOperation.valueOf(op).executeOp(cmds, this);
+			try {
+				String op = CommandParser.parse(cmds);
+				ClientOperation.valueOf(op).executeOp(cmds, this);
+			}
+			catch (Exception e) {
+				System.out.println("commands are wrong");
+			}
 		}
 		return false;
 	}
