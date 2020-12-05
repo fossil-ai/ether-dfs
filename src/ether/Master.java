@@ -183,7 +183,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public MinionInfo getMinionInfo(String id) throws RemoteException {
-		return this.getMinionInfo(id);
+		return minionManager.getMinionInfo(id);
 	}
 	
 	public void pingMinions(){
