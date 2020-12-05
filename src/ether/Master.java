@@ -197,6 +197,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 			} catch (RemoteException | NotBoundException e) {
 				// TODO Auto-generated catch block
 				info.setAlive(false);
+				this.minionManager.removeMinion(info);
 				System.out.println("Pinging Minion " + info.getId() + " failed.");
 				//e.printStackTrace();
 			}
