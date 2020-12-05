@@ -212,9 +212,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		this.pingMinions();
-		
 	}
 
 }
