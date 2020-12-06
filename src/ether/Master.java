@@ -26,6 +26,7 @@ import utils.ConfigReader;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
+import utils.Lease;
 import utils.LeaseManager;
 import utils.LoadBalancer;
 import utils.LocalNameSpaceManager;
@@ -219,9 +220,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public boolean lease(String clientID, String globalFileName) throws RemoteException {
-		boolean isGranted = this.leaseManager.grantLease(clientID, globalFileName);
-		return isGranted;
+	public Lease lease(String clientID, String globalFileName) throws RemoteException {
+		return this.leaseManager.grantLease(clientID, globalFileName);
 	}
 
 }

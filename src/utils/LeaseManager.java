@@ -15,20 +15,20 @@ public class LeaseManager {
 		this.scheduler = Executors.newScheduledThreadPool(100);
 	}
 	
-	public boolean grantLease(String ClientID, String globalFileName){
+	public Lease grantLease(String ClientID, String globalFileName){
 		if(this.leaseExist(globalFileName)){
 			if(this.getLeaseHolder(globalFileName).equalsIgnoreCase(ClientID)){
-				return true;
+				return this.leases.get(globalFileName);
 			}
 			else {
-				return false;
+				return null;
 			}
 		}
 		else {
 			Lease lease = new Lease(globalFileName, ClientID, 10);
 			this.leases.put(globalFileName, lease);
 			this.scheduler.schedule(this.leases.get(globalFileName), 5, TimeUnit.SECONDS);
-			return true;
+			return this.leases.get(globalFileName);
 		}
 	}
 	

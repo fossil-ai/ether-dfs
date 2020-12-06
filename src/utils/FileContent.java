@@ -29,12 +29,10 @@ public class FileContent implements Serializable {
 	}
 
 	public void writeByte(String filePath) {
-		System.out.println("writing in client to " + filePath);
 		File transferredFile = new File(filePath);
 		System.out.println(transferredFile.getParentFile().toString());
 		if(transferredFile.getParentFile() != null) {
 			if (!transferredFile.getParentFile().exists()) {
-				System.out.println("no exist");
 				transferredFile.getParentFile().mkdirs();
 			}
 		}

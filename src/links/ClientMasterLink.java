@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import utils.FileNode;
+import utils.Lease;
 import utils.MinionInfo;
 
 /**
@@ -36,6 +37,6 @@ public interface ClientMasterLink extends Remote {
 
 	boolean doesFileExist(String path) throws RemoteException;
 	
-	boolean lease(String ClientID, String globalFilename) throws RemoteException;
+	Lease lease(String ClientID, String globalFilename) throws RemoteException;
 
 }

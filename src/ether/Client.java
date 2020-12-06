@@ -22,6 +22,7 @@ import utils.CommandParser;
 import utils.ConfigReader;
 import utils.FileContent;
 import utils.FileNode;
+import utils.Lease;
 import utils.MinionInfo;
 
 public class Client {
@@ -222,31 +223,45 @@ public class Client {
 				filename = filename.split("tmp")[1];
 
 				try {
-					if (client.masterLink.lease(Integer.toString(client.clientID), filename)) {
-						if (client.masterLink.doesFileExist(filename)) {
-							System.out.println("Already exists.");
-							FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
+					if (client.masterLink.doesFileExist(filename)) {
+						System.out.println("Already exists.");
+						FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
 
-							try {
-								content.writeByte(cmds[1]);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+						try {
+							content.writeByte(cmds[1]);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-
-						ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
-						processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-						processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
-						processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-						Process p = processBuilder.start();
-						p.waitFor();
-						FileContent content = new FileContent(cmds[1]);
-						client.minionLink.writeFile(content, client.cwdNode);
-						client.updateFileNode();
-						content.delete();
-					} else {
-						System.out.println("Another client is currently leasing this file.");
 					}
+
+//					Lease lease = client.masterLink.lease(Integer.toString(client.clientID), filename);
+
+					ProcessBuilder processBuilder = new ProcessBuilder(cmds[0], cmds[1]);
+					processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+					processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
+					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+					Process p = processBuilder.start();
+					p.waitFor();
+					
+					FileContent content = new FileContent(cmds[1]);
+					client.minionLink.writeFile(content, client.cwdNode);
+					client.updateFileNode();
+					content.delete();
+
+//					System.out.println(lease.getHolder());
+//					System.out.println(lease.isExpired());
+//					
+//					if (lease != null) {
+//						if (!lease.isExpired()) {
+//							FileContent content = new FileContent(cmds[1]);
+//							client.minionLink.writeFile(content, client.cwdNode);
+//							client.updateFileNode();
+//							content.delete();
+//							System.out.println("Lease active - changes pushed through.");
+//						} else {
+//							System.out.println("Lease on file expired - changes ignored.");
+//						}
+//					}
 
 				} catch (RemoteException e1) {
 					// TODO Auto-generated catch block

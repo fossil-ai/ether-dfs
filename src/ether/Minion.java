@@ -106,7 +106,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.nsManager = new LocalNameSpaceManager(this.directory, Integer.toString(this.minionID));
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
-
 	}
 
 	private void connectToMaster(String masterRegAddr, int masterRegPort) {
@@ -259,6 +258,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
 		String newDirPath = this.directory + append_path + content.getName();
+		System.out.println(newDirPath);
 		try {
 			content.writeByte(newDirPath);
 		} catch (Exception e) {
@@ -271,11 +271,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public synchronized File writeFile(FileContent content, FileNode cwd) throws RemoteException {
+		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		if (this.loadStatus == -1 || this.loadStatus == 0 || this.masterLink.getMinionCount() < 2) {
 			String[] path = cwd.path.split("tmp");
 			String append_path = path[path.length - 1];
 			append_path = pathCheck(append_path);
 			String newDirPath = this.directory + append_path + content.getName();
+			System.out.println(newDirPath);
 			try {
 				content.writeByte(newDirPath);
 			} catch (Exception e) {
