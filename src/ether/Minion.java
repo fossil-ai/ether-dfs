@@ -283,7 +283,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			try {
 				content.setPrimary(true);
 				content.writeByte(newDirPath);
-				replicateFile(content,cwd);
+				//replicateFile(content,cwd);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
