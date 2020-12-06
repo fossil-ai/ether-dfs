@@ -281,7 +281,9 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			append_path = pathCheck(append_path);
 			String newDirPath = this.directory + append_path + content.getName();
 			try {
+				content.setPrimary(true);
 				content.writeByte(newDirPath);
+				replicateFile(content,cwd);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -395,13 +397,15 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	@Override
 	public void replicateFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
+		FileContent replicaContent = content;
 		String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
 		String minionMinionLink = "MinionMinionLink_" + newMinionID;
 		Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
 				this.masterLink.getMinionInfo(newMinionID).getPort());
 		try {
 			MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
-			mmstub.rerouteWriteFile(content, cwd);
+			replicaContent.setPrimary(false);
+			mmstub.rerouteWriteFile(replicaContent, cwd);
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

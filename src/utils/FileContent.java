@@ -16,6 +16,7 @@ public class FileContent implements Serializable {
 	private String filename;
 	private byte[] bytes;
 	private File file;
+	private boolean primary; // 1 = primary; 0 = secondary
 
 	public FileContent(String filename) {
 		this.filename = filename;
@@ -56,4 +57,10 @@ public class FileContent implements Serializable {
 		return filename;
 	}
 
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
+	}
+	public boolean isPrimary() {
+		return this.primary;
+	}
 }
