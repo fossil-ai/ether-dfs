@@ -16,7 +16,7 @@ public class ConfigReader {
 	public ConfigReader() {
 
 		try {
-			reader = new BufferedReader(new FileReader("resources/filesys.conf"));
+			reader = new BufferedReader(new FileReader("resources/filesys_local.conf"));
 			configs = new TreeMap<String, String>();
 			minionConfigs = new TreeMap<String, Map<String, String>>();
 			String currentLine;

@@ -230,8 +230,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
-//		List<MinionInfo> list = this.minionManager.getMinionInfoList();
-//		if()
+//		if(rerouteID == null){
+//			return null;
+//		}
+
 		return 0;
 	}
 	

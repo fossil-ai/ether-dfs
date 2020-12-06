@@ -225,6 +225,7 @@ public class Client {
 				// TODO Auto-generated method stub
 				String filename = client.cwdNode.path + "/" + cmds[1];
 				filename = filename.split("tmp")[1];
+				boolean updateFlag = false;
 
 				int versionNum = 0;
 				                               
@@ -243,8 +244,8 @@ public class Client {
 				try {
 					if (client.masterLink.doesFileExist(filename)) {
 						System.out.println("Already exists.");
+						updateFlag = true;
 						FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
-
 						try {
 							content.writeByte(cmds[1]);
 						} catch (Exception e) {
@@ -268,6 +269,7 @@ public class Client {
 						                                       
 
 					FileContent content = new FileContent(cmds[1]);
+<<<<<<< HEAD
 					client.minionLink.writeFile(content, client.cwdNode);
 					
 
@@ -279,6 +281,15 @@ public class Client {
 						System.out.println("can not update version #");
 						}
 						                                       
+=======
+					if(updateFlag){
+						client.minionLink.updateFile(content, client.cwdNode);
+					}
+					else {
+						client.minionLink.writeFile(content, client.cwdNode);
+					}
+					
+>>>>>>> parent of c508201... Revert "another stupid error fixed"
 					client.updateFileNode();
 					content.delete();
 
