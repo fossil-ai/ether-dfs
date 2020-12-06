@@ -141,8 +141,9 @@ public class Client {
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
 					
-					if(client.masterLink.getEtherFile().getFileMap().containsKey(cmds[1]));
+					if(client.masterLink.getEtherFile().getFileMap().containsKey(cmds[1])) {
 						client.masterLink.removeValue(cmds[1]);
+					}
 					      
 					client.updateFileNode();
 				} catch (RemoteException e) {
