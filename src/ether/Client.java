@@ -269,7 +269,6 @@ public class Client {
 						                                       
 
 					FileContent content = new FileContent(cmds[1]);
-<<<<<<< HEAD
 					client.minionLink.writeFile(content, client.cwdNode);
 					
 
@@ -280,8 +279,7 @@ public class Client {
 					catch(RemoteException e1) {
 						System.out.println("can not update version #");
 						}
-						                                       
-=======
+						                    
 					if(updateFlag){
 						client.minionLink.updateFile(content, client.cwdNode);
 					}
@@ -289,7 +287,6 @@ public class Client {
 						client.minionLink.writeFile(content, client.cwdNode);
 					}
 					
->>>>>>> parent of c508201... Revert "another stupid error fixed"
 					client.updateFileNode();
 					content.delete();
 
