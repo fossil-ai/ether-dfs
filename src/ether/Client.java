@@ -242,7 +242,7 @@ public class Client {
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
-					
+
 					FileContent content = new FileContent(cmds[1]);
 					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
@@ -389,7 +389,6 @@ public class Client {
 		}
 		try {
 			if (client.masterLink.doesFileExist((client.cwdNode.path + "/" + cmds[1]).split("tmp")[1])) {
-				System.out.println("file exits");
 				return true;
 			} else {
 				System.out.println("Please enter a valid file name");

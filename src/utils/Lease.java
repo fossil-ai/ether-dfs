@@ -23,8 +23,8 @@ public class Lease implements Runnable, Serializable {
 	public String getHolder() {
 		return this.clientID;
 	}
-	
-	public boolean isExpired(){
+
+	public boolean isExpired() {
 		return this.isExpired;
 	}
 
@@ -36,14 +36,13 @@ public class Lease implements Runnable, Serializable {
 			e.printStackTrace();
 		}
 	}
-	
 
 	@Override
 	public void run() {
 		System.out.println("Starting Client " + this.clientID + "'s lease on " + this.globalFileName + " for a term of "
 				+ this.leaseTerm + " seconds.");
 		this.live();
-		System.out.println("Client " + this.clientID + " lease on " + this.globalFileName + " is over.");	
+		System.out.println("Client " + this.clientID + " lease on " + this.globalFileName + " is over.");
 		this.isExpired = true;
 	}
 

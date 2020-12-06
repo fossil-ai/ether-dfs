@@ -17,8 +17,6 @@ import utils.FileNode;
 
 public interface MinionMinionLink extends Remote {
 
-	public File createReplica(FileContent content, FileNode cwd) throws RemoteException;
-
 	public ArrayList<String> rerouteReadFile(String fileName, FileNode cwd) throws RemoteException;
 
 	public void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException;
@@ -26,5 +24,7 @@ public interface MinionMinionLink extends Remote {
 	public void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException;
 
 	public FileContent rerouteGetFileContent(String filename, FileNode cwd) throws RemoteException;
+	
+	public void replicateFile(FileContent content, FileNode cwd) throws RemoteException;
 
 }

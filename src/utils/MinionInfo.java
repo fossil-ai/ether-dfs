@@ -26,7 +26,7 @@ public class MinionInfo implements Serializable {
 	public boolean isAlive() {
 		return alive;
 	}
-	
+
 	public void setAlive(boolean alive) {
 		this.alive = alive;
 	}
@@ -35,7 +35,6 @@ public class MinionInfo implements Serializable {
 		return id;
 	}
 
-
 	public String getAddress() {
 		return this.address;
 	}
@@ -43,10 +42,9 @@ public class MinionInfo implements Serializable {
 	public int getPort() {
 		return this.port;
 	}
-	
-	public String getDirectory(){
+
+	public String getDirectory() {
 		return this.directory;
 	}
-
 
 }

@@ -84,7 +84,6 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		return this.client_count;
 	}
 
-
 	@Override
 	public synchronized ArrayList<String> listFilesAtCWD(FileNode cwdNode) {
 		ArrayList<String> listOfFiles = new ArrayList<String>();
@@ -189,10 +188,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public MinionInfo getMinionInfo(String id) throws RemoteException {
 		return minionManager.getMinionInfo(id);
 	}
-	
-	public void pingMinions(){
+
+	public void pingMinions() {
 		List<MinionInfo> list = this.minionManager.getMinionInfoList();
-		for(int i = 0; i < list.size(); i++){
+		for (int i = 0; i < list.size(); i++) {
 			MinionInfo info = list.get(i);
 			try {
 				System.out.println("Ping minion with ID: " + info.getId());
@@ -203,7 +202,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 				info.setAlive(false);
 				this.minionManager.removeMinion(info);
 				System.out.println("Pinging Minion " + info.getId() + " failed.");
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		}
 	}
@@ -222,6 +221,13 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public Lease lease(String clientID, String globalFileName) throws RemoteException {
 		return this.leaseManager.grantLease(clientID, globalFileName);
+	}
+
+	@Override
+	public int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
+//		List<MinionInfo> list = this.minionManager.getMinionInfoList();
+//		if()
+		return 0;
 	}
 
 }

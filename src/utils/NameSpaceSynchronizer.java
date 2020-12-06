@@ -80,6 +80,7 @@ public class NameSpaceSynchronizer {
 	}
 
 	private Document buildXMLFromLocalNameSpaces(Document doc) {
+		this.allFilesMap.clear();
 		for (Map.Entry<String, FileTree> entry : this.localDirectoryTrees.entrySet()) {
 			String minionID = entry.getKey();
 			String minionRootDir = "/tmp/minion_" + minionID;

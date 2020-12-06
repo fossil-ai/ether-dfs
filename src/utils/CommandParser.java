@@ -28,10 +28,10 @@ public class CommandParser {
 	public static String parse(String[] cmds) {
 		try {
 			Command cmd = Command.valueOf(cmds[0].toUpperCase());
-			if (cmds.length < cmd.argsNum()){
+			if (cmds.length < cmd.argsNum()) {
 				System.out.println("Not enough arguments");
 			}
-			if (cmds.length > cmd.argsNum()){
+			if (cmds.length > cmd.argsNum()) {
 				System.out.println("Too many arguments");
 			}
 			if (cmd.isValid(cmds))

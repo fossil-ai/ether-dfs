@@ -80,7 +80,7 @@ public class LoadBalancer {
 
 			if (bounds[0] < this.minionDistMap.get(entry.getKey())
 					&& this.minionDistMap.get(entry.getKey()) < bounds[1]) {
-				
+
 				if (this.loadStatus.get(entry.getKey()) != 0) {
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
 				}
@@ -94,7 +94,7 @@ public class LoadBalancer {
 				}
 				this.loadStatus.put(entry.getKey(), -1);
 				this.loadToMinionMap.get(-1).add(entry.getKey());
-				
+
 			} else {
 				if (this.loadStatus.get(entry.getKey()) != 1) {
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());

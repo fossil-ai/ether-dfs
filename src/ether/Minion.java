@@ -196,7 +196,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			String newMinionID = Integer
 					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
+			Registry minionRegistry = LocateRegistry.getRegistry(
+					this.masterLink.getMinionInfo(newMinionID).getAddress(),
 					this.masterLink.getMinionInfo(newMinionID).getPort());
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
@@ -239,7 +240,8 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			String newMinionID = Integer
 					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
+			Registry minionRegistry = LocateRegistry.getRegistry(
+					this.masterLink.getMinionInfo(newMinionID).getAddress(),
 					this.masterLink.getMinionInfo(newMinionID).getPort());
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
@@ -272,12 +274,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	@Override
 	public synchronized File writeFile(FileContent content, FileNode cwd) throws RemoteException {
 		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
+		String underLoadedMinionID = null;
 		if (this.loadStatus == -1 || this.loadStatus == 0 || this.masterLink.getMinionCount() < 2) {
 			String[] path = cwd.path.split("tmp");
 			String append_path = path[path.length - 1];
 			append_path = pathCheck(append_path);
 			String newDirPath = this.directory + append_path + content.getName();
-			System.out.println(newDirPath);
 			try {
 				content.writeByte(newDirPath);
 			} catch (Exception e) {
@@ -287,11 +289,12 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		} else {
-			String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
-			System.out.println("High load status detected - re-routing file write to Minion " + newMinionID);
-			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
-					this.masterLink.getMinionInfo(newMinionID).getPort());
+			underLoadedMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+			System.out.println("High load status detected - re-routing file write to Minion " + underLoadedMinionID);
+			String minionMinionLink = "MinionMinionLink_" + underLoadedMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(
+					this.masterLink.getMinionInfo(underLoadedMinionID).getAddress(),
+					this.masterLink.getMinionInfo(underLoadedMinionID).getPort());
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
 				mmstub.rerouteWriteFile(content, cwd);
@@ -299,8 +302,24 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
+//		
+//		if (this.masterLink.getMinionCount() > 1) {
+//			String replicationMinionID = Integer.toString(this.masterLink.getReplicaMinionID(Integer.toString(this.minionID), underLoadedMinionID));
+//			System.out.println("REPLICATION - re-routing file write to Minion " + replicationMinionID);
+//			String minionMinionRepLink = "MinionMinionLink_" + replicationMinionID;
+//			Registry minionRepRegistry = LocateRegistry.getRegistry(
+//					this.masterLink.getMinionInfo(replicationMinionID).getAddress(),
+//					this.masterLink.getMinionInfo(replicationMinionID).getPort());
+//			try {
+//				MinionMinionLink mmRepStub = (MinionMinionLink) minionRepRegistry.lookup(minionMinionRepLink);
+//				mmRepStub.rerouteWriteFile(content, cwd);
+//			} catch (NotBoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}	
+//		}
+
 		return null;
 	}
 
@@ -314,13 +333,6 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			e.printStackTrace();
 		}
 		return size;
-	}
-
-
-	@Override
-	public synchronized File createReplica(FileContent content, FileNode cwd) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public String pathCheck(String path) {
@@ -338,13 +350,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		FileContent content = null;
 		System.out.println(newDirPath);
 		if (this.nsManager.hasFile(newDirPath)) {
-			System.out.println("this minion has it");
 			content = new FileContent(newDirPath);
 		} else {
 			String newMinionID = Integer
 					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
 			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
+			Registry minionRegistry = LocateRegistry.getRegistry(
+					this.masterLink.getMinionInfo(newMinionID).getAddress(),
 					this.masterLink.getMinionInfo(newMinionID).getPort());
 			try {
 				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
@@ -372,5 +384,21 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	public boolean checkAlive() throws RemoteException {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public void replicateFile(FileContent content, FileNode cwd) throws RemoteException {
+		// TODO Auto-generated method stub
+		String newMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+		String minionMinionLink = "MinionMinionLink_" + newMinionID;
+		Registry minionRegistry = LocateRegistry.getRegistry(this.masterLink.getMinionInfo(newMinionID).getAddress(),
+				this.masterLink.getMinionInfo(newMinionID).getPort());
+		try {
+			MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+			mmstub.rerouteWriteFile(content, cwd);
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

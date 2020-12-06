@@ -8,7 +8,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
- 
 
 import utils.ConfigReader;
 
@@ -27,9 +26,9 @@ public class MasterService {
 			try {
 				System.out.println("Launching MasterServer");
 				Master masterServer = new Master();
-				
+
 				ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		        executorService.scheduleAtFixedRate(masterServer, 5, 5, TimeUnit.SECONDS);
+				executorService.scheduleAtFixedRate(masterServer, 5, 5, TimeUnit.SECONDS);
 
 				System.err.println("Ready and running...");
 
@@ -42,7 +41,6 @@ public class MasterService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
 
 	}
 

@@ -58,8 +58,8 @@ public class MinionManager implements Serializable {
 		}
 
 	}
-	
-	public int getID(String code){
+
+	public int getID(String code) {
 		return this.idMapping.get(code);
 	}
 
@@ -87,13 +87,13 @@ public class MinionManager implements Serializable {
 		info_.setAlive(true);
 		this.activeMinionMap.put(Integer.toString(info.getId()), info_);
 	}
-	
+
 	public void removeMinion(MinionInfo info) {
 		MinionInfo info_ = this.minionInfoMap.get(Integer.toString(info.getId()));
 		info_.setAlive(false);
 		this.activeMinionMap.remove(Integer.toString(info.getId()));
 	}
-	
+
 	public int minionsNum() {
 		return this.activeMinionMap.size();
 	}

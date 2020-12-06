@@ -18,8 +18,7 @@ public class FileManager {
 		return filename;
 	}
 
-	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex,
-			List<MinionInfo> minionLocations) {
+	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex, List<MinionInfo> minionLocations) {
 		filePrimaryMinionMap.put(filename, minionLocations.get(primaryMinionIndex));
 	}
 
