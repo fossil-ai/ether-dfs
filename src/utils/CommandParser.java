@@ -29,7 +29,7 @@ public class CommandParser {
 		try {
 			Command cmd = Command.valueOf(cmds[0].toUpperCase());
 			if (cmds.length < cmd.argsNum()){
-				System.out.println("Please provide a file name");
+				System.out.println("Not enough arguments");
 			}
 			if (cmds.length > cmd.argsNum()){
 				System.out.println("Too many arguments");

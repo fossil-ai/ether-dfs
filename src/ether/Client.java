@@ -383,12 +383,10 @@ public class Client {
 	}
 
 	public static boolean fileNameCheck(String[] cmds, Client client) {
-		System.out.println("cmds length" + cmds.length);
 		if (cmds[1] == null) {
 			System.out.println("Please enter enough commands");
 			return false;
 		}
-		System.out.println("file name " + client.cwdNode.path + "/");
 		try {
 			if (client.masterLink.doesFileExist((client.cwdNode.path + "/" + cmds[1]).split("tmp")[1])) {
 				System.out.println("file exits");
