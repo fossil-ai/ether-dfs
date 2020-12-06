@@ -16,7 +16,6 @@ public class FileManager {
 
 	public String getGlobalPath(String filename) {
 		return filename;
-
 	}
 
 	public void assignPrimaryMinionToFile(String filename, int primaryMinionIndex,

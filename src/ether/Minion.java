@@ -338,6 +338,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		FileContent content = null;
 		System.out.println(newDirPath);
 		if (this.nsManager.hasFile(newDirPath)) {
+			System.out.println("this minion has it");
 			content = new FileContent(newDirPath);
 		} else {
 			String newMinionID = Integer

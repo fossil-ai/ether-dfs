@@ -30,8 +30,8 @@ public class FileContent implements Serializable {
 
 	public void writeByte(String filePath) {
 		File transferredFile = new File(filePath);
-		System.out.println(transferredFile.getParentFile().toString());
 		if(transferredFile.getParentFile() != null) {
+			System.out.println(transferredFile.getParentFile().toString());
 			if (!transferredFile.getParentFile().exists()) {
 				transferredFile.getParentFile().mkdirs();
 			}

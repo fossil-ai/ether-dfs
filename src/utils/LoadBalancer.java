@@ -40,7 +40,6 @@ public class LoadBalancer {
 		return this.loadStatus.get(id);
 	}
 
-	
 	public int getNonOverloadedMinion() {
 		System.out.println(this.loadToMinionMap.toString());
 		System.out.println(this.loadStatus.toString());
@@ -56,7 +55,7 @@ public class LoadBalancer {
 			}
 		} else if (this.loadToMinionMap.get(0).size() > 0) {
 			int size = this.loadToMinionMap.get(0).size();
-			int item = new Random().nextInt(size);							
+			int item = new Random().nextInt(size);
 			int i = 0;
 			for (String id : this.loadToMinionMap.get(0)) {
 				if (i == item) {
@@ -73,69 +72,38 @@ public class LoadBalancer {
 	}
 
 	private void assignStatus() {
-	
-		System.out.println(this.minionMemoryMap.toString());
-		System.out.println(this.minionDistMap.toString());
-		System.out.println(this.loadStatus.toString());
-		System.out.println(this.loadToMinionMap.toString());
-		System.out.println("-----------------------");
-		
 
-		
 		for (Entry<String, Double> entry : this.minionMemoryMap.entrySet()) {
 			System.out.println("Minion with ID " + entry.getKey() + " has size " + entry.getValue());
 			int percentage = (int) (100.0 * (entry.getValue() / this.globalMemory));
 			this.minionDistMap.put(entry.getKey(), percentage);
-			
+
 			if (bounds[0] < this.minionDistMap.get(entry.getKey())
 					&& this.minionDistMap.get(entry.getKey()) < bounds[1]) {
 				
-				
-				System.out.println("UPDATING MINION " +  entry.getKey() + " from " + this.loadStatus.get(entry.getKey()) +  " to 0 LOAD STATUS");
-					
-					
 				if (this.loadStatus.get(entry.getKey()) != 0) {
-					System.out.println("WASNT THIS BEFORE!");
-					System.out.println(this.loadToMinionMap.toString());
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
-					System.out.println(this.loadToMinionMap.toString());
-					System.out.println("REMOVED");
 				}
-				
-				
 				this.loadStatus.put(entry.getKey(), 0);
 				this.loadToMinionMap.get(0).add(entry.getKey());
-				
+
 			} else if (bounds[0] >= this.minionDistMap.get(entry.getKey())) {
-				System.out.println("UPDATING MINION " +  entry.getKey() + " from " + this.loadStatus.get(entry.getKey()) +  " to -1 LOAD STATUS");
+
 				if (this.loadStatus.get(entry.getKey()) != -1) {
-					System.out.println("WASNT THIS BEFORE!");
-					System.out.println(this.loadToMinionMap.toString());
 					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
-					System.out.println(this.loadToMinionMap.toString());
-					System.out.println("REMOVED");
 				}
 				this.loadStatus.put(entry.getKey(), -1);
 				this.loadToMinionMap.get(-1).add(entry.getKey());
-			} else {
-				System.out.println("UPDATING MINION " +  entry.getKey() + " from " + this.loadStatus.get(entry.getKey()) +  " to 1 LOAD STATUS");
-				if (this.loadStatus.get(entry.getKey()) != 1) {
-					System.out.println("WASNT THIS BEFORE!");
-					System.out.println(this.loadToMinionMap.toString());
-					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
-					System.out.println(this.loadToMinionMap.toString());
-					System.out.println("REMOVED");
-				}
 				
+			} else {
+				if (this.loadStatus.get(entry.getKey()) != 1) {
+					this.loadToMinionMap.get(this.loadStatus.get(entry.getKey())).remove(entry.getKey());
+				}
+
 				this.loadStatus.put(entry.getKey(), 1);
 				this.loadToMinionMap.get(1).add(entry.getKey());
 			}
 		}
-		
-		System.out.println(this.minionMemoryMap.toString());
-		System.out.println(this.minionDistMap.toString());
-		System.out.println(this.loadToMinionMap.toString());
-		System.out.println(this.loadStatus.toString());
 	}
 
 	private void updateGlobal() {
