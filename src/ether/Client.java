@@ -221,13 +221,12 @@ public class Client {
 				// TODO Auto-generated method stub
 				String filename = client.cwdNode.path + "/" + cmds[1];
 				filename = filename.split("tmp")[1];
-				boolean updateFlag = false;
 
 				try {
 					if (client.masterLink.doesFileExist(filename)) {
 						System.out.println("Already exists.");
-						updateFlag = true;
 						FileContent content = client.minionLink.getFileContent(cmds[1], client.cwdNode);
+
 						try {
 							content.writeByte(cmds[1]);
 						} catch (Exception e) {
@@ -245,13 +244,7 @@ public class Client {
 					p.waitFor();
 
 					FileContent content = new FileContent(cmds[1]);
-					if(updateFlag){
-						client.minionLink.updateFile(content, client.cwdNode);
-					}
-					else {
-						client.minionLink.writeFile(content, client.cwdNode);
-					}
-					
+					client.minionLink.writeFile(content, client.cwdNode);
 					client.updateFileNode();
 					content.delete();
 
