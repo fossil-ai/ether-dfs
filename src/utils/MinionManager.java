@@ -32,7 +32,7 @@ public class MinionManager implements Serializable {
 		this.activeMinionMap = new TreeMap<String, MinionInfo>();
 		this.minionInfoMap = new TreeMap<String, MinionInfo>();
 		this.idMapping = new TreeMap<String, Integer>();
-		this.minionMetaFile = "resources/minionmeta.conf";
+		this.minionMetaFile = "resources/minionmeta_local.conf";
 		this.parseMinionMeta();
 	}
 
