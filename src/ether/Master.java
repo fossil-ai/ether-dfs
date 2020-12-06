@@ -35,6 +35,7 @@ import utils.MinionManager;
 import utils.NameSpaceSynchronizer;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
+import utils.EtherFile;
 
 public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, Runnable {
 
@@ -49,6 +50,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	NameSpaceSynchronizer nameSpaceSynchronizer;
 	LoadBalancer balancer;
 	ConfigReader reader;
+	
+	EtherFile etherFile;
 
 	Random random;
 
@@ -60,6 +63,8 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.balancer = new LoadBalancer();
 		this.leaseManager = new LeaseManager();
 		this.random = new Random();
+		
+		this.etherFile = new EtherFile();
 
 		this.reader = new ConfigReader();
 		int REG_PORT = this.reader.getRegistryPort();
@@ -229,5 +234,18 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 //		if()
 		return 0;
 	}
+	
+	public EtherFile getEtherFile() {
+		return this.etherFile;
+		}
+	public void putValue(String name, int version) {
+		this.etherFile.getFileMap().put(name,version);
+		}
+	public int getValue(String name) {
+		return (int)this.etherFile.getFileMap().get(name);
+		}
+	public void removeValue(String name) {
+		this.etherFile.getFileMap().remove(name);
+		}
 
 }

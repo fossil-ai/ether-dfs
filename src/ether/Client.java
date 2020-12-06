@@ -140,6 +140,10 @@ public class Client {
 
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
+					
+					if(client.masterLink.getEtherFile().getFileMap().containsKey(cmds[1]));
+						client.masterLink.removeValue(cmds[1]);
+					      
 					client.updateFileNode();
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -222,6 +226,20 @@ public class Client {
 				String filename = client.cwdNode.path + "/" + cmds[1];
 				filename = filename.split("tmp")[1];
 
+				int versionNum = 0;
+				                               
+				                               
+			                            
+				try {
+					if (!client.masterLink.getEtherFile().getFileMap().containsKey(filename))
+						client.masterLink.putValue(filename.toString(),versionNum);
+				 
+				    versionNum = client.masterLink.getValue(filename);
+				}                           
+				catch(RemoteException e ) {
+					System.out.println("cannot put the value to map");
+				}
+				                               
 				try {
 					if (client.masterLink.doesFileExist(filename)) {
 						System.out.println("Already exists.");
@@ -242,9 +260,25 @@ public class Client {
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
+					
+					if(versionNum != client.masterLink.getValue(filename)) {
+						System.out.println("file conflict, your change is discarded");
+						return;
+					}
+						                                       
 
 					FileContent content = new FileContent(cmds[1]);
 					client.minionLink.writeFile(content, client.cwdNode);
+					
+
+					try {
+						client.masterLink.putValue(filename.toString(),
+								new Integer(versionNum+1));
+						}
+					catch(RemoteException e1) {
+						System.out.println("can not update version #");
+						}
+						                                       
 					client.updateFileNode();
 					content.delete();
 

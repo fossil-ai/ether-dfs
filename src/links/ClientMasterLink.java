@@ -38,5 +38,13 @@ public interface ClientMasterLink extends Remote {
 	boolean doesFileExist(String path) throws RemoteException;
 
 	Lease lease(String ClientID, String globalFilename) throws RemoteException;
+	
+	public EtherFile getEtherFile() throws RemoteException;
+	      
+	public void putValue(String name, int version)  throws RemoteException;
+
+	public int getValue(String name)  throws RemoteException;
+	
+	public void removeValue(String name) throws RemoteException;
 
 }
