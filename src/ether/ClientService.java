@@ -1,6 +1,10 @@
 package ether;
 
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import utils.ConfigReader;
 
 public class ClientService {
@@ -32,6 +36,9 @@ public class ClientService {
 		System.out.println("********* ************************** ********");
 
 		Client client = new Client(REG_ADDR, REG_PORT);
+		
+		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+		executorService.scheduleAtFixedRate(client, 5, 20, TimeUnit.SECONDS);
 
 		Scanner scanner = new Scanner(System.in);
 		boolean done = false;

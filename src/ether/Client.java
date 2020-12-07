@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 
 import links.ClientMasterLink;
 import links.ClientMinionLink;
+import links.MasterMinionLink;
 import links.MinionMinionLink;
 import utils.CommandParser;
 import utils.ConfigReader;
@@ -25,7 +26,7 @@ import utils.FileNode;
 import utils.Lease;
 import utils.MinionInfo;
 
-public class Client {
+public class Client implements Runnable {
 
 	Registry masterRegistry;
 	Registry minionRegistry;
@@ -34,6 +35,9 @@ public class Client {
 	private int clientID;
 	private String clientMasterStubName;
 	private String clientMinionStubName;
+	private String minionID;
+	private String minionhostname;
+	private int minionport;
 
 	private ArrayList<String> currentWorkingDirectory;
 	private FileNode cwdNode;
@@ -342,6 +346,10 @@ public class Client {
 			String minionHostname = minionInfo[1];
 			String minionPort = minionInfo[2];
 
+			this.minionID = minionID;
+			this.minionhostname = minionHostname;
+			this.minionport = Integer.parseInt(minionPort);
+
 			System.out.println("Attempting to connection to minion at registry: " + minionHostname + ":" + minionPort);
 
 			minionRegistry = LocateRegistry.getRegistry(minionHostname, Integer.parseInt(minionPort));
@@ -443,6 +451,61 @@ public class Client {
 			return false;
 		}
 
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		pingMinion();
+	}
+
+	private void pingMinion() {
+		// TODO Auto-generated method stub
+
+		try {
+
+			minionRegistry = LocateRegistry.getRegistry(this.minionhostname, this.minionport);
+			this.clientMinionStubName = "ClientMinionLink_" + this.minionID;
+			minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
+
+		} catch (RemoteException | NotBoundException e) {
+			
+			String[] minionInfo = null;
+			try {
+				minionInfo = masterLink.getRandomMinionInfo();
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String minionID = minionInfo[0];
+			String minionHostname = minionInfo[1];
+			String minionPort = minionInfo[2];
+			
+			this.minionID = minionID;
+			this.minionhostname = minionHostname;
+			this.minionport = Integer.parseInt(minionPort);
+
+			System.out.println("Attempting to connection to minion at registry: " + minionHostname + ":" + minionPort);
+
+			try {
+				minionRegistry = LocateRegistry.getRegistry(minionHostname, Integer.parseInt(minionPort));
+			} catch (NumberFormatException | RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			this.clientMinionStubName = "ClientMinionLink_" + minionID;
+			System.out.println(this.clientMinionStubName);
+			try {
+				minionLink = (ClientMinionLink) minionRegistry.lookup(this.clientMinionStubName);
+			} catch (RemoteException | NotBoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			System.out.println("RECONNECTED TO MINION " + this.minionID);
+			this.printCWD();
+
+		}
 	}
 
 }
