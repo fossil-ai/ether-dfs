@@ -150,11 +150,11 @@ public class Client {
 
 				try {
 					client.minionLink.deleteFile(cmds[1], client.cwdNode);
-					
-					if(client.masterLink.getEtherFile().getFileMap().containsKey(cmds[1])) {
+
+					if (client.masterLink.getEtherFile().getFileMap().containsKey(cmds[1])) {
 						client.masterLink.removeValue(cmds[1]);
 					}
-					      
+
 					client.updateFileNode();
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -239,19 +239,16 @@ public class Client {
 				boolean updateFlag = false;
 
 				int versionNum = 0;
-				                               
-				                               
-			                            
+
 				try {
 					if (!client.masterLink.getEtherFile().getFileMap().containsKey(filename))
-						client.masterLink.putValue(filename.toString(),versionNum);
-				 
-				    versionNum = client.masterLink.getValue(filename);
-				}                           
-				catch(RemoteException e ) {
+						client.masterLink.putValue(filename.toString(), versionNum);
+
+					versionNum = client.masterLink.getValue(filename);
+				} catch (RemoteException e) {
 					System.out.println("cannot put the value to map");
 				}
-				                               
+
 				try {
 					if (client.masterLink.doesFileExist(filename)) {
 						System.out.println("Already exists.");
@@ -272,32 +269,26 @@ public class Client {
 					processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 					Process p = processBuilder.start();
 					p.waitFor();
-					
-					if(versionNum != client.masterLink.getValue(filename)) {
+
+					if (versionNum != client.masterLink.getValue(filename)) {
 						System.out.println("file conflict, your change is discarded");
 						return;
 					}
-						                                       
 
 					FileContent content = new FileContent(cmds[1]);
-					//client.minionLink.writeFile(content, client.cwdNode);
-					
+					// client.minionLink.writeFile(content, client.cwdNode);
 
-					try {
-						client.masterLink.putValue(filename.toString(),
-								new Integer(versionNum+1));
-						}
-					catch(RemoteException e1) {
-						System.out.println("can not update version #");
-						}
-						                    
-					if(updateFlag){
+					if (updateFlag) {
 						client.minionLink.updateFile(content, client.cwdNode);
-					}
-					else {
+						try {
+							client.masterLink.putValue(filename.toString(), new Integer(versionNum + 1));
+						} catch (RemoteException e1) {
+							System.out.println("can not update version #");
+						}
+					} else {
 						client.minionLink.writeFile(content, client.cwdNode);
 					}
-					
+
 					client.updateFileNode();
 					content.delete();
 
