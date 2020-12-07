@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -213,6 +214,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public synchronized void rerouteDeleteFile(String fileName, FileNode cwd) throws RemoteException {
+		System.out.println("REROUTE");
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
@@ -238,17 +240,22 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		}
-
-		ArrayList<Integer> ids = this.masterLink.getAllFileMinionOwners(newDirPath);
+		
+		String minionRootDir = "/tmp/minion_" + this.minionID;
+		String globalPath = newDirPath.split(minionRootDir)[1];
+		System.out.println(globalPath);
+		
+		ArrayList<Integer> ids = this.masterLink.getAllFileMinionOwners(globalPath);
 		for (int i = 0; i < ids.size(); i++) {
 			String newMinionID = Integer.toString(ids.get(i));
-			if (newMinionID.equalsIgnoreCase(Integer.toString(this.minionID))) {
+			if (!newMinionID.equalsIgnoreCase(Integer.toString(this.minionID))) {
 				String minionMinionLink = "MinionMinionLink_" + newMinionID;
 				Registry minionRegistry = LocateRegistry.getRegistry(
 						this.masterLink.getMinionInfo(newMinionID).getAddress(),
 						this.masterLink.getMinionInfo(newMinionID).getPort());
 				try {
 					MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+					System.out.println("DELETING HERE AS WELL");
 					mmstub.rerouteDeleteFile(fileName, cwd);
 				} catch (NotBoundException e) {
 					// TODO Auto-generated catch block

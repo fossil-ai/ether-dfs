@@ -225,12 +225,12 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 
 	@Override
-	public Lease lease(String clientID, String globalFileName) throws RemoteException {
+	public synchronized Lease lease(String clientID, String globalFileName) throws RemoteException {
 		return this.leaseManager.grantLease(clientID, globalFileName);
 	}
 
 	@Override
-	public int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
+	public synchronized int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
 		List<MinionInfo> list = this.minionManager.getMinionInfoList();
 		if(list.size() == 2){
 			return Integer.parseInt(currentID);
@@ -246,7 +246,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	}
 	
 	@Override
-	public ArrayList<Integer> getAllFileMinionOwners(String filename) {
+	public synchronized ArrayList<Integer> getAllFileMinionOwners(String filename) {
 		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(filename);
 		ArrayList<Integer> minionIDsWithFile = new ArrayList<Integer>();
 		for (Entry<String, String> entry : minionOwners.entrySet()) {

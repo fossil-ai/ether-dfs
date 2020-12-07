@@ -37,6 +37,7 @@ public class NameSpaceSynchronizer {
 	}
 
 	public TreeMap<String, String> getMinionOwners(String path) {
+		System.out.println(this.allFilesMap.toString());
 		return this.allFilesMap.get(path);
 	}
 
