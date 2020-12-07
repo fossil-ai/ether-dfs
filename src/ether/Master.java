@@ -276,8 +276,10 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public synchronized ArrayList<Integer> getAllFileMinionOwners(String filename) {
 		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(filename);
 		ArrayList<Integer> minionIDsWithFile = new ArrayList<Integer>();
-		for (Entry<String, String> entry : minionOwners.entrySet()) {
-			minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
+		if(minionOwners != null) {
+			for (Entry<String, String> entry : minionOwners.entrySet()) {
+				minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
+			}
 		}
 		return minionIDsWithFile;
 	}
