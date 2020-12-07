@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
+import links.MinionMinionLink;
 import utils.ConfigReader;
 import utils.EtherFile;
 import utils.FileManager;
@@ -50,7 +51,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	NameSpaceSynchronizer nameSpaceSynchronizer;
 	LoadBalancer balancer;
 	ConfigReader reader;
-	
+
 	EtherFile etherFile;
 
 	Random random;
@@ -63,10 +64,9 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		this.balancer = new LoadBalancer();
 		this.leaseManager = new LeaseManager();
 		this.random = new Random();
-		
+
 		this.etherFile = new EtherFile();
 
-		
 		this.reader = new ConfigReader();
 		int REG_PORT = this.reader.getRegistryPort();
 
@@ -208,10 +208,30 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 				info.setAlive(false);
 				this.minionManager.removeMinion(info);
 				System.out.println("Pinging Minion " + info.getId() + " failed.");
-				// e.printStackTrace();
+				List<MinionInfo> list_ = this.minionManager.getMinionInfoList();
+				for (int j = 0; j < list_.size(); j++) {
+					MinionInfo info_ = list_.get(j);
+					System.out.println("Ping minion with ID: " + info_.getId());
+					Registry registry_;
+					try {
+						registry_ = LocateRegistry.getRegistry(info_.getAddress(), info_.getPort());
+						MasterMinionLink mmstub = (MasterMinionLink) registry_.lookup("MasterMinionLink_" + info_.getId());
+						mmstub.resync();
+						
+					} catch (RemoteException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (NotBoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+				}
 			}
 		}
-	}
+			// e.printStackTrace();
+		}
+
 
 	@Override
 	public synchronized int getMyID(String code) throws RemoteException {
@@ -232,19 +252,24 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	@Override
 	public synchronized int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
 		List<MinionInfo> list = this.minionManager.getMinionInfoList();
-		if(list.size() == 2){
-			return Integer.parseInt(currentID);
+		String selectedMinionID = currentID;
+		while (selectedMinionID.equalsIgnoreCase(currentID)) {
+			int randID = ThreadLocalRandom.current().nextInt(0, list.size());
+			selectedMinionID = Integer.toString(list.get(randID).getId());
 		}
-		else {
-			String selectedMinionID = currentID;
-			while(selectedMinionID.equalsIgnoreCase(currentID)) {
-				int randID = ThreadLocalRandom.current().nextInt(0, list.size());
-				selectedMinionID = Integer.toString(list.get(randID).getId());
-			}
-			return Integer.parseInt(selectedMinionID);
-		}
+		return Integer.parseInt(selectedMinionID);
+//		if (list.size() == 2) {
+//			return Integer.parseInt(currentID);
+//		} else {
+//			String selectedMinionID = currentID;
+//			while (selectedMinionID.equalsIgnoreCase(currentID)) {
+//				int randID = ThreadLocalRandom.current().nextInt(0, list.size());
+//				selectedMinionID = Integer.toString(list.get(randID).getId());
+//			}
+//			return Integer.parseInt(selectedMinionID);
+//		}
 	}
-	
+
 	@Override
 	public synchronized ArrayList<Integer> getAllFileMinionOwners(String filename) {
 		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(filename);
@@ -257,15 +282,18 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	public EtherFile getEtherFile() {
 		return this.etherFile;
-		}
+	}
+
 	public void putValue(String name, int version) {
-		this.etherFile.getFileMap().put(name,version);
-		}
+		this.etherFile.getFileMap().put(name, version);
+	}
+
 	public int getValue(String name) {
-		return (int)this.etherFile.getFileMap().get(name);
-		}
+		return (int) this.etherFile.getFileMap().get(name);
+	}
+
 	public void removeValue(String name) {
 		this.etherFile.getFileMap().remove(name);
-		}
+	}
 
 }

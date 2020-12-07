@@ -12,4 +12,6 @@ import java.rmi.RemoteException;
 public interface MasterMinionLink extends Remote {
 
 	boolean checkAlive() throws RemoteException;
+	
+	void resync() throws RemoteException;
 }

@@ -3,6 +3,7 @@ package utils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,8 +38,11 @@ public class NameSpaceSynchronizer {
 	}
 
 	public TreeMap<String, String> getMinionOwners(String path) {
-		System.out.println(this.allFilesMap.toString());
 		return this.allFilesMap.get(path);
+	}
+	
+	public void updateOnRemoval(List<MinionInfo> list){
+		
 	}
 
 	public void buildGlobalNameSpace() {
@@ -81,7 +85,9 @@ public class NameSpaceSynchronizer {
 	}
 
 	private Document buildXMLFromLocalNameSpaces(Document doc) {
+		System.out.println("DELETING FILES MAPPING");
 		this.allFilesMap.clear();
+		System.out.println(this.allFilesMap.toString());
 		for (Map.Entry<String, FileTree> entry : this.localDirectoryTrees.entrySet()) {
 			String minionID = entry.getKey();
 			String minionRootDir = "/tmp/minion_" + minionID;

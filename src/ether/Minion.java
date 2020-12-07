@@ -269,6 +269,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 	@Override
 	public synchronized void rerouteWriteFile(FileContent content, FileNode cwd) throws RemoteException {
 		// TODO Auto-generated method stub
+		System.out.println("REPLICATING");
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
@@ -282,6 +283,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		this.nsManager.buildTreeFromDir();
 		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
+		System.out.println("DONE");
 	}
 
 	@Override
@@ -504,6 +506,13 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			e.printStackTrace();
 		}
 		return time.toString();
+	}
+
+	@Override
+	public void resync() throws RemoteException {
+		this.nsManager.buildTreeFromDir();
+		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 	}
 
 }
