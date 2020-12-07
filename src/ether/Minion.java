@@ -1,29 +1,23 @@
 package ether;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 
+import links.ClientMinionLink;
 import links.MasterMinionLink;
 import links.MinionMasterLink;
 import links.MinionMinionLink;
@@ -32,8 +26,6 @@ import utils.FileContent;
 import utils.FileNode;
 import utils.LocalNameSpaceManager;
 import utils.MinionInfo;
-import utils.MinionManager;
-import links.ClientMinionLink;
 
 public class Minion extends UnicastRemoteObject implements MasterMinionLink, ClientMinionLink, MinionMinionLink {
 
@@ -219,11 +211,30 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
 		String newDirPath = this.directory + append_path + fileName;
-		File file = new File(newDirPath);
-		file.delete();
-		this.nsManager.buildTreeFromDir();
-		this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
-		this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
+		if (this.nsManager.hasFile(newDirPath)) {
+			File file_ = new File(newDirPath);
+			
+			if(file_.isDirectory()) {
+				this.deleteDirectory(file_);
+			}
+			else {
+				file_.delete();
+			}
+						
+			this.nsManager.buildTreeFromDir();
+			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
+			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
+		}
+	}
+	
+	boolean deleteDirectory(File directoryToBeDeleted) {
+	    File[] allContents = directoryToBeDeleted.listFiles();
+	    if (allContents != null) {
+	        for (File file : allContents) {
+	            deleteDirectory(file);
+	        }
+	    }
+	    return directoryToBeDeleted.delete();
 	}
 
 	@Override
@@ -233,9 +244,18 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		append_path = pathCheck(append_path);
 		String newDirPath = this.directory + append_path + fileName;
 
+
+		
 		if (this.nsManager.hasFile(newDirPath)) {
-			File file = new File(newDirPath);
-			file.delete();
+			File file_ = new File(newDirPath);
+			
+			if(file_.isDirectory()) {
+				this.deleteDirectory(file_);
+			}
+			else {
+				file_.delete();
+			}
+						
 			this.nsManager.buildTreeFromDir();
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
