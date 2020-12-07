@@ -225,11 +225,28 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 
 	@Override
 	public int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
-//		if(rerouteID == null){
-//			return null;
-//		}
-
-		return 0;
+		List<MinionInfo> list = this.minionManager.getMinionInfoList();
+		if(list.size() == 2){
+			return Integer.parseInt(currentID);
+		}
+		else {
+			String selectedMinionID = currentID;
+			while(selectedMinionID.equalsIgnoreCase(currentID)) {
+				int randID = ThreadLocalRandom.current().nextInt(0, list.size());
+				selectedMinionID = Integer.toString(list.get(randID).getId());
+			}
+			return Integer.parseInt(selectedMinionID);
+		}
+	}
+	
+	@Override
+	public ArrayList<Integer> getAllFileMinionOwners(String filename) {
+		TreeMap<String, String> minionOwners = this.nameSpaceSynchronizer.getMinionOwners(filename);
+		ArrayList<Integer> minionIDsWithFile = new ArrayList<Integer>();
+		for (Entry<String, String> entry : minionOwners.entrySet()) {
+			minionIDsWithFile.add(Integer.parseInt(entry.getKey()));
+		}
+		return minionIDsWithFile;
 	}
 
 }

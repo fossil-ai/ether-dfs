@@ -2,7 +2,11 @@ package links;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
+import utils.FileNode;
 import utils.LocalNameSpaceManager;
 import utils.MinionInfo;
 
@@ -26,6 +30,8 @@ public interface MinionMasterLink extends Remote {
 	public int updateMemory(String id, double size) throws RemoteException;
 
 	public int getFileMinionOwner(String id, String newDirPath) throws RemoteException;
+	
+	public ArrayList<Integer> getAllFileMinionOwners(String filename);
 
 	public int getUnderLoadedMinionID() throws RemoteException;
 	
