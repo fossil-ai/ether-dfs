@@ -240,11 +240,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			this.masterLink.synchronize(Integer.toString(this.minionID), nsManager);
 			this.loadStatus = this.masterLink.updateMemory(Integer.toString(this.minionID), this.sizeofDir());
 		}
-		
+
 		String minionRootDir = "/tmp/minion_" + this.minionID;
 		String globalPath = newDirPath.split(minionRootDir)[1];
 		System.out.println(globalPath);
-		
+
 		ArrayList<Integer> ids = this.masterLink.getAllFileMinionOwners(globalPath);
 		for (int i = 0; i < ids.size(); i++) {
 			String newMinionID = Integer.toString(ids.get(i));
@@ -298,7 +298,7 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 			try {
 				content.setPrimary(true);
 				content.writeByte(newDirPath);
-				//replicateFile(content,cwd);
+				// replicateFile(content,cwd);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -323,14 +323,14 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 		if (this.masterLink.getMinionCount() > 1) {
 			String replicationMinionID = Integer.toString(this.minionID);
-			if (underLoadedMinionID == null) {
-				while(Integer.toString(this.minionID).equals(replicationMinionID)){
-					replicationMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
-				}
-			} else {
+//			if (underLoadedMinionID == null) {
+//				while (Integer.toString(this.minionID).equals(replicationMinionID)) {
+//					replicationMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+//				}
+//			} else {
 				replicationMinionID = Integer.toString(
 						this.masterLink.getReplicaMinionID(Integer.toString(this.minionID), underLoadedMinionID));
-			}
+//			}
 			System.out.println("REPLICATION - re-routing file write to Minion " + replicationMinionID);
 			String minionMinionRepLink = "MinionMinionLink_" + replicationMinionID;
 			Registry minionRepRegistry = LocateRegistry.getRegistry(
@@ -430,31 +430,42 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 
 	@Override
 	public File updateFile(FileContent content, FileNode cwd) throws RemoteException {
+		
 		String[] path = cwd.path.split("tmp");
 		String append_path = path[path.length - 1];
 		append_path = pathCheck(append_path);
 		String newDirPath = this.directory + append_path + content.getName();
+
 		if (this.nsManager.hasFile(newDirPath)) {
 			try {
 				content.writeByte(newDirPath);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else {
-			String newMinionID = Integer
-					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
-			String minionMinionLink = "MinionMinionLink_" + newMinionID;
-			Registry minionRegistry = LocateRegistry.getRegistry(
-					this.masterLink.getMinionInfo(newMinionID).getAddress(),
-					this.masterLink.getMinionInfo(newMinionID).getPort());
-			try {
-				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
-				mmstub.rerouteWriteFile(content, cwd);
-			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		}
+
+		String minionRootDir = "/tmp/minion_" + this.minionID;
+		String globalPath = newDirPath.split(minionRootDir)[1];
+		System.out.println(globalPath);
+
+		ArrayList<Integer> ids = this.masterLink.getAllFileMinionOwners(globalPath);
+		for (int i = 0; i < ids.size(); i++) {
+			String newMinionID = Integer.toString(ids.get(i));
+			if (!newMinionID.equalsIgnoreCase(Integer.toString(this.minionID))) {
+				String minionMinionLink = "MinionMinionLink_" + newMinionID;
+				Registry minionRegistry = LocateRegistry.getRegistry(
+						this.masterLink.getMinionInfo(newMinionID).getAddress(),
+						this.masterLink.getMinionInfo(newMinionID).getPort());
+				try {
+					MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+					mmstub.rerouteWriteFile(content, cwd);
+				} catch (NotBoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
+		
 		return null;
 	}
 

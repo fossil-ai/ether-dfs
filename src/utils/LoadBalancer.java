@@ -41,8 +41,6 @@ public class LoadBalancer {
 	}
 
 	public int getNonOverloadedMinion() {
-		System.out.println(this.loadToMinionMap.toString());
-		System.out.println(this.loadStatus.toString());
 		if (this.loadToMinionMap.get(-1).size() > 0) {
 			int size = this.loadToMinionMap.get(-1).size();
 			int item = new Random().nextInt(size);
