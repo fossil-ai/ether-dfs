@@ -31,7 +31,7 @@ public interface MinionMasterLink extends Remote {
 
 	public int getFileMinionOwner(String id, String newDirPath) throws RemoteException;
 	
-	public ArrayList<Integer> getAllFileMinionOwners(String filename);
+	public ArrayList<Integer> getAllFileMinionOwners(String filename) throws RemoteException;
 
 	public int getUnderLoadedMinionID() throws RemoteException;
 	

@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import links.MasterMinionLink;
 import links.MinionMasterLink;
 import utils.ConfigReader;
+import utils.EtherFile;
 import utils.FileManager;
 import utils.FileNode;
 import utils.GlobalNameSpaceManager;
@@ -35,7 +36,6 @@ import utils.MinionManager;
 import utils.NameSpaceSynchronizer;
 import links.ClientMasterLink;
 import links.ClientMinionLink;
-import utils.EtherFile;
 
 public class Master extends UnicastRemoteObject implements MinionMasterLink, ClientMasterLink, Runnable {
 
@@ -66,6 +66,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		
 		this.etherFile = new EtherFile();
 
+		
 		this.reader = new ConfigReader();
 		int REG_PORT = this.reader.getRegistryPort();
 
@@ -253,7 +254,7 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 		}
 		return minionIDsWithFile;
 	}
-	
+
 	public EtherFile getEtherFile() {
 		return this.etherFile;
 		}

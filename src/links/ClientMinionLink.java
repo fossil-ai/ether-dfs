@@ -27,5 +27,7 @@ public interface ClientMinionLink extends Remote {
 	File updateFile(FileContent fileContent, FileNode cwd) throws RemoteException;
 
 	FileContent getFileContent(String filename, FileNode cwd) throws RemoteException;
+	
+	String getTimeStamp(String filename, FileNode cwd) throws RemoteException;
 
 }

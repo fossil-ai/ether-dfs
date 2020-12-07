@@ -106,7 +106,17 @@ public class Client {
 		TIME {
 			@Override
 			public void executeOp(String[] cmds, Client client) {
-				// TODO Auto-generated
+
+				if (fileNameCheck(cmds, client) == false)
+					return;
+
+				try {
+					String timestamp = client.minionLink.getTimeStamp(cmds[1], client.cwdNode);
+					System.out.println(timestamp);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		},
 
@@ -270,7 +280,7 @@ public class Client {
 						                                       
 
 					FileContent content = new FileContent(cmds[1]);
-					client.minionLink.writeFile(content, client.cwdNode);
+					//client.minionLink.writeFile(content, client.cwdNode);
 					
 
 					try {

@@ -26,5 +26,7 @@ public interface MinionMinionLink extends Remote {
 	public FileContent rerouteGetFileContent(String filename, FileNode cwd) throws RemoteException;
 	
 	public void replicateFile(FileContent content, FileNode cwd) throws RemoteException;
+	
+	public String rerouteGetTimeStamp(String filename, FileNode cwd) throws RemoteException;
 
 }

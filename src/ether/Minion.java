@@ -21,6 +21,7 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 
 import links.MasterMinionLink;
 import links.MinionMasterLink;
@@ -445,4 +446,57 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		}
 		return null;
 	}
+
+	@Override
+	public String getTimeStamp(String filename, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + filename;
+		if (this.nsManager.hasFile(newDirPath)) {
+			Path pathname = Paths.get(newDirPath);
+			FileTime time = null;
+			try {
+				time = Files.getLastModifiedTime(pathname);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return time.toString();
+		} else {
+			String newMinionID = Integer
+					.toString(this.masterLink.getFileMinionOwner(Integer.toString(this.minionID), newDirPath));
+			String minionMinionLink = "MinionMinionLink_" + newMinionID;
+			Registry minionRegistry = LocateRegistry.getRegistry(
+					this.masterLink.getMinionInfo(newMinionID).getAddress(),
+					this.masterLink.getMinionInfo(newMinionID).getPort());
+			try {
+				MinionMinionLink mmstub = (MinionMinionLink) minionRegistry.lookup(minionMinionLink);
+				String timestamp = mmstub.rerouteGetTimeStamp(filename, cwd);
+				return timestamp;
+			} catch (NotBoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String rerouteGetTimeStamp(String filename, FileNode cwd) throws RemoteException {
+		String[] path = cwd.path.split("tmp");
+		String append_path = path[path.length - 1];
+		append_path = pathCheck(append_path);
+		String newDirPath = this.directory + append_path + filename;
+		Path pathname = Paths.get(newDirPath);
+		FileTime time = null;
+		try {
+			time = Files.getLastModifiedTime(pathname);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return time.toString();
+	}
+
 }
