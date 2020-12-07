@@ -322,9 +322,11 @@ public class Minion extends UnicastRemoteObject implements MasterMinionLink, Cli
 		}
 
 		if (this.masterLink.getMinionCount() > 1) {
-			String replicationMinionID;
+			String replicationMinionID = Integer.toString(this.minionID);
 			if (underLoadedMinionID == null) {
-				replicationMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+				while(Integer.toString(this.minionID).equals(replicationMinionID)){
+					replicationMinionID = Integer.toString(this.masterLink.getUnderLoadedMinionID());
+				}
 			} else {
 				replicationMinionID = Integer.toString(
 						this.masterLink.getReplicaMinionID(Integer.toString(this.minionID), underLoadedMinionID));

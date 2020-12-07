@@ -253,9 +253,11 @@ public class Master extends UnicastRemoteObject implements MinionMasterLink, Cli
 	public synchronized int getReplicaMinionID(String currentID, String rerouteID) throws RemoteException {
 		List<MinionInfo> list = this.minionManager.getMinionInfoList();
 		String selectedMinionID = currentID;
-		while (selectedMinionID.equalsIgnoreCase(currentID)) {
+		System.out.println(selectedMinionID + ":" + currentID);
+		while (selectedMinionID.equals(currentID)) {
 			int randID = ThreadLocalRandom.current().nextInt(0, list.size());
 			selectedMinionID = Integer.toString(list.get(randID).getId());
+			System.out.println(selectedMinionID + ":" + currentID);
 		}
 		return Integer.parseInt(selectedMinionID);
 //		if (list.size() == 2) {
